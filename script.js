@@ -1,12 +1,3 @@
-/* Vitrine Digitale (1 bien à la fois)
- * - src par défaut: exports/catalogue_vitrine.json
- * - filtre agence via ?agence=
- * - screen/screens/seed pour répartir les biens entre écrans
- * - diapo photos (max 5) puis changement de bien
- * - rotate = durée MINIMUM par bien (si 5 photos * photoRotate > rotate, on garde plus longtemps)
- * - refresh = reload JSON
- */
-
 (function () {
   const $ = (sel) => document.querySelector(sel);
 
@@ -25,10 +16,15 @@
     slideRef: $("#slideRef"),
     slideTitle: $("#slideTitle"),
     slideMeta: $("#slideMeta"),
-    slidePhone: $("#slidePhone"),
 
+    // images
     slideImgA: $("#slideImgA"),
     slideImgB: $("#slideImgB"),
+
+    // ✅ contact card fields
+    contactAdvisor: $("#contactAdvisor"),
+    contactAgencyPhone: $("#contactAgencyPhone"),
+    contactAdvisorMobile: $("#contactAdvisorMobile"),
   };
 
   const PLACEHOLDER_SVG =
@@ -103,10 +99,7 @@
   }
 
   function normalizeItem(item) {
-    return {
-      ...item,
-      photos: normalizePhotos(item.photos, 5),
-    };
+    return { ...item, photos: normalizePhotos(item.photos, 5) };
   }
 
   function getPhoto(item, idx) {
@@ -132,6 +125,80 @@
     return items.filter((_, index) => ((index + seed) % screens) === (screen - 1));
   }
 
+  // ---------------------------
+  // Téléphone & parsing "agence"
+  // ---------------------------
+  function digitsOnly(s) {
+    return safeText(s).replace(/[^\d]/g, "");
+  }
+
+  function formatFR10(d10) {
+    // "0698484278" -> "06 98 48 42 78"
+    return d10.replace(/(\d{2})(?=\d)/g, "$1 ").trim();
+  }
+
+  function isLikelyFRPhone(d) {
+    return d.length === 10 && d.startsWith("0");
+  }
+
+  function extractContactFromAgence(agenceStr) {
+    const s = safeText(agenceStr);
+
+    // Valeurs par défaut
+    const out = {
+      agencyName: "",
+      agencyPhone: "",
+      advisorName: "",
+      advisorMobile: ""
+    };
+    if (!s) return out;
+
+    // 1) Nom agence = avant le premier "TÉL"
+    // ex: "COURPIÈRE TÉL : 09..." => "COURPIÈRE"
+    const mName = s.match(/^(.+?)\s*T[ÉE]L\s*:/i);
+    if (mName) out.agencyName = safeText(mName[1]);
+
+    // 2) Tél agence = le premier "TÉL : ...." (jusqu’à "NÉGOCIATEUR" si présent)
+    const mAgencyPhone = s.match(/T[ÉE]L\s*:\s*([0-9 .-]{8,})/i);
+    if (mAgencyPhone) {
+      const d = digitsOnly(mAgencyPhone[1]);
+      if (isLikelyFRPhone(d)) out.agencyPhone = formatFR10(d);
+    }
+
+    // 3) Nom conseiller
+    // "NÉGOCIATEUR EN CHARGE DU BIEN : CÉLINE HERITIER TÉL : 0698..."
+    const mAdvisor = s.match(/N[ÉE]GOCIATEUR\s+EN\s+CHARGE\s+DU\s+BIEN\s*:\s*([^:]+?)\s*T[ÉE]L\s*:/i);
+    if (mAdvisor) out.advisorName = safeText(mAdvisor[1]);
+
+    // 4) Mobile conseiller = le "TÉL : ..." après la zone conseiller
+    const mAdvisorMobile = s.match(/N[ÉE]GOCIATEUR\s+EN\s+CHARGE\s+DU\s+BIEN\s*:\s*.+?\s*T[ÉE]L\s*:\s*([0-9 .-]{8,})/i);
+    if (mAdvisorMobile) {
+      const d = digitsOnly(mAdvisorMobile[1]);
+      if (isLikelyFRPhone(d)) out.advisorMobile = formatFR10(d);
+    }
+
+    return out;
+  }
+
+  function pickAdvisorMobile(item, extracted) {
+    // priorité au mobile extrait depuis "agence"
+    if (extracted && extracted.advisorMobile) return extracted.advisorMobile;
+
+    // sinon fallback item.phone (souvent le mobile du conseiller chez toi)
+    const d = digitsOnly(item.phone);
+    if (isLikelyFRPhone(d)) return formatFR10(d);
+
+    return "—";
+  }
+
+  function applyBrightFilter(imgEl) {
+    if (!imgEl) return;
+    imgEl.style.filter = "brightness(1.1) contrast(1.05) saturate(1.08)";
+  }
+
+  // ---------------------------
+  // Params / fetch
+  // ---------------------------
   function getParams() {
     const u = new URL(window.location.href);
     const p = u.searchParams;
@@ -142,53 +209,46 @@
       screens: clampInt(p.get("screens"), 1, 999, 1),
       seed: clampInt(p.get("seed"), 0, 999999, 0),
 
-      // rotate = durée minimum par bien
       rotate: clampInt(p.get("rotate"), 3, 3600, 12),
-
-      // photoRotate = cadence du diapo photos
       photoRotate: clampInt(p.get("photoRotate"), 2, 120, 4),
-
-      // refresh JSON
       refresh: clampInt(p.get("refresh"), 10, 3600, 120),
 
-      // source JSON
       src: (p.get("src") || "exports/catalogue_vitrine.json").trim(),
+      debug: p.get("debug") === "1",
     };
   }
 
   async function fetchCatalogue(src) {
     const url = new URL(src, window.location.href);
-    url.searchParams.set("ts", String(Date.now())); // cache bust
-
+    url.searchParams.set("ts", String(Date.now()));
     const res = await fetch(url.toString(), { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-
-    if (!data || !Array.isArray(data.items)) {
-      throw new Error("JSON invalide (attendu: {generatedAt, items[]})");
-    }
+    if (!data || !Array.isArray(data.items)) throw new Error("JSON invalide (attendu: {generatedAt, items[]})");
     return data;
   }
 
   function showView(name) {
-    els.viewSlide.classList.toggle("hidden", name !== "slide");
-    els.viewEmpty.classList.toggle("hidden", name !== "empty");
+    $("#viewSlide").classList.toggle("hidden", name !== "slide");
+    $("#viewEmpty").classList.toggle("hidden", name !== "empty");
   }
 
   function showEmpty(title, sub) {
-    els.emptyTitle.textContent = title;
-    els.emptySub.textContent = sub;
+    $("#emptyTitle").textContent = title;
+    $("#emptySub").textContent = sub;
     showView("empty");
   }
 
   function setHud(params, count, generatedAt) {
+    if (!params.debug) return;
+    document.body.classList.add("debug");
     if (els.hudAgency) els.hudAgency.textContent = params.agence ? params.agence.toUpperCase() : "TOUTES AGENCES";
     if (els.hudMode) els.hudMode.textContent = "SLIDE";
     if (els.hudInfo) els.hudInfo.textContent = `Écran ${params.screen}/${params.screens} • ${count} annonces • ${generatedAt || "…"}`;
   }
 
   // ---------------------------
-  // Slide engine: photos puis bien suivant
+  // Slide engine
   // ---------------------------
   const state = {
     items: [],
@@ -207,34 +267,38 @@
     state.tickTimer = null;
   }
 
-  // ✅ Boost luminosité (fallback) même si certaines photos sont trop sombres
-  function applyBrightFilter(imgEl) {
-    if (!imgEl) return;
-    imgEl.style.filter = "brightness(1.1) contrast(1.05) saturate(1.08)";
-  }
-
   function setSlideItem(item) {
+    // Base slide
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
     els.slideTitle.textContent = safeText(item.title || "Bien immobilier");
 
     const parts = [];
-    const cityLine = `${safeText(item.city || "")}${item.postalCode ? " (" + item.postalCode + ")" : ""}`;
-    if (cityLine.trim()) parts.push(cityLine);
+    const cityLine = safeText(item.city || "");
+    if (cityLine) parts.push(cityLine);
     if (item.surface) parts.push(`${Math.round(Number(item.surface))} m²`);
     if (item.rooms) parts.push(`${item.rooms} pièce${Number(item.rooms) > 1 ? "s" : ""}`);
     if (item.bedrooms) parts.push(`${item.bedrooms} chambre${Number(item.bedrooms) > 1 ? "s" : ""}`);
     els.slideMeta.textContent = parts.join(" • ") || "—";
 
-    els.slidePhone.textContent = safeText(item.phone || "—");
+    // ✅ Contact : parse depuis item.agence
+    const extracted = extractContactFromAgence(item.agence);
 
+    // Conseiller
+    els.contactAdvisor.textContent = extracted.advisorName || "Conseiller GTI";
+
+    // Tel agence
+    els.contactAgencyPhone.textContent = extracted.agencyPhone || "—";
+
+    // Mobile conseiller (extrait ou fallback item.phone)
+    els.contactAdvisorMobile.textContent = pickAdvisorMobile(item, extracted);
+
+    // Photos
     state.photoIndex = 0;
     state.usingA = true;
 
     els.slideImgA.src = getPhoto(item, 0);
     els.slideImgB.src = getPhoto(item, 1);
-
-    // ✅ applique le boost dès l'affichage
     applyBrightFilter(els.slideImgA);
     applyBrightFilter(els.slideImgB);
 
@@ -263,8 +327,6 @@
 
     await preload(nextUrl);
     show.src = nextUrl;
-
-    // ✅ boost sur l'image qui arrive
     applyBrightFilter(show);
 
     requestAnimationFrame(() => {
@@ -277,29 +339,25 @@
 
   function computeItemDurationSec(item, rotateMinSec, photoRotateSec) {
     const count = Array.isArray(item.photos) ? item.photos.length : 0;
-    const photoSlots = Math.max(1, count); // si 0 photo => 1 slot
+    const photoSlots = Math.max(1, count);
     const fullPhotosDuration = photoSlots * photoRotateSec;
     return Math.max(rotateMinSec, fullPhotosDuration);
   }
 
   function startSlide(items, rotateMinSec, photoRotateSec) {
     clearTimers();
-
     state.items = items;
     state.itemIndex = 0;
 
     const first = items[0];
     setSlideItem(first);
-
     state.nextItemAt = Date.now() + computeItemDurationSec(first, rotateMinSec, photoRotateSec) * 1000;
 
-    // timer diapo photo
     state.photoTimer = setInterval(() => {
       const item = state.items[state.itemIndex];
       swapPhoto(item);
     }, photoRotateSec * 1000);
 
-    // tick: change de bien seulement quand durée atteinte (après diapo)
     state.tickTimer = setInterval(() => {
       if (Date.now() < state.nextItemAt) return;
 
@@ -314,7 +372,7 @@
   }
 
   // ---------------------------
-  // Cycle: load JSON + refresh
+  // Refresh loop
   // ---------------------------
   let refreshTimer = null;
   let lastFingerprint = "";
@@ -325,16 +383,18 @@
 
   async function runOnce() {
     const params = getParams();
+    document.body.classList.toggle("debug", !!params.debug);
+
     try {
       const data = await fetchCatalogue(params.src);
 
       let items = Array.isArray(data.items) ? data.items : [];
       items = items.map(normalizeItem);
 
-      // filtre agence si renseigné
       if (params.agence) {
         const target = normalizeAgency(params.agence);
-        items = items.filter(x => normalizeAgency(x.agence) === target);
+        // robuste: "FIRMINY ..." doit matcher FIRMINY
+        items = items.filter(x => normalizeAgency(x.agence).includes(target));
       }
 
       items = sortItems(items);
