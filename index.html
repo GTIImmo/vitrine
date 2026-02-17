@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Vitrine GTI</title>
   <meta name="robots" content="noindex,nofollow" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,75 +16,82 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- App shell -->
-  <main class="app" id="app">
-    <!-- HEADER (no overlap) -->
-    <header class="hud">
-      <div class="hud__left">
-        <span class="pill" id="pillAgency">GTI</span>
-        <span class="pill pill--sub" id="pillMode">MODE</span>
+<main class="app" id="app">
+  <!-- Top HUD (no overlap) -->
+  <header class="hud">
+    <div class="hud__left">
+      <span class="pill" id="pillAgency">GTI</span>
+      <span class="pill pill--sub" id="pillMode">SLIDE</span>
+      <span class="pill pill--sub" id="pillCount">0</span>
+    </div>
+
+    <div class="hud__right">
+      <span class="pill pill--sub" id="pillScreen">ÉCRAN —</span>
+      <span class="pill pill--sub" id="pillTime">—</span>
+    </div>
+  </header>
+
+  <!-- GRID -->
+  <section class="grid" id="gridView" hidden>
+    <div class="grid__inner" id="gridCards"></div>
+  </section>
+
+  <!-- SLIDE -->
+  <section class="slide" id="slideView" hidden>
+    <div class="slide__media" id="mediaRoot">
+      <!-- double-buffer images for crossfade -->
+      <img class="media__img is-front" id="imgA" alt="" decoding="async" />
+      <img class="media__img" id="imgB" alt="" decoding="async" />
+
+      <div class="media__fallback" id="mediaFallback" hidden>
+        <div class="fallback__logo">GTI Immobilier</div>
+        <div class="fallback__txt">Photo indisponible</div>
       </div>
 
-      <div class="hud__right">
-        <span class="pill pill--sub" id="pillInfo">…</span>
+      <div class="media__corner">
+        <span class="badge badge--price" id="slidePrice">—</span>
+        <span class="badge badge--ref" id="slideRef">—</span>
       </div>
-    </header>
 
-    <!-- GRID -->
-    <section class="grid" id="gridView" hidden>
-      <div class="grid__inner" id="gridCards"></div>
-    </section>
+      <div class="progress">
+        <div class="progress__bar" id="progressBar"></div>
+      </div>
+    </div>
 
-    <!-- SLIDE -->
-    <section class="slide" id="slideView" hidden>
-      <div class="slide__media">
-        <img id="slideImg" alt="" loading="eager" decoding="async">
-        <div class="media__fallback" id="slideFallback" hidden>
-          <div class="fallback__logo">GTI Immobilier</div>
-          <div class="fallback__txt">Photo indisponible</div>
+    <aside class="panel">
+      <h1 class="title" id="slideTitle">—</h1>
+      <div class="meta" id="slideMeta">—</div>
+
+      <div class="chips" id="slideChips"></div>
+
+      <div class="panel__spacer"></div>
+
+      <div class="contact">
+        <div class="contact__label">CONTACTEZ-NOUS</div>
+        <div class="contact__line">
+          <div class="contact__brand" id="contactBrand">GTI Immobilier</div>
+          <div class="contact__phone" id="contactPhone">—</div>
         </div>
+        <div class="contact__hint">Votre projet, notre équipe</div>
       </div>
+    </aside>
+  </section>
 
-      <aside class="slide__panel">
-        <div class="panel__top">
-          <div class="price" id="slidePrice">—</div>
-          <div class="ref" id="slideRef">—</div>
-        </div>
+  <!-- EMPTY -->
+  <section class="empty" id="emptyView" hidden>
+    <div class="empty__card">
+      <div class="empty__title">Aucune annonce à afficher</div>
+      <div class="empty__subtitle" id="emptyHint">—</div>
+    </div>
+  </section>
 
-        <h1 class="title" id="slideTitle">—</h1>
+  <!-- Footer (light debug) -->
+  <footer class="foot">
+    <span id="footLeft">—</span>
+    <span id="footRight">—</span>
+  </footer>
+</main>
 
-        <div class="meta" id="slideMeta">—</div>
-
-        <div class="chips" id="slideChips"></div>
-
-        <div class="panel__spacer"></div>
-
-        <div class="contact">
-          <div class="contact__label">CONTACTEZ-NOUS</div>
-          <div class="contact__line">
-            <div class="contact__brand" id="contactBrand">GTI Immobilier</div>
-            <div class="contact__phone" id="contactPhone">—</div>
-          </div>
-          <div class="contact__hint">Votre projet, notre équipe</div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- EMPTY -->
-    <section class="empty" id="emptyView" hidden>
-      <div class="empty__card">
-        <div class="empty__title">Aucune annonce à afficher</div>
-        <div class="empty__subtitle" id="emptyHint">Vérifiez le filtre agence et la source JSON.</div>
-      </div>
-    </section>
-
-    <!-- FOOTER debug light -->
-    <footer class="foot" id="foot">
-      <span id="footLeft">—</span>
-      <span id="footRight">—</span>
-    </footer>
-  </main>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
