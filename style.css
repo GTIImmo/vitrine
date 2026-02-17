@@ -1,359 +1,368 @@
-/* Vitrine digitale - GTI
-   URL params:
-   - agence=FIRMINY
-   - screen=2&screens=6
-   - mode=grid|slide
-   - rotate=seconds (slide)
-   - refresh=seconds (reload JSON)
-   - src=data/catalogue_vitrine.json (default)
-   - seed=number (optional shift)
-*/
+:root{
+  --bg:#0b0f14;
+  --panel:#0f1620;
+  --panel2:#0c121a;
+  --text:#f3f5f7;
+  --muted:rgba(243,245,247,.72);
+  --muted2:rgba(243,245,247,.55);
+  --line:rgba(255,255,255,.10);
 
-const $ = (id) => document.getElementById(id);
+  --accent:#c2185b;     /* GTI vibe */
+  --accent2:#10b981;    /* vert CTA */
 
-const DEFAULTS = {
-  src: "data/catalogue_vitrine.json",
-  mode: "slide",
-  rotate: 12,
-  refresh: 90,
-  screen: 1,
-  screens: 1,
-  seed: 0,
-  agence: ""
-};
-
-const BLOCKED_STATUSES = new Set(["ARCHIVED","DELETED","INACTIVE","SOLD"]);
-
-function getParams(){
-  const p = new URLSearchParams(location.search);
-  const obj = { ...DEFAULTS };
-
-  if (p.get("src")) obj.src = p.get("src");
-  if (p.get("mode")) obj.mode = (p.get("mode") || "").toLowerCase();
-  if (p.get("rotate")) obj.rotate = Math.max(2, parseInt(p.get("rotate"), 10) || DEFAULTS.rotate);
-  if (p.get("refresh")) obj.refresh = Math.max(10, parseInt(p.get("refresh"), 10) || DEFAULTS.refresh);
-
-  if (p.get("screen")) obj.screen = Math.max(1, parseInt(p.get("screen"), 10) || 1);
-  if (p.get("screens")) obj.screens = Math.max(1, parseInt(p.get("screens"), 10) || 1);
-  if (p.get("seed")) obj.seed = parseInt(p.get("seed"), 10) || 0;
-
-  if (p.get("agence")) obj.agence = (p.get("agence") || "").trim().toUpperCase();
-
-  // sanitize screen range
-  if (obj.screen > obj.screens) obj.screen = 1;
-
-  return obj;
+  --shadow: 0 18px 60px rgba(0,0,0,.35);
+  --radius:18px;
+  --radius2:26px;
+  --container: 100vw;
 }
 
-function moneyEUR(n){
-  const v = Number(n || 0);
-  if (!isFinite(v) || v <= 0) return "Prix sur demande";
-  return v.toLocaleString("fr-FR") + " €";
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background: radial-gradient(1200px 800px at 20% 10%, rgba(194,24,91,.12), transparent 60%),
+              radial-gradient(1000px 700px at 80% 30%, rgba(16,185,129,.10), transparent 55%),
+              var(--bg);
+  color:var(--text);
+  overflow:hidden; /* kiosque */
 }
 
-function safeText(s){
-  return (s == null ? "" : String(s)).trim();
+/* App layout */
+.app{
+  height:100%;
+  width:100%;
+  display:flex;
+  flex-direction:column;
 }
 
-function pickPhoto(item){
-  const photos = Array.isArray(item.photos) ? item.photos : [];
-  return photos[0] || "";
+/* HUD top - NEVER overlaps content */
+.hud{
+  height:64px;
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom:1px solid var(--line);
+  background: linear-gradient(180deg, rgba(15,22,32,.92), rgba(15,22,32,.65));
+  backdrop-filter: blur(8px);
 }
 
-function buildTitle(item){
-  const offer = (safeText(item.offerType) || "").toLowerCase();
-  const offerLabel = offer.includes("vente") ? "Vente" : (offer ? offer : "Annonce");
-  const typeGuess = safeText(item.title).split("|")[0].trim() || safeText(item.title) || "Bien";
-  const city = safeText(item.city);
-  const pc = safeText(item.postalCode);
-  return `${offerLabel} | ${typeGuess} | ${city}${pc ? " ("+pc+")" : ""}`;
+.hud__left,.hud__right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
 }
 
-function buildMeta(item){
-  const city = safeText(item.city);
-  const pc = safeText(item.postalCode);
-  const s = Number(item.surface || 0);
-  const r = Number(item.rooms || 0);
-  const parts = [];
-  if (city) parts.push(city + (pc ? " " + pc : ""));
-  if (s) parts.push(`${s} m²`);
-  if (r) parts.push(`${r} pièce${r>1?"s":""}`);
-  return parts.join(" • ") || "—";
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  color:var(--text);
+  font-weight:700;
+  letter-spacing:.02em;
+  white-space:nowrap;
+}
+.pill--sub{
+  font-weight:600;
+  color:var(--muted);
 }
 
-function normalizeStatus(s){
-  return safeText(s).toUpperCase();
+/* FOOTER */
+.foot{
+  height:44px;
+  padding:10px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-top:1px solid var(--line);
+  color:var(--muted2);
+  font-size:13px;
+  background: rgba(0,0,0,.18);
 }
 
-function sortItems(items){
-  // updatedAt desc then weight desc
-  return items.slice().sort((a,b) => {
-    const da = safeText(a.updatedAt);
-    const db = safeText(b.updatedAt);
-    if (da !== db) return db.localeCompare(da);
-    const wa = Number(a.weight || 0);
-    const wb = Number(b.weight || 0);
-    return wb - wa;
-  });
+/* --------------------
+   GRID MODE
+-------------------- */
+.grid{
+  flex:1;
+  padding:18px;
+}
+.grid__inner{
+  height:100%;
+  display:grid;
+  gap:16px;
+  grid-template-columns: repeat(3, 1fr);
 }
 
-function filterItems(all, agence){
-  let items = Array.isArray(all) ? all : [];
-
-  // status filter (requested)
-  items = items.filter(it => !BLOCKED_STATUSES.has(normalizeStatus(it.status)));
-
-  // agence filter (optional)
-  if (agence){
-    items = items.filter(it => safeText(it.agence).toUpperCase() === agence);
-  }
-  return items;
+/* Responsive for smaller screens */
+@media (max-width: 1200px){
+  .grid__inner{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 760px){
+  .grid__inner{ grid-template-columns: 1fr; }
 }
 
-function distribute(items, screen, screens, seed){
-  if (!screens || screens <= 1) return items;
-  const shift = ((seed % screens) + screens) % screens;
-  const idxWanted = ((screen - 1 + shift) % screens);
-  return items.filter((_, i) => (i % screens) === idxWanted);
+.card{
+  border-radius: var(--radius2);
+  overflow:hidden;
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow: var(--shadow);
+  display:flex;
+  flex-direction:column;
+  min-height:0;
 }
 
-async function fetchCatalogue(src){
-  const url = src + (src.includes("?") ? "&" : "?") + "ts=" + Date.now();
-  const r = await fetch(url, { cache: "no-store" });
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  return await r.json();
+.card__media{
+  position:relative;
+  aspect-ratio: 16/10;
+  background:#0a0e13;
+}
+.card__media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  /* IMPORTANT: image lumineuse => AUCUN overlay sombre */
+  filter:none;
+}
+.card__badge{
+  position:absolute;
+  left:12px; top:12px;
+  padding:10px 12px;
+  border-radius:999px;
+  background: rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.16);
+  font-weight:900;
+  letter-spacing:.02em;
+}
+.card__body{
+  padding:14px 14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-height:0;
+}
+.card__title{
+  font-size:18px;
+  font-weight:900;
+  line-height:1.15;
+  margin:0;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.card__meta{
+  color:var(--muted);
+  font-weight:600;
+}
+.card__ref{
+  color:var(--muted2);
+  font-size:13px;
+  font-weight:600;
 }
 
-/* Views */
-function show(view){
-  $("gridView").hidden = view !== "grid";
-  $("slideView").hidden = view !== "slide";
-  $("emptyView").hidden = view !== "empty";
+/* --------------------
+   SLIDE MODE
+-------------------- */
+.slide{
+  flex:1;
+  display:grid;
+  grid-template-columns: 1.35fr .65fr;
+  min-height:0;
 }
 
-function setHUD(params, totalForScreen, generatedAt){
-  $("pillAgency").textContent = params.agence ? params.agence : "GTI";
-  $("pillMode").textContent = params.mode.toUpperCase();
-  const t = generatedAt ? safeText(generatedAt).replace("T"," ") : "—";
-  $("pillInfo").textContent = `ÉCRAN ${params.screen}/${params.screens} • ${totalForScreen} ANN.${totalForScreen>1?"":"."} • ${t}`;
+/* Media */
+.slide__media{
+  position:relative;
+  min-height:0;
+  background:#0a0e13;
+}
+.slide__media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  /* IMPORTANT: image lumineuse => pas de filtre sombre */
+  filter:none;
+}
+.media__fallback{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  background: radial-gradient(900px 600px at 30% 20%, rgba(194,24,91,.20), transparent 55%),
+              radial-gradient(900px 600px at 70% 70%, rgba(16,185,129,.18), transparent 55%),
+              #0a0e13;
+}
+.fallback__logo{
+  font-weight:900;
+  font-size:28px;
+}
+.fallback__txt{
+  color:var(--muted);
+  font-weight:700;
 }
 
-function setFooter(left, right){
-  $("footLeft").textContent = left || "—";
-  $("footRight").textContent = right || "—";
+/* Panel right */
+.slide__panel{
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  padding:26px 24px 22px;
+  background: linear-gradient(180deg, rgba(15,22,32,.92), rgba(10,14,19,.92));
+  border-left:1px solid rgba(255,255,255,.10);
+  gap:14px;
 }
 
-/* GRID render */
-function renderGrid(items){
-  const host = $("gridCards");
-  host.innerHTML = "";
-
-  const maxCards = 12; // au moins 6 visibles, on en montre plus si écran grand
-  const slice = items.slice(0, maxCards);
-
-  slice.forEach(it => {
-    const photo = pickPhoto(it);
-    const card = document.createElement("article");
-    card.className = "card";
-
-    const media = document.createElement("div");
-    media.className = "card__media";
-
-    const img = document.createElement("img");
-    img.alt = "";
-    img.loading = "lazy";
-    img.decoding = "async";
-    img.src = photo || "";
-    img.onerror = () => { img.style.display = "none"; };
-
-    const badge = document.createElement("div");
-    badge.className = "card__badge";
-    badge.textContent = moneyEUR(it.price);
-
-    media.appendChild(img);
-    media.appendChild(badge);
-
-    const body = document.createElement("div");
-    body.className = "card__body";
-
-    const h = document.createElement("h3");
-    h.className = "card__title";
-    h.textContent = safeText(it.title) || buildTitle(it);
-
-    const meta = document.createElement("div");
-    meta.className = "card__meta";
-    meta.textContent = buildMeta(it);
-
-    const ref = document.createElement("div");
-    ref.className = "card__ref";
-    ref.textContent = safeText(it.ref) ? `Réf. ${it.ref}` : "";
-
-    body.appendChild(h);
-    body.appendChild(meta);
-    body.appendChild(ref);
-
-    card.appendChild(media);
-    card.appendChild(body);
-
-    host.appendChild(card);
-  });
+.panel__top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
 }
 
-/* SLIDE render */
-function renderSlide(item, index, total, params){
-  const imgEl = $("slideImg");
-  const fb = $("slideFallback");
-
-  const photo = pickPhoto(item);
-  if (photo){
-    imgEl.src = photo;
-    imgEl.hidden = false;
-    fb.hidden = true;
-    imgEl.onerror = () => {
-      imgEl.hidden = true;
-      fb.hidden = false;
-    };
-  } else {
-    imgEl.hidden = true;
-    fb.hidden = false;
-  }
-
-  $("slidePrice").textContent = moneyEUR(item.price);
-  $("slideRef").textContent = safeText(item.ref) ? `Réf. ${item.ref}` : `#${safeText(item.id) || (index+1)}`;
-
-  $("slideTitle").textContent = buildTitle(item);
-  $("slideMeta").textContent = buildMeta(item);
-
-  // chips
-  const chips = $("slideChips");
-  chips.innerHTML = "";
-  const agence = safeText(item.agence);
-  const status = normalizeStatus(item.status);
-  const surface = Number(item.surface || 0);
-  const rooms = Number(item.rooms || 0);
-  const beds = Number(item.bedrooms || 0);
-
-  const list = [];
-  if (agence) list.push({ t: agence, soft:false });
-  if (surface) list.push({ t: `${surface} m²`, soft:true });
-  if (rooms) list.push({ t: `${rooms} pièce${rooms>1?"s":""}`, soft:true });
-  if (beds) list.push({ t: `${beds} chambre${beds>1?"s":""}`, soft:true });
-  if (status) list.push({ t: status, soft:true });
-
-  list.slice(0, 6).forEach(c => {
-    const s = document.createElement("span");
-    s.className = "chip" + (c.soft ? " chip--soft" : "");
-    s.textContent = c.t;
-    chips.appendChild(s);
-  });
-
-  // Contact
-  $("contactBrand").textContent = agence ? `GTI Immobilier • ${agence}` : "GTI Immobilier";
-  $("contactPhone").textContent = safeText(item.phone) || "—";
-
-  setFooter(
-    `${params.agence || "GTI"} • ${params.mode.toUpperCase()} • ${index+1}/${total}`,
-    safeText(item.updatedAt) ? `Maj: ${safeText(item.updatedAt).replace("T"," ")}` : ""
-  );
+.price{
+  display:inline-flex;
+  align-items:center;
+  padding:12px 14px;
+  border-radius:999px;
+  background: rgba(16,185,129,.16);
+  border:1px solid rgba(16,185,129,.35);
+  font-weight:900;
+  font-size:22px;
+  letter-spacing:.01em;
+  white-space:nowrap;
+}
+.ref{
+  color:var(--muted2);
+  font-weight:700;
+  font-size:14px;
+  text-align:right;
+  white-space:nowrap;
 }
 
-let state = {
-  params: getParams(),
-  allItems: [],
-  items: [],
-  generatedAt: "",
-  slideIndex: 0,
-  slideTimer: null,
-  refreshTimer: null
-};
-
-function stopTimers(){
-  if (state.slideTimer) { clearInterval(state.slideTimer); state.slideTimer = null; }
-  if (state.refreshTimer) { clearInterval(state.refreshTimer); state.refreshTimer = null; }
+/* Title avoids overlap: it's in normal flow */
+.title{
+  margin:0;
+  font-size: clamp(30px, 3.1vw, 54px);
+  font-weight: 950;
+  line-height:1.03;
+  letter-spacing:-.02em;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 
-async function loadAndRender(){
-  const params = getParams();
-  state.params = params;
-
-  try{
-    const data = await fetchCatalogue(params.src);
-    const gen = safeText(data.generatedAt || data.generated_at || data.generatedAtISO || "");
-    state.generatedAt = gen;
-
-    const all = Array.isArray(data.items) ? data.items : (Array.isArray(data) ? data : []);
-    const filtered = filterItems(all, params.agence);
-    const sorted = sortItems(filtered);
-    const distributed = distribute(sorted, params.screen, params.screens, params.seed);
-
-    state.allItems = all;
-    state.items = distributed;
-    state.slideIndex = 0;
-
-    setHUD(params, distributed.length, gen);
-
-    if (!distributed.length){
-      show("empty");
-      $("emptyHint").textContent = `0 annonce après filtres (agence=${params.agence || "—"}, status bloqués=${Array.from(BLOCKED_STATUSES).join(", ")})`;
-      setFooter("—", "—");
-      return;
-    }
-
-    if (params.mode === "grid"){
-      show("grid");
-      renderGrid(distributed);
-      setFooter(
-        `${params.agence || "GTI"} • GRID • ${distributed.length} annonces`,
-        gen ? `Catalogue: ${gen.replace("T"," ")}` : ""
-      );
-      return;
-    }
-
-    // default slide
-    show("slide");
-    renderSlide(distributed[0], 0, distributed.length, params);
-
-  }catch(err){
-    show("empty");
-    $("emptyHint").textContent = `Erreur chargement JSON (${err?.message || err}). src=${params.src}`;
-    setFooter("Erreur", safeText(err?.message || err));
-  }
+/* Meta line */
+.meta{
+  color:var(--muted);
+  font-weight:700;
+  font-size:18px;
+  line-height:1.2;
 }
 
-function startSlideRotation(){
-  stopTimers();
-
-  const { params } = state;
-  if (params.mode !== "slide") return;
-  if (!state.items.length) return;
-
-  state.slideTimer = setInterval(() => {
-    const items = state.items;
-    if (!items.length) return;
-
-    state.slideIndex = (state.slideIndex + 1) % items.length;
-    renderSlide(items[state.slideIndex], state.slideIndex, items.length, state.params);
-  }, params.rotate * 1000);
+/* chips */
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.chip{
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color:var(--text);
+  font-weight:800;
+  font-size:14px;
+  white-space:nowrap;
+}
+.chip--soft{
+  color:var(--muted);
+  font-weight:700;
 }
 
-function startRefresh(){
-  const { params } = state;
-  state.refreshTimer = setInterval(async () => {
-    await loadAndRender();
-    startSlideRotation();
-  }, params.refresh * 1000);
+/* Spacer to keep contact at bottom */
+.panel__spacer{
+  flex:1;
 }
 
-/* Boot */
-(async function boot(){
-  await loadAndRender();
-  startSlideRotation();
-  startRefresh();
+/* Contact card */
+.contact{
+  border-radius: var(--radius2);
+  border:1px solid rgba(16,185,129,.25);
+  background: linear-gradient(180deg, rgba(16,185,129,.10), rgba(255,255,255,.04));
+  padding:18px 16px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.25);
+}
+.contact__label{
+  font-weight:900;
+  letter-spacing:.12em;
+  font-size:12px;
+  color:rgba(255,255,255,.80);
+}
+.contact__line{
+  margin-top:10px;
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+}
+.contact__brand{
+  font-weight:900;
+  font-size:18px;
+}
+.contact__phone{
+  font-weight:950;
+  font-size:20px;
+  color:#eafff6;
+}
+.contact__hint{
+  margin-top:8px;
+  color:var(--muted);
+  font-weight:700;
+}
 
-  // If URL params change via kiosk reload, allow manual refresh key
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "r" || e.key === "R"){
-      loadAndRender().then(startSlideRotation);
-    }
-  });
-})();
+/* Empty view */
+.empty{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+.empty__card{
+  width:min(720px, 92vw);
+  border-radius: var(--radius2);
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  padding:26px 22px;
+  box-shadow: var(--shadow);
+}
+.empty__title{
+  font-size:28px;
+  font-weight:950;
+}
+.empty__subtitle{
+  margin-top:8px;
+  color:var(--muted);
+  font-weight:650;
+}
+
+/* Small tweak for very wide displays */
+@media (min-width: 1900px){
+  .slide{ grid-template-columns: 1.45fr .55fr; }
+}
