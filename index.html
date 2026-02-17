@@ -16,7 +16,7 @@
 <body>
   <main id="app" class="app" aria-live="polite">
 
-    <!-- HUD (caché par défaut en CSS) -->
+    <!-- HUD (caché par défaut, visible si debug=1) -->
     <header class="hud" aria-hidden="true">
       <div class="hud__left">
         <div class="pill" id="hudAgency">AGENCE</div>
@@ -42,9 +42,14 @@
         <div class="slide__panel">
           <div class="panelTop">
             <div class="slide__title" id="slideTitle">—</div>
+
+            <!-- ✅ META texte (on garde) -->
             <div class="slide__meta" id="slideMeta">—</div>
 
-            <!-- ✅ NOUVEAU : DPE (caché si absent) -->
+            <!-- ✅ NOUVEAU : stats premium (icônes + valeurs) -->
+            <div class="statsRow" id="slideStats" aria-label="Caractéristiques du bien"></div>
+
+            <!-- ✅ DPE (caché si absent) -->
             <div class="dpeCard hidden" id="dpeCard" aria-label="Diagnostic de performance énergétique">
               <div class="dpeHead">
                 <div class="dpeTitle">DPE</div>
@@ -66,7 +71,7 @@
             <!-- /DPE -->
           </div>
 
-          <!-- ✅ BLOC CONTACT existant -->
+          <!-- CONTACT -->
           <div class="contactCard" id="contactCard">
             <div class="contactTop">
               <div class="contactBrand">
@@ -98,7 +103,7 @@
       </article>
     </section>
 
-    <!-- EMPTY / ERROR -->
+    <!-- EMPTY -->
     <section id="viewEmpty" class="view view--empty hidden">
       <div class="empty">
         <div class="empty__title" id="emptyTitle">Aucune annonce à afficher</div>
