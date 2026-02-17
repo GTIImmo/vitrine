@@ -37,17 +37,17 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900">
         <defs>
           <linearGradient id="g" x1="0" x2="1">
-            <stop offset="0" stop-color="#121420"/>
-            <stop offset="1" stop-color="#0b0c10"/>
+            <stop offset="0" stop-color="#eef1f6"/>
+            <stop offset="1" stop-color="#f6f7fb"/>
           </linearGradient>
         </defs>
         <rect width="100%" height="100%" fill="url(#g)"/>
-        <circle cx="420" cy="420" r="220" fill="rgba(194,24,91,.18)"/>
-        <circle cx="980" cy="300" r="260" fill="rgba(15,118,110,.16)"/>
-        <text x="50%" y="52%" fill="rgba(242,244,255,.82)" font-family="Inter, Arial" font-size="52" font-weight="900" text-anchor="middle">
+        <circle cx="420" cy="420" r="220" fill="rgba(194,24,91,.12)"/>
+        <circle cx="980" cy="300" r="260" fill="rgba(15,118,110,.12)"/>
+        <text x="50%" y="52%" fill="rgba(18,19,24,.82)" font-family="Inter, Arial" font-size="52" font-weight="900" text-anchor="middle">
           GTI Immobilier
         </text>
-        <text x="50%" y="60%" fill="rgba(242,244,255,.55)" font-family="Inter, Arial" font-size="24" font-weight="650" text-anchor="middle">
+        <text x="50%" y="60%" fill="rgba(18,19,24,.55)" font-family="Inter, Arial" font-size="24" font-weight="650" text-anchor="middle">
           Visuel indisponible
         </text>
       </svg>
@@ -207,6 +207,12 @@
     state.tickTimer = null;
   }
 
+  // ✅ Boost luminosité (fallback) même si certaines photos sont trop sombres
+  function applyBrightFilter(imgEl) {
+    if (!imgEl) return;
+    imgEl.style.filter = "brightness(1.1) contrast(1.05) saturate(1.08)";
+  }
+
   function setSlideItem(item) {
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
@@ -227,6 +233,10 @@
 
     els.slideImgA.src = getPhoto(item, 0);
     els.slideImgB.src = getPhoto(item, 1);
+
+    // ✅ applique le boost dès l'affichage
+    applyBrightFilter(els.slideImgA);
+    applyBrightFilter(els.slideImgB);
 
     els.slideImgA.classList.add("is-visible");
     els.slideImgB.classList.remove("is-visible");
@@ -253,6 +263,9 @@
 
     await preload(nextUrl);
     show.src = nextUrl;
+
+    // ✅ boost sur l'image qui arrive
+    applyBrightFilter(show);
 
     requestAnimationFrame(() => {
       hide.classList.remove("is-visible");
@@ -356,5 +369,4 @@
 
   runOnce();
   startRefreshLoop();
-
 })();
