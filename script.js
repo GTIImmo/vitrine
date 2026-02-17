@@ -1,0 +1,360 @@
+/* Vitrine Digitale (1 bien à la fois)
+ * - src par défaut: exports/catalogue_vitrine.json
+ * - filtre agence via ?agence=
+ * - screen/screens/seed pour répartir les biens entre écrans
+ * - diapo photos (max 5) puis changement de bien
+ * - rotate = durée MINIMUM par bien (si 5 photos * photoRotate > rotate, on garde plus longtemps)
+ * - refresh = reload JSON
+ */
+
+(function () {
+  const $ = (sel) => document.querySelector(sel);
+
+  const els = {
+    hudAgency: $("#hudAgency"),
+    hudMode: $("#hudMode"),
+    hudInfo: $("#hudInfo"),
+
+    viewSlide: $("#viewSlide"),
+    viewEmpty: $("#viewEmpty"),
+
+    emptyTitle: $("#emptyTitle"),
+    emptySub: $("#emptySub"),
+
+    slidePrice: $("#slidePrice"),
+    slideRef: $("#slideRef"),
+    slideTitle: $("#slideTitle"),
+    slideMeta: $("#slideMeta"),
+    slidePhone: $("#slidePhone"),
+
+    slideImgA: $("#slideImgA"),
+    slideImgB: $("#slideImgB"),
+  };
+
+  const PLACEHOLDER_SVG =
+    "data:image/svg+xml;charset=utf-8," +
+    encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900">
+        <defs>
+          <linearGradient id="g" x1="0" x2="1">
+            <stop offset="0" stop-color="#121420"/>
+            <stop offset="1" stop-color="#0b0c10"/>
+          </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#g)"/>
+        <circle cx="420" cy="420" r="220" fill="rgba(194,24,91,.18)"/>
+        <circle cx="980" cy="300" r="260" fill="rgba(15,118,110,.16)"/>
+        <text x="50%" y="52%" fill="rgba(242,244,255,.82)" font-family="Inter, Arial" font-size="52" font-weight="900" text-anchor="middle">
+          GTI Immobilier
+        </text>
+        <text x="50%" y="60%" fill="rgba(242,244,255,.55)" font-family="Inter, Arial" font-size="24" font-weight="650" text-anchor="middle">
+          Visuel indisponible
+        </text>
+      </svg>
+    `);
+
+  // ---------------------------
+  // Helpers
+  // ---------------------------
+  function clampInt(v, min, max, def) {
+    const n = parseInt(v, 10);
+    if (!Number.isFinite(n)) return def;
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function safeText(s) {
+    return (s == null ? "" : String(s)).trim();
+  }
+
+  function normalizeAgency(s) {
+    return safeText(s).toUpperCase();
+  }
+
+  function parseDateKey(x) {
+    const s = safeText(x);
+    if (!s) return 0;
+    const t = Date.parse(s);
+    return Number.isFinite(t) ? t : 0;
+  }
+
+  function formatPriceEUR(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n) || n <= 0) return "Prix sur demande";
+    try {
+      return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
+    } catch {
+      return `${Math.round(n).toLocaleString("fr-FR")} €`;
+    }
+  }
+
+  function normalizePhotos(photos, max = 5) {
+    if (!Array.isArray(photos)) return [];
+    const out = [];
+    const seen = new Set();
+    for (const u of photos) {
+      const url = (u || "").toString().trim();
+      if (!url) continue;
+      if (seen.has(url)) continue;
+      seen.add(url);
+      out.push(url);
+      if (out.length >= max) break;
+    }
+    return out;
+  }
+
+  function normalizeItem(item) {
+    return {
+      ...item,
+      photos: normalizePhotos(item.photos, 5),
+    };
+  }
+
+  function getPhoto(item, idx) {
+    const arr = Array.isArray(item.photos) ? item.photos : [];
+    if (arr.length === 0) return PLACEHOLDER_SVG;
+    const i = ((idx % arr.length) + arr.length) % arr.length;
+    return arr[i] || PLACEHOLDER_SVG;
+  }
+
+  function sortItems(items) {
+    return items.slice().sort((a, b) => {
+      const da = parseDateKey(a.updatedAt);
+      const db = parseDateKey(b.updatedAt);
+      if (db !== da) return db - da;
+      const wa = Number(a.weight || 0);
+      const wb = Number(b.weight || 0);
+      return wb - wa;
+    });
+  }
+
+  function splitAcrossScreens(items, screen, screens, seed) {
+    if (screens <= 1) return items;
+    return items.filter((_, index) => ((index + seed) % screens) === (screen - 1));
+  }
+
+  function getParams() {
+    const u = new URL(window.location.href);
+    const p = u.searchParams;
+
+    return {
+      agence: (p.get("agence") || "").trim(),
+      screen: clampInt(p.get("screen"), 1, 999, 1),
+      screens: clampInt(p.get("screens"), 1, 999, 1),
+      seed: clampInt(p.get("seed"), 0, 999999, 0),
+
+      // rotate = durée minimum par bien
+      rotate: clampInt(p.get("rotate"), 3, 3600, 12),
+
+      // photoRotate = cadence du diapo photos
+      photoRotate: clampInt(p.get("photoRotate"), 2, 120, 4),
+
+      // refresh JSON
+      refresh: clampInt(p.get("refresh"), 10, 3600, 120),
+
+      // source JSON
+      src: (p.get("src") || "exports/catalogue_vitrine.json").trim(),
+    };
+  }
+
+  async function fetchCatalogue(src) {
+    const url = new URL(src, window.location.href);
+    url.searchParams.set("ts", String(Date.now())); // cache bust
+
+    const res = await fetch(url.toString(), { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (!data || !Array.isArray(data.items)) {
+      throw new Error("JSON invalide (attendu: {generatedAt, items[]})");
+    }
+    return data;
+  }
+
+  function showView(name) {
+    els.viewSlide.classList.toggle("hidden", name !== "slide");
+    els.viewEmpty.classList.toggle("hidden", name !== "empty");
+  }
+
+  function showEmpty(title, sub) {
+    els.emptyTitle.textContent = title;
+    els.emptySub.textContent = sub;
+    showView("empty");
+  }
+
+  function setHud(params, count, generatedAt) {
+    if (els.hudAgency) els.hudAgency.textContent = params.agence ? params.agence.toUpperCase() : "TOUTES AGENCES";
+    if (els.hudMode) els.hudMode.textContent = "SLIDE";
+    if (els.hudInfo) els.hudInfo.textContent = `Écran ${params.screen}/${params.screens} • ${count} annonces • ${generatedAt || "…"}`;
+  }
+
+  // ---------------------------
+  // Slide engine: photos puis bien suivant
+  // ---------------------------
+  const state = {
+    items: [],
+    itemIndex: 0,
+    photoIndex: 0,
+    usingA: true,
+    photoTimer: null,
+    tickTimer: null,
+    nextItemAt: 0,
+  };
+
+  function clearTimers() {
+    if (state.photoTimer) clearInterval(state.photoTimer);
+    if (state.tickTimer) clearInterval(state.tickTimer);
+    state.photoTimer = null;
+    state.tickTimer = null;
+  }
+
+  function setSlideItem(item) {
+    els.slidePrice.textContent = formatPriceEUR(item.price);
+    els.slideRef.textContent = safeText(item.ref || "");
+    els.slideTitle.textContent = safeText(item.title || "Bien immobilier");
+
+    const parts = [];
+    const cityLine = `${safeText(item.city || "")}${item.postalCode ? " (" + item.postalCode + ")" : ""}`;
+    if (cityLine.trim()) parts.push(cityLine);
+    if (item.surface) parts.push(`${Math.round(Number(item.surface))} m²`);
+    if (item.rooms) parts.push(`${item.rooms} pièce${Number(item.rooms) > 1 ? "s" : ""}`);
+    if (item.bedrooms) parts.push(`${item.bedrooms} chambre${Number(item.bedrooms) > 1 ? "s" : ""}`);
+    els.slideMeta.textContent = parts.join(" • ") || "—";
+
+    els.slidePhone.textContent = safeText(item.phone || "—");
+
+    state.photoIndex = 0;
+    state.usingA = true;
+
+    els.slideImgA.src = getPhoto(item, 0);
+    els.slideImgB.src = getPhoto(item, 1);
+
+    els.slideImgA.classList.add("is-visible");
+    els.slideImgB.classList.remove("is-visible");
+  }
+
+  function preload(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
+
+  async function swapPhoto(item) {
+    const photos = Array.isArray(item.photos) ? item.photos : [];
+    if (photos.length <= 1) return;
+
+    state.photoIndex++;
+    const nextUrl = getPhoto(item, state.photoIndex);
+
+    const show = state.usingA ? els.slideImgB : els.slideImgA;
+    const hide = state.usingA ? els.slideImgA : els.slideImgB;
+
+    await preload(nextUrl);
+    show.src = nextUrl;
+
+    requestAnimationFrame(() => {
+      hide.classList.remove("is-visible");
+      show.classList.add("is-visible");
+    });
+
+    state.usingA = !state.usingA;
+  }
+
+  function computeItemDurationSec(item, rotateMinSec, photoRotateSec) {
+    const count = Array.isArray(item.photos) ? item.photos.length : 0;
+    const photoSlots = Math.max(1, count); // si 0 photo => 1 slot
+    const fullPhotosDuration = photoSlots * photoRotateSec;
+    return Math.max(rotateMinSec, fullPhotosDuration);
+  }
+
+  function startSlide(items, rotateMinSec, photoRotateSec) {
+    clearTimers();
+
+    state.items = items;
+    state.itemIndex = 0;
+
+    const first = items[0];
+    setSlideItem(first);
+
+    state.nextItemAt = Date.now() + computeItemDurationSec(first, rotateMinSec, photoRotateSec) * 1000;
+
+    // timer diapo photo
+    state.photoTimer = setInterval(() => {
+      const item = state.items[state.itemIndex];
+      swapPhoto(item);
+    }, photoRotateSec * 1000);
+
+    // tick: change de bien seulement quand durée atteinte (après diapo)
+    state.tickTimer = setInterval(() => {
+      if (Date.now() < state.nextItemAt) return;
+
+      state.itemIndex = (state.itemIndex + 1) % state.items.length;
+      const item = state.items[state.itemIndex];
+      setSlideItem(item);
+
+      state.nextItemAt = Date.now() + computeItemDurationSec(item, rotateMinSec, photoRotateSec) * 1000;
+    }, 250);
+
+    showView("slide");
+  }
+
+  // ---------------------------
+  // Cycle: load JSON + refresh
+  // ---------------------------
+  let refreshTimer = null;
+  let lastFingerprint = "";
+
+  function fingerprint(items) {
+    return items.map(i => `${i.id}|${i.updatedAt}|${(i.photos && i.photos.length) || 0}`).join(";;");
+  }
+
+  async function runOnce() {
+    const params = getParams();
+    try {
+      const data = await fetchCatalogue(params.src);
+
+      let items = Array.isArray(data.items) ? data.items : [];
+      items = items.map(normalizeItem);
+
+      // filtre agence si renseigné
+      if (params.agence) {
+        const target = normalizeAgency(params.agence);
+        items = items.filter(x => normalizeAgency(x.agence) === target);
+      }
+
+      items = sortItems(items);
+      items = splitAcrossScreens(items, params.screen, params.screens, params.seed);
+
+      setHud(params, items.length, data.generatedAt);
+
+      if (!items.length) {
+        clearTimers();
+        showEmpty("Aucune annonce à afficher", "Vérifie agence/screen/screens et src=exports/catalogue_vitrine.json");
+        return;
+      }
+
+      const fp = fingerprint(items);
+      if (fp !== lastFingerprint) {
+        lastFingerprint = fp;
+        startSlide(items, params.rotate, params.photoRotate);
+      } else {
+        showView("slide");
+      }
+    } catch (e) {
+      clearTimers();
+      showEmpty("Erreur de chargement", `Impossible de charger le catalogue (${safeText(e.message || e)}).`);
+    }
+  }
+
+  function startRefreshLoop() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    const params = getParams();
+    refreshTimer = setInterval(runOnce, params.refresh * 1000);
+  }
+
+  runOnce();
+  startRefreshLoop();
+
+})();
