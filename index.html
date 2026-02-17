@@ -43,9 +43,30 @@
           <div class="panelTop">
             <div class="slide__title" id="slideTitle">—</div>
             <div class="slide__meta" id="slideMeta">—</div>
+
+            <!-- ✅ NOUVEAU : DPE (caché si absent) -->
+            <div class="dpeCard hidden" id="dpeCard" aria-label="Diagnostic de performance énergétique">
+              <div class="dpeHead">
+                <div class="dpeTitle">DPE</div>
+                <div class="dpeHint">Consommation &amp; GES</div>
+              </div>
+
+              <div class="dpeGrid">
+                <figure class="dpeItem">
+                  <img id="dpeConsoImg" class="dpeImg" alt="DPE - Consommation" />
+                  <figcaption class="dpeCaption">Consommation</figcaption>
+                </figure>
+
+                <figure class="dpeItem">
+                  <img id="dpeGesImg" class="dpeImg" alt="DPE - GES" />
+                  <figcaption class="dpeCaption">GES</figcaption>
+                </figure>
+              </div>
+            </div>
+            <!-- /DPE -->
           </div>
 
-          <!-- ✅ NOUVEAU BLOC CONTACT -->
+          <!-- ✅ BLOC CONTACT existant -->
           <div class="contactCard" id="contactCard">
             <div class="contactTop">
               <div class="contactBrand">
