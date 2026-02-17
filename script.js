@@ -17,16 +17,19 @@
     slideTitle: $("#slideTitle"),
     slideMeta: $("#slideMeta"),
 
+    // ✅ NOUVEAU : stats premium
+    slideStats: $("#slideStats"),
+
     // images
     slideImgA: $("#slideImgA"),
     slideImgB: $("#slideImgB"),
 
-    // ✅ contact card fields
+    // contact
     contactAdvisor: $("#contactAdvisor"),
     contactAgencyPhone: $("#contactAgencyPhone"),
     contactAdvisorMobile: $("#contactAdvisorMobile"),
 
-    // ✅ DPE
+    // DPE
     dpeCard: $("#dpeCard"),
     dpeConsoImg: $("#dpeConsoImg"),
     dpeGesImg: $("#dpeGesImg"),
@@ -78,6 +81,11 @@
     return Number.isFinite(t) ? t : 0;
   }
 
+  function asNumber(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+
   function formatPriceEUR(value) {
     const n = Number(value);
     if (!Number.isFinite(n) || n <= 0) return "Prix sur demande";
@@ -103,8 +111,42 @@
     return out;
   }
 
+  // ✅ On accepte plusieurs noms possibles (selon ton export)
+  function readBathrooms(item) {
+    const candidates = [
+      item.bathrooms,
+      item.bathroom,
+      item.bathroomCount,
+      item.nbBathrooms,
+      item.sdb,
+      item.nbSdb,
+      item.nb_sdb,
+      item.bains
+    ];
+    for (const c of candidates) {
+      const n = asNumber(c);
+      if (n != null && n > 0) return Math.round(n);
+    }
+    return null;
+  }
+
   function normalizeItem(item) {
-    return { ...item, photos: normalizePhotos(item.photos, 5) };
+    const it = { ...item, photos: normalizePhotos(item.photos, 5) };
+
+    // Harmonisation numérique (si string)
+    const surface = asNumber(it.surface);
+    if (surface != null) it.surface = surface;
+
+    const rooms = asNumber(it.rooms);
+    if (rooms != null) it.rooms = Math.round(rooms);
+
+    const bedrooms = asNumber(it.bedrooms);
+    if (bedrooms != null) it.bedrooms = Math.round(bedrooms);
+
+    const baths = readBathrooms(it);
+    if (baths != null) it.bathrooms = baths;
+
+    return it;
   }
 
   function getPhoto(item, idx) {
@@ -181,7 +223,116 @@
     return "—";
   }
 
-  // ✅ DPE helpers
+  // ---------------------------
+  // ✅ Icônes modernes (SVG inline)
+  // ---------------------------
+  function iconSVG(name) {
+    // Stroke noir neutre; rendu premium
+    switch (name) {
+      case "surface":
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 9V4h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 15v5h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 9V4h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 15v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+      case "rooms":
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 10.5V20h16v-9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 10.5 12 4l9 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10 20v-6h4v6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>`;
+      case "bedrooms":
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 18v-7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>`;
+      case "bathrooms":
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14v3a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5v-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M7 12V7a3 3 0 0 1 3-3h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M16 8h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M18 6v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>`;
+      default:
+        return "";
+    }
+  }
+
+  function plural(n, one, many) {
+    if (n == null) return "";
+    return n > 1 ? many : one;
+  }
+
+  // ✅ rendu stats premium
+  function renderStats(item) {
+    if (!els.slideStats) return;
+
+    const surface = (item.surface != null && Number.isFinite(Number(item.surface)) && Number(item.surface) > 0)
+      ? Math.round(Number(item.surface))
+      : null;
+
+    const rooms = (item.rooms != null && Number.isFinite(Number(item.rooms)) && Number(item.rooms) > 0)
+      ? Math.round(Number(item.rooms))
+      : null;
+
+    const bedrooms = (item.bedrooms != null && Number.isFinite(Number(item.bedrooms)) && Number(item.bedrooms) > 0)
+      ? Math.round(Number(item.bedrooms))
+      : null;
+
+    const baths = (item.bathrooms != null && Number.isFinite(Number(item.bathrooms)) && Number(item.bathrooms) > 0)
+      ? Math.round(Number(item.bathrooms))
+      : null;
+
+    const stats = [];
+
+    if (surface != null) stats.push({
+      key: "surface",
+      value: `${surface} m²`,
+      label: "Surface"
+    });
+
+    if (rooms != null) stats.push({
+      key: "rooms",
+      value: `${rooms}`,
+      label: plural(rooms, "Pièce", "Pièces")
+    });
+
+    if (bedrooms != null) stats.push({
+      key: "bedrooms",
+      value: `${bedrooms}`,
+      label: plural(bedrooms, "Chambre", "Chambres")
+    });
+
+    if (baths != null) stats.push({
+      key: "bathrooms",
+      value: `${baths}`,
+      label: plural(baths, "Salle de bain", "Salles de bain")
+    });
+
+    // Si rien → on cache proprement
+    if (!stats.length) {
+      els.slideStats.innerHTML = "";
+      els.slideStats.classList.add("hidden");
+      return;
+    }
+
+    els.slideStats.classList.remove("hidden");
+    els.slideStats.innerHTML = stats.map(s => `
+      <div class="statChip" data-stat="${s.key}">
+        <div class="statIcon" aria-hidden="true">${iconSVG(s.key)}</div>
+        <div class="statText">
+          <div class="statValue">${s.value}</div>
+          <div class="statLabel">${s.label}</div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  // ---------------------------
+  // DPE helpers
+  // ---------------------------
   function setDpe(item) {
     const conso = item && item.dpe ? safeText(item.dpe.conso) : "";
     const ges = item && item.dpe ? safeText(item.dpe.ges) : "";
@@ -289,18 +440,25 @@
     els.slideRef.textContent = safeText(item.ref || "");
     els.slideTitle.textContent = safeText(item.title || "Bien immobilier");
 
+    // META texte (on garde)
     const parts = [];
     const cityLine = safeText(item.city || "");
     if (cityLine) parts.push(cityLine);
+
     if (item.surface) parts.push(`${Math.round(Number(item.surface))} m²`);
     if (item.rooms) parts.push(`${item.rooms} pièce${Number(item.rooms) > 1 ? "s" : ""}`);
     if (item.bedrooms) parts.push(`${item.bedrooms} chambre${Number(item.bedrooms) > 1 ? "s" : ""}`);
+    if (item.bathrooms) parts.push(`${item.bathrooms} sdb`);
+
     els.slideMeta.textContent = parts.join(" • ") || "—";
 
-    // ✅ DPE (conso + GES)
+    // ✅ Stats premium (icônes)
+    renderStats(item);
+
+    // DPE
     setDpe(item);
 
-    // ✅ Contact : parse depuis item.agence
+    // Contact : parse depuis item.agence
     const extracted = extractContactFromAgence(item.agence);
 
     els.contactAdvisor.textContent = extracted.advisorName || "Conseiller GTI";
