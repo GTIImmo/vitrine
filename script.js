@@ -1,450 +1,360 @@
-/* Vitrine digitale PRO - GTI (vanilla)
-   URL params:
-   - agence=FIRMINY
-   - screen=2&screens=6
-   - mode=grid|slide
-   - rotate=seconds (slide)
-   - refresh=seconds (reload JSON)
-   - src=data/catalogue_vitrine.json (default)
-   - seed=number
-   - bright=1 (boost lumineux)
-   - ken=1 (Ken Burns zoom)
-   - max=N (limit items after filtering)
-*/
+/* Vitrine Digitale (1 bien à la fois)
+ * - src par défaut: exports/catalogue_vitrine.json
+ * - filtre agence via ?agence=
+ * - screen/screens/seed pour répartir les biens entre écrans
+ * - diapo photos (max 5) puis changement de bien
+ * - rotate = durée MINIMUM par bien (si 5 photos * photoRotate > rotate, on garde plus longtemps)
+ * - refresh = reload JSON
+ */
 
-const $ = (id) => document.getElementById(id);
+(function () {
+  const $ = (sel) => document.querySelector(sel);
 
-const DEFAULTS = {
-  src: "data/catalogue_vitrine.json",
-  mode: "slide",
-  rotate: 12,
-  refresh: 90,
-  screen: 1,
-  screens: 1,
-  seed: 0,
-  agence: "",
-  bright: 1,
-  ken: 1,
-  max: 0
-};
+  const els = {
+    hudAgency: $("#hudAgency"),
+    hudMode: $("#hudMode"),
+    hudInfo: $("#hudInfo"),
 
-const BLOCKED_STATUSES = new Set(["ARCHIVED","DELETED","INACTIVE","SOLD"]);
+    viewSlide: $("#viewSlide"),
+    viewEmpty: $("#viewEmpty"),
 
-function clampInt(v, def, min, max){
-  const n = parseInt(v, 10);
-  if (!isFinite(n)) return def;
-  return Math.min(max, Math.max(min, n));
-}
+    emptyTitle: $("#emptyTitle"),
+    emptySub: $("#emptySub"),
 
-function getParams(){
-  const p = new URLSearchParams(location.search);
-  const obj = { ...DEFAULTS };
+    slidePrice: $("#slidePrice"),
+    slideRef: $("#slideRef"),
+    slideTitle: $("#slideTitle"),
+    slideMeta: $("#slideMeta"),
+    slidePhone: $("#slidePhone"),
 
-  if (p.get("src")) obj.src = p.get("src");
-  if (p.get("mode")) obj.mode = (p.get("mode") || "").toLowerCase();
-  obj.rotate = clampInt(p.get("rotate"), DEFAULTS.rotate, 2, 120);
-  obj.refresh = clampInt(p.get("refresh"), DEFAULTS.refresh, 10, 3600);
+    slideImgA: $("#slideImgA"),
+    slideImgB: $("#slideImgB"),
+  };
 
-  obj.screen = clampInt(p.get("screen"), 1, 1, 99);
-  obj.screens = clampInt(p.get("screens"), 1, 1, 99);
-  obj.seed = clampInt(p.get("seed"), 0, -999, 999);
+  const PLACEHOLDER_SVG =
+    "data:image/svg+xml;charset=utf-8," +
+    encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900">
+        <defs>
+          <linearGradient id="g" x1="0" x2="1">
+            <stop offset="0" stop-color="#121420"/>
+            <stop offset="1" stop-color="#0b0c10"/>
+          </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#g)"/>
+        <circle cx="420" cy="420" r="220" fill="rgba(194,24,91,.18)"/>
+        <circle cx="980" cy="300" r="260" fill="rgba(15,118,110,.16)"/>
+        <text x="50%" y="52%" fill="rgba(242,244,255,.82)" font-family="Inter, Arial" font-size="52" font-weight="900" text-anchor="middle">
+          GTI Immobilier
+        </text>
+        <text x="50%" y="60%" fill="rgba(242,244,255,.55)" font-family="Inter, Arial" font-size="24" font-weight="650" text-anchor="middle">
+          Visuel indisponible
+        </text>
+      </svg>
+    `);
 
-  obj.bright = clampInt(p.get("bright"), DEFAULTS.bright, 0, 1);
-  obj.ken = clampInt(p.get("ken"), DEFAULTS.ken, 0, 1);
-  obj.max = clampInt(p.get("max"), 0, 0, 5000);
-
-  if (p.get("agence")) obj.agence = (p.get("agence") || "").trim().toUpperCase();
-  if (obj.screen > obj.screens) obj.screen = 1;
-
-  // apply flags to body
-  document.body.dataset.bright = String(obj.bright);
-  document.body.dataset.ken = String(obj.ken);
-
-  return obj;
-}
-
-function safeText(s){ return (s == null ? "" : String(s)).trim(); }
-
-function moneyEUR(n){
-  const v = Number(n || 0);
-  if (!isFinite(v) || v <= 0) return "Prix sur demande";
-  return v.toLocaleString("fr-FR") + " €";
-}
-
-function normalizeStatus(s){ return safeText(s).toUpperCase(); }
-
-function pickPhoto(item, i=0){
-  const photos = Array.isArray(item.photos) ? item.photos : [];
-  return photos[i] || "";
-}
-
-function buildTitle(item){
-  const offer = (safeText(item.offerType) || "").toLowerCase();
-  const offerLabel = offer.includes("vente") ? "Vente" : (offer ? offer : "Annonce");
-  const typeGuess = safeText(item.title).split("|")[0].trim() || safeText(item.title) || "Bien";
-  const city = safeText(item.city);
-  const pc = safeText(item.postalCode);
-  return `${offerLabel} | ${typeGuess} | ${city}${pc ? " ("+pc+")" : ""}`;
-}
-
-function buildMeta(item){
-  const city = safeText(item.city);
-  const pc = safeText(item.postalCode);
-  const s = Number(item.surface || 0);
-  const r = Number(item.rooms || 0);
-  const parts = [];
-  if (city) parts.push(city + (pc ? " " + pc : ""));
-  if (s) parts.push(`${s} m²`);
-  if (r) parts.push(`${r} pièce${r>1?"s":""}`);
-  return parts.join(" • ") || "—";
-}
-
-function sortItems(items){
-  return items.slice().sort((a,b) => {
-    const da = safeText(a.updatedAt);
-    const db = safeText(b.updatedAt);
-    if (da !== db) return db.localeCompare(da);
-    const wa = Number(a.weight || 0);
-    const wb = Number(b.weight || 0);
-    return wb - wa;
-  });
-}
-
-function filterItems(all, agence){
-  let items = Array.isArray(all) ? all : [];
-  items = items.filter(it => !BLOCKED_STATUSES.has(normalizeStatus(it.status)));
-  if (agence) items = items.filter(it => safeText(it.agence).toUpperCase() === agence);
-  return items;
-}
-
-function distribute(items, screen, screens, seed){
-  if (!screens || screens <= 1) return items;
-  const shift = ((seed % screens) + screens) % screens;
-  const idxWanted = ((screen - 1 + shift) % screens);
-  return items.filter((_, i) => (i % screens) === idxWanted);
-}
-
-async function fetchCatalogue(src){
-  const url = src + (src.includes("?") ? "&" : "?") + "ts=" + Date.now();
-  const r = await fetch(url, { cache: "no-store" });
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  return await r.json();
-}
-
-/* Views */
-function show(view){
-  $("gridView").hidden = view !== "grid";
-  $("slideView").hidden = view !== "slide";
-  $("emptyView").hidden = view !== "empty";
-}
-
-/* HUD + footer */
-function setHUD(params, count, generatedAt){
-  $("pillAgency").textContent = params.agence ? params.agence : "GTI";
-  $("pillMode").textContent = params.mode.toUpperCase();
-  $("pillCount").textContent = `${count} annonces`;
-  $("pillScreen").textContent = `ÉCRAN ${params.screen}/${params.screens}`;
-
-  const t = generatedAt ? safeText(generatedAt).replace("T"," ") : "—";
-  $("pillTime").textContent = t;
-}
-
-function setFooter(left, right){
-  $("footLeft").textContent = left || "—";
-  $("footRight").textContent = right || "—";
-}
-
-/* GRID */
-function renderGrid(items){
-  const host = $("gridCards");
-  host.innerHTML = "";
-
-  const maxCards = 12;
-  const slice = items.slice(0, maxCards);
-
-  slice.forEach(it => {
-    const photo = pickPhoto(it, 0);
-
-    const card = document.createElement("article");
-    card.className = "card";
-
-    const media = document.createElement("div");
-    media.className = "card__media";
-
-    const img = document.createElement("img");
-    img.alt = "";
-    img.loading = "lazy";
-    img.decoding = "async";
-    img.src = photo || "";
-    img.onerror = () => { img.style.display = "none"; };
-
-    const badge = document.createElement("div");
-    badge.className = "card__badge";
-    badge.textContent = moneyEUR(it.price);
-
-    media.appendChild(img);
-    media.appendChild(badge);
-
-    const body = document.createElement("div");
-    body.className = "card__body";
-
-    const h = document.createElement("h3");
-    h.className = "card__title";
-    h.textContent = safeText(it.title) || buildTitle(it);
-
-    const meta = document.createElement("div");
-    meta.className = "card__meta";
-    meta.textContent = buildMeta(it);
-
-    const ref = document.createElement("div");
-    ref.className = "card__ref";
-    ref.textContent = safeText(it.ref) ? `Réf. ${it.ref}` : "";
-
-    body.appendChild(h);
-    body.appendChild(meta);
-    body.appendChild(ref);
-
-    card.appendChild(media);
-    card.appendChild(body);
-
-    host.appendChild(card);
-  });
-}
-
-/* SLIDE PRO: preload + crossfade + fallback to next photo */
-const imgA = () => $("imgA");
-const imgB = () => $("imgB");
-
-function preload(url){
-  return new Promise((resolve) => {
-    if (!url) return resolve(false);
-    const i = new Image();
-    i.onload = () => resolve(true);
-    i.onerror = () => resolve(false);
-    i.src = url;
-  });
-}
-
-function setProgress(pct){
-  $("progressBar").style.width = `${Math.max(0, Math.min(100, pct))}%`;
-}
-
-function renderSlideText(item, index, total, params){
-  $("slidePrice").textContent = moneyEUR(item.price);
-  $("slideRef").textContent = safeText(item.ref) ? `Réf. ${item.ref}` : `#${safeText(item.id) || (index+1)}`;
-
-  $("slideTitle").textContent = buildTitle(item);
-  $("slideMeta").textContent = buildMeta(item);
-
-  // chips
-  const chips = $("slideChips");
-  chips.innerHTML = "";
-
-  const agence = safeText(item.agence);
-  const status = normalizeStatus(item.status);
-  const surface = Number(item.surface || 0);
-  const rooms = Number(item.rooms || 0);
-  const beds = Number(item.bedrooms || 0);
-
-  const list = [];
-  if (agence) list.push({ t: agence, soft:false });
-  if (surface) list.push({ t: `${surface} m²`, soft:true });
-  if (rooms) list.push({ t: `${rooms} pièce${rooms>1?"s":""}`, soft:true });
-  if (beds) list.push({ t: `${beds} chambre${beds>1?"s":""}`, soft:true });
-  if (status) list.push({ t: status, soft:true });
-
-  list.slice(0, 6).forEach(c => {
-    const s = document.createElement("span");
-    s.className = "chip" + (c.soft ? " chip--soft" : "");
-    s.textContent = c.t;
-    chips.appendChild(s);
-  });
-
-  $("contactBrand").textContent = agence ? `GTI Immobilier • ${agence}` : "GTI Immobilier";
-  $("contactPhone").textContent = safeText(item.phone) || "—";
-
-  setFooter(
-    `${params.agence || "GTI"} • SLIDE • ${index+1}/${total}`,
-    safeText(item.updatedAt) ? `Maj: ${safeText(item.updatedAt).replace("T"," ")}` : ""
-  );
-}
-
-async function setSlideImageWithFallback(item, frontIsA){
-  const fallback = $("mediaFallback");
-  const front = frontIsA ? imgA() : imgB();
-  const back  = frontIsA ? imgB() : imgA();
-
-  // try first 3 photos max (avoid long loops)
-  let chosen = "";
-  for (let k=0;k<3;k++){
-    const u = pickPhoto(item, k);
-    if (!u) continue;
-    const ok = await preload(u);
-    if (ok){ chosen = u; break; }
+  // ---------------------------
+  // Helpers
+  // ---------------------------
+  function clampInt(v, min, max, def) {
+    const n = parseInt(v, 10);
+    if (!Number.isFinite(n)) return def;
+    return Math.max(min, Math.min(max, n));
   }
 
-  if (!chosen){
-    fallback.hidden = false;
-    front.src = "";
-    back.src = "";
-    front.classList.add("is-front");
-    back.classList.remove("is-front");
-    return false;
+  function safeText(s) {
+    return (s == null ? "" : String(s)).trim();
   }
 
-  fallback.hidden = true;
-
-  // put chosen on back buffer first, then fade
-  back.src = chosen;
-
-  // force repaint for transition reliability
-  back.classList.add("is-front");
-  front.classList.remove("is-front");
-
-  return true;
-}
-
-/* State */
-let state = {
-  params: getParams(),
-  allItems: [],
-  items: [],
-  generatedAt: "",
-  slideIndex: 0,
-  slideTimer: null,
-  refreshTimer: null,
-  progressTimer: null,
-  frontIsA: true,
-  slideStartAt: 0
-};
-
-function stopTimers(){
-  if (state.slideTimer) { clearInterval(state.slideTimer); state.slideTimer = null; }
-  if (state.refreshTimer) { clearInterval(state.refreshTimer); state.refreshTimer = null; }
-  if (state.progressTimer) { clearInterval(state.progressTimer); state.progressTimer = null; }
-}
-
-async function loadAndRender(){
-  const params = getParams();
-  state.params = params;
-
-  try{
-    const data = await fetchCatalogue(params.src);
-    const gen = safeText(data.generatedAt || "");
-    state.generatedAt = gen;
-
-    const all = Array.isArray(data.items) ? data.items : [];
-    let filtered = filterItems(all, params.agence);
-    filtered = sortItems(filtered);
-    filtered = distribute(filtered, params.screen, params.screens, params.seed);
-    if (params.max > 0) filtered = filtered.slice(0, params.max);
-
-    state.allItems = all;
-    state.items = filtered;
-    state.slideIndex = 0;
-
-    setHUD(params, filtered.length, gen);
-
-    if (!filtered.length){
-      show("empty");
-      $("emptyHint").textContent =
-        `0 annonce après filtres (agence=${params.agence || "—"}) • src=${params.src}`;
-      setFooter("—", "—");
-      return;
-    }
-
-    if (params.mode === "grid"){
-      show("grid");
-      renderGrid(filtered);
-      setFooter(`${params.agence || "GTI"} • GRID • ${filtered.length} annonces`, gen ? `Catalogue: ${gen.replace("T"," ")}` : "");
-      return;
-    }
-
-    show("slide");
-
-    // first slide
-    const item = filtered[0];
-    renderSlideText(item, 0, filtered.length, params);
-    state.frontIsA = true;
-    await setSlideImageWithFallback(item, state.frontIsA);
-    setProgress(0);
-
-    // preload next 2 images in background (no await)
-    preloadNext();
-
-  }catch(err){
-    show("empty");
-    $("emptyHint").textContent = `Erreur chargement JSON (${err?.message || err}). src=${params.src}`;
-    setFooter("Erreur", safeText(err?.message || err));
+  function normalizeAgency(s) {
+    return safeText(s).toUpperCase();
   }
-}
 
-function preloadNext(){
-  const items = state.items;
-  if (!items.length) return;
-  const n1 = items[(state.slideIndex + 1) % items.length];
-  const n2 = items[(state.slideIndex + 2) % items.length];
-  [pickPhoto(n1,0), pickPhoto(n1,1), pickPhoto(n2,0)].forEach(u => { preload(u); });
-}
+  function parseDateKey(x) {
+    const s = safeText(x);
+    if (!s) return 0;
+    const t = Date.parse(s);
+    return Number.isFinite(t) ? t : 0;
+  }
 
-function startProgress(){
-  if (state.progressTimer) clearInterval(state.progressTimer);
-  state.slideStartAt = Date.now();
-  const dur = state.params.rotate * 1000;
-
-  state.progressTimer = setInterval(() => {
-    const t = Date.now() - state.slideStartAt;
-    const pct = (t / dur) * 100;
-    setProgress(pct);
-  }, 120);
-}
-
-function startSlideRotation(){
-  stopTimers();
-
-  const params = state.params;
-  if (params.mode !== "slide") return;
-  if (!state.items.length) return;
-
-  startProgress();
-
-  state.slideTimer = setInterval(async () => {
-    const items = state.items;
-    if (!items.length) return;
-
-    state.slideIndex = (state.slideIndex + 1) % items.length;
-
-    const item = items[state.slideIndex];
-    renderSlideText(item, state.slideIndex, items.length, state.params);
-
-    // crossfade buffers
-    state.frontIsA = !state.frontIsA;
-    await setSlideImageWithFallback(item, state.frontIsA);
-
-    setProgress(0);
-    startProgress();
-    preloadNext();
-
-  }, params.rotate * 1000);
-}
-
-function startRefresh(){
-  state.refreshTimer = setInterval(async () => {
-    await loadAndRender();
-    startSlideRotation();
-  }, state.params.refresh * 1000);
-}
-
-/* Boot */
-(async function boot(){
-  await loadAndRender();
-  startSlideRotation();
-  startRefresh();
-
-  // quick manual refresh (kiosk keyboard)
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "r" || e.key === "R"){
-      loadAndRender().then(startSlideRotation);
+  function formatPriceEUR(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n) || n <= 0) return "Prix sur demande";
+    try {
+      return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
+    } catch {
+      return `${Math.round(n).toLocaleString("fr-FR")} €`;
     }
-  });
+  }
+
+  function normalizePhotos(photos, max = 5) {
+    if (!Array.isArray(photos)) return [];
+    const out = [];
+    const seen = new Set();
+    for (const u of photos) {
+      const url = (u || "").toString().trim();
+      if (!url) continue;
+      if (seen.has(url)) continue;
+      seen.add(url);
+      out.push(url);
+      if (out.length >= max) break;
+    }
+    return out;
+  }
+
+  function normalizeItem(item) {
+    return {
+      ...item,
+      photos: normalizePhotos(item.photos, 5),
+    };
+  }
+
+  function getPhoto(item, idx) {
+    const arr = Array.isArray(item.photos) ? item.photos : [];
+    if (arr.length === 0) return PLACEHOLDER_SVG;
+    const i = ((idx % arr.length) + arr.length) % arr.length;
+    return arr[i] || PLACEHOLDER_SVG;
+  }
+
+  function sortItems(items) {
+    return items.slice().sort((a, b) => {
+      const da = parseDateKey(a.updatedAt);
+      const db = parseDateKey(b.updatedAt);
+      if (db !== da) return db - da;
+      const wa = Number(a.weight || 0);
+      const wb = Number(b.weight || 0);
+      return wb - wa;
+    });
+  }
+
+  function splitAcrossScreens(items, screen, screens, seed) {
+    if (screens <= 1) return items;
+    return items.filter((_, index) => ((index + seed) % screens) === (screen - 1));
+  }
+
+  function getParams() {
+    const u = new URL(window.location.href);
+    const p = u.searchParams;
+
+    return {
+      agence: (p.get("agence") || "").trim(),
+      screen: clampInt(p.get("screen"), 1, 999, 1),
+      screens: clampInt(p.get("screens"), 1, 999, 1),
+      seed: clampInt(p.get("seed"), 0, 999999, 0),
+
+      // rotate = durée minimum par bien
+      rotate: clampInt(p.get("rotate"), 3, 3600, 12),
+
+      // photoRotate = cadence du diapo photos
+      photoRotate: clampInt(p.get("photoRotate"), 2, 120, 4),
+
+      // refresh JSON
+      refresh: clampInt(p.get("refresh"), 10, 3600, 120),
+
+      // source JSON
+      src: (p.get("src") || "exports/catalogue_vitrine.json").trim(),
+    };
+  }
+
+  async function fetchCatalogue(src) {
+    const url = new URL(src, window.location.href);
+    url.searchParams.set("ts", String(Date.now())); // cache bust
+
+    const res = await fetch(url.toString(), { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (!data || !Array.isArray(data.items)) {
+      throw new Error("JSON invalide (attendu: {generatedAt, items[]})");
+    }
+    return data;
+  }
+
+  function showView(name) {
+    els.viewSlide.classList.toggle("hidden", name !== "slide");
+    els.viewEmpty.classList.toggle("hidden", name !== "empty");
+  }
+
+  function showEmpty(title, sub) {
+    els.emptyTitle.textContent = title;
+    els.emptySub.textContent = sub;
+    showView("empty");
+  }
+
+  function setHud(params, count, generatedAt) {
+    if (els.hudAgency) els.hudAgency.textContent = params.agence ? params.agence.toUpperCase() : "TOUTES AGENCES";
+    if (els.hudMode) els.hudMode.textContent = "SLIDE";
+    if (els.hudInfo) els.hudInfo.textContent = `Écran ${params.screen}/${params.screens} • ${count} annonces • ${generatedAt || "…"}`;
+  }
+
+  // ---------------------------
+  // Slide engine: photos puis bien suivant
+  // ---------------------------
+  const state = {
+    items: [],
+    itemIndex: 0,
+    photoIndex: 0,
+    usingA: true,
+    photoTimer: null,
+    tickTimer: null,
+    nextItemAt: 0,
+  };
+
+  function clearTimers() {
+    if (state.photoTimer) clearInterval(state.photoTimer);
+    if (state.tickTimer) clearInterval(state.tickTimer);
+    state.photoTimer = null;
+    state.tickTimer = null;
+  }
+
+  function setSlideItem(item) {
+    els.slidePrice.textContent = formatPriceEUR(item.price);
+    els.slideRef.textContent = safeText(item.ref || "");
+    els.slideTitle.textContent = safeText(item.title || "Bien immobilier");
+
+    const parts = [];
+    const cityLine = `${safeText(item.city || "")}${item.postalCode ? " (" + item.postalCode + ")" : ""}`;
+    if (cityLine.trim()) parts.push(cityLine);
+    if (item.surface) parts.push(`${Math.round(Number(item.surface))} m²`);
+    if (item.rooms) parts.push(`${item.rooms} pièce${Number(item.rooms) > 1 ? "s" : ""}`);
+    if (item.bedrooms) parts.push(`${item.bedrooms} chambre${Number(item.bedrooms) > 1 ? "s" : ""}`);
+    els.slideMeta.textContent = parts.join(" • ") || "—";
+
+    els.slidePhone.textContent = safeText(item.phone || "—");
+
+    state.photoIndex = 0;
+    state.usingA = true;
+
+    els.slideImgA.src = getPhoto(item, 0);
+    els.slideImgB.src = getPhoto(item, 1);
+
+    els.slideImgA.classList.add("is-visible");
+    els.slideImgB.classList.remove("is-visible");
+  }
+
+  function preload(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
+
+  async function swapPhoto(item) {
+    const photos = Array.isArray(item.photos) ? item.photos : [];
+    if (photos.length <= 1) return;
+
+    state.photoIndex++;
+    const nextUrl = getPhoto(item, state.photoIndex);
+
+    const show = state.usingA ? els.slideImgB : els.slideImgA;
+    const hide = state.usingA ? els.slideImgA : els.slideImgB;
+
+    await preload(nextUrl);
+    show.src = nextUrl;
+
+    requestAnimationFrame(() => {
+      hide.classList.remove("is-visible");
+      show.classList.add("is-visible");
+    });
+
+    state.usingA = !state.usingA;
+  }
+
+  function computeItemDurationSec(item, rotateMinSec, photoRotateSec) {
+    const count = Array.isArray(item.photos) ? item.photos.length : 0;
+    const photoSlots = Math.max(1, count); // si 0 photo => 1 slot
+    const fullPhotosDuration = photoSlots * photoRotateSec;
+    return Math.max(rotateMinSec, fullPhotosDuration);
+  }
+
+  function startSlide(items, rotateMinSec, photoRotateSec) {
+    clearTimers();
+
+    state.items = items;
+    state.itemIndex = 0;
+
+    const first = items[0];
+    setSlideItem(first);
+
+    state.nextItemAt = Date.now() + computeItemDurationSec(first, rotateMinSec, photoRotateSec) * 1000;
+
+    // timer diapo photo
+    state.photoTimer = setInterval(() => {
+      const item = state.items[state.itemIndex];
+      swapPhoto(item);
+    }, photoRotateSec * 1000);
+
+    // tick: change de bien seulement quand durée atteinte (après diapo)
+    state.tickTimer = setInterval(() => {
+      if (Date.now() < state.nextItemAt) return;
+
+      state.itemIndex = (state.itemIndex + 1) % state.items.length;
+      const item = state.items[state.itemIndex];
+      setSlideItem(item);
+
+      state.nextItemAt = Date.now() + computeItemDurationSec(item, rotateMinSec, photoRotateSec) * 1000;
+    }, 250);
+
+    showView("slide");
+  }
+
+  // ---------------------------
+  // Cycle: load JSON + refresh
+  // ---------------------------
+  let refreshTimer = null;
+  let lastFingerprint = "";
+
+  function fingerprint(items) {
+    return items.map(i => `${i.id}|${i.updatedAt}|${(i.photos && i.photos.length) || 0}`).join(";;");
+  }
+
+  async function runOnce() {
+    const params = getParams();
+    try {
+      const data = await fetchCatalogue(params.src);
+
+      let items = Array.isArray(data.items) ? data.items : [];
+      items = items.map(normalizeItem);
+
+      // filtre agence si renseigné
+      if (params.agence) {
+        const target = normalizeAgency(params.agence);
+        items = items.filter(x => normalizeAgency(x.agence) === target);
+      }
+
+      items = sortItems(items);
+      items = splitAcrossScreens(items, params.screen, params.screens, params.seed);
+
+      setHud(params, items.length, data.generatedAt);
+
+      if (!items.length) {
+        clearTimers();
+        showEmpty("Aucune annonce à afficher", "Vérifie agence/screen/screens et src=exports/catalogue_vitrine.json");
+        return;
+      }
+
+      const fp = fingerprint(items);
+      if (fp !== lastFingerprint) {
+        lastFingerprint = fp;
+        startSlide(items, params.rotate, params.photoRotate);
+      } else {
+        showView("slide");
+      }
+    } catch (e) {
+      clearTimers();
+      showEmpty("Erreur de chargement", `Impossible de charger le catalogue (${safeText(e.message || e)}).`);
+    }
+  }
+
+  function startRefreshLoop() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    const params = getParams();
+    refreshTimer = setInterval(runOnce, params.refresh * 1000);
+  }
+
+  runOnce();
+  startRefreshLoop();
+
 })();
