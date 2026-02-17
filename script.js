@@ -25,6 +25,11 @@
     contactAdvisor: $("#contactAdvisor"),
     contactAgencyPhone: $("#contactAgencyPhone"),
     contactAdvisorMobile: $("#contactAdvisorMobile"),
+
+    // ✅ DPE
+    dpeCard: $("#dpeCard"),
+    dpeConsoImg: $("#dpeConsoImg"),
+    dpeGesImg: $("#dpeGesImg"),
   };
 
   const PLACEHOLDER_SVG =
@@ -133,7 +138,6 @@
   }
 
   function formatFR10(d10) {
-    // "0698484278" -> "06 98 48 42 78"
     return d10.replace(/(\d{2})(?=\d)/g, "$1 ").trim();
   }
 
@@ -144,33 +148,21 @@
   function extractContactFromAgence(agenceStr) {
     const s = safeText(agenceStr);
 
-    // Valeurs par défaut
-    const out = {
-      agencyName: "",
-      agencyPhone: "",
-      advisorName: "",
-      advisorMobile: ""
-    };
+    const out = { agencyName: "", agencyPhone: "", advisorName: "", advisorMobile: "" };
     if (!s) return out;
 
-    // 1) Nom agence = avant le premier "TÉL"
-    // ex: "COURPIÈRE TÉL : 09..." => "COURPIÈRE"
     const mName = s.match(/^(.+?)\s*T[ÉE]L\s*:/i);
     if (mName) out.agencyName = safeText(mName[1]);
 
-    // 2) Tél agence = le premier "TÉL : ...." (jusqu’à "NÉGOCIATEUR" si présent)
     const mAgencyPhone = s.match(/T[ÉE]L\s*:\s*([0-9 .-]{8,})/i);
     if (mAgencyPhone) {
       const d = digitsOnly(mAgencyPhone[1]);
       if (isLikelyFRPhone(d)) out.agencyPhone = formatFR10(d);
     }
 
-    // 3) Nom conseiller
-    // "NÉGOCIATEUR EN CHARGE DU BIEN : CÉLINE HERITIER TÉL : 0698..."
     const mAdvisor = s.match(/N[ÉE]GOCIATEUR\s+EN\s+CHARGE\s+DU\s+BIEN\s*:\s*([^:]+?)\s*T[ÉE]L\s*:/i);
     if (mAdvisor) out.advisorName = safeText(mAdvisor[1]);
 
-    // 4) Mobile conseiller = le "TÉL : ..." après la zone conseiller
     const mAdvisorMobile = s.match(/N[ÉE]GOCIATEUR\s+EN\s+CHARGE\s+DU\s+BIEN\s*:\s*.+?\s*T[ÉE]L\s*:\s*([0-9 .-]{8,})/i);
     if (mAdvisorMobile) {
       const d = digitsOnly(mAdvisorMobile[1]);
@@ -181,19 +173,43 @@
   }
 
   function pickAdvisorMobile(item, extracted) {
-    // priorité au mobile extrait depuis "agence"
     if (extracted && extracted.advisorMobile) return extracted.advisorMobile;
 
-    // sinon fallback item.phone (souvent le mobile du conseiller chez toi)
     const d = digitsOnly(item.phone);
     if (isLikelyFRPhone(d)) return formatFR10(d);
 
     return "—";
   }
 
-  function applyBrightFilter(imgEl) {
-    if (!imgEl) return;
-    imgEl.style.filter = "brightness(1.1) contrast(1.05) saturate(1.08)";
+  // ✅ DPE helpers
+  function setDpe(item) {
+    const conso = item && item.dpe ? safeText(item.dpe.conso) : "";
+    const ges = item && item.dpe ? safeText(item.dpe.ges) : "";
+
+    const hasAny = !!(conso || ges);
+    if (!els.dpeCard) return;
+
+    els.dpeCard.classList.toggle("hidden", !hasAny);
+
+    if (els.dpeConsoImg) {
+      if (conso) {
+        els.dpeConsoImg.src = conso;
+        els.dpeConsoImg.classList.remove("hidden");
+      } else {
+        els.dpeConsoImg.removeAttribute("src");
+        els.dpeConsoImg.classList.add("hidden");
+      }
+    }
+
+    if (els.dpeGesImg) {
+      if (ges) {
+        els.dpeGesImg.src = ges;
+        els.dpeGesImg.classList.remove("hidden");
+      } else {
+        els.dpeGesImg.removeAttribute("src");
+        els.dpeGesImg.classList.add("hidden");
+      }
+    }
   }
 
   // ---------------------------
@@ -281,16 +297,14 @@
     if (item.bedrooms) parts.push(`${item.bedrooms} chambre${Number(item.bedrooms) > 1 ? "s" : ""}`);
     els.slideMeta.textContent = parts.join(" • ") || "—";
 
+    // ✅ DPE (conso + GES)
+    setDpe(item);
+
     // ✅ Contact : parse depuis item.agence
     const extracted = extractContactFromAgence(item.agence);
 
-    // Conseiller
     els.contactAdvisor.textContent = extracted.advisorName || "Conseiller GTI";
-
-    // Tel agence
     els.contactAgencyPhone.textContent = extracted.agencyPhone || "—";
-
-    // Mobile conseiller (extrait ou fallback item.phone)
     els.contactAdvisorMobile.textContent = pickAdvisorMobile(item, extracted);
 
     // Photos
@@ -299,8 +313,6 @@
 
     els.slideImgA.src = getPhoto(item, 0);
     els.slideImgB.src = getPhoto(item, 1);
-    applyBrightFilter(els.slideImgA);
-    applyBrightFilter(els.slideImgB);
 
     els.slideImgA.classList.add("is-visible");
     els.slideImgB.classList.remove("is-visible");
@@ -327,7 +339,6 @@
 
     await preload(nextUrl);
     show.src = nextUrl;
-    applyBrightFilter(show);
 
     requestAnimationFrame(() => {
       hide.classList.remove("is-visible");
@@ -378,7 +389,7 @@
   let lastFingerprint = "";
 
   function fingerprint(items) {
-    return items.map(i => `${i.id}|${i.updatedAt}|${(i.photos && i.photos.length) || 0}`).join(";;");
+    return items.map(i => `${i.id}|${i.updatedAt}|${(i.photos && i.photos.length) || 0}|${i.dpe ? "dpe" : ""}`).join(";;");
   }
 
   async function runOnce() {
@@ -393,7 +404,6 @@
 
       if (params.agence) {
         const target = normalizeAgency(params.agence);
-        // robuste: "FIRMINY ..." doit matcher FIRMINY
         items = items.filter(x => normalizeAgency(x.agence).includes(target));
       }
 
