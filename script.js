@@ -17,19 +17,16 @@
     slideTitle: $("#slideTitle"),
     slideMeta: $("#slideMeta"),
 
-    // ✅ NOUVEAU : stats premium
-    slideStats: $("#slideStats"),
-
-    // images
     slideImgA: $("#slideImgA"),
     slideImgB: $("#slideImgB"),
+    slideProg: $("#slideProg"),
 
-    // contact
+    slideStats: $("#slideStats"),
+
     contactAdvisor: $("#contactAdvisor"),
     contactAgencyPhone: $("#contactAgencyPhone"),
     contactAdvisorMobile: $("#contactAdvisorMobile"),
 
-    // DPE
     dpeCard: $("#dpeCard"),
     dpeConsoImg: $("#dpeConsoImg"),
     dpeGesImg: $("#dpeGesImg"),
@@ -65,26 +62,10 @@
     if (!Number.isFinite(n)) return def;
     return Math.max(min, Math.min(max, n));
   }
-
-  function safeText(s) {
-    return (s == null ? "" : String(s)).trim();
-  }
-
-  function normalizeAgency(s) {
-    return safeText(s).toUpperCase();
-  }
-
-  function parseDateKey(x) {
-    const s = safeText(x);
-    if (!s) return 0;
-    const t = Date.parse(s);
-    return Number.isFinite(t) ? t : 0;
-  }
-
-  function asNumber(v) {
-    const n = Number(v);
-    return Number.isFinite(n) ? n : null;
-  }
+  function safeText(s) { return (s == null ? "" : String(s)).trim(); }
+  function normalizeAgency(s) { return safeText(s).toUpperCase(); }
+  function parseDateKey(x) { const t = Date.parse(safeText(x)); return Number.isFinite(t) ? t : 0; }
+  function asNumber(v){ const n = Number(v); return Number.isFinite(n) ? n : null; }
 
   function formatPriceEUR(value) {
     const n = Number(value);
@@ -96,7 +77,7 @@
     }
   }
 
-  function normalizePhotos(photos, max = 5) {
+  function normalizePhotos(photos, max = 10) {
     if (!Array.isArray(photos)) return [];
     const out = [];
     const seen = new Set();
@@ -111,17 +92,41 @@
     return out;
   }
 
-  // ✅ On accepte plusieurs noms possibles (selon ton export)
+  // ✅ salles de bain : support large (selon exports)
   function readBathrooms(item) {
     const candidates = [
-      item.bathrooms,
-      item.bathroom,
-      item.bathroomCount,
-      item.nbBathrooms,
-      item.sdb,
-      item.nbSdb,
-      item.nb_sdb,
-      item.bains
+      item.bathrooms, item.bathroom, item.bathroomCount,
+      item.nbBathrooms, item.sdb, item.nbSdb, item.nb_sdb, item.bains
+    ];
+    for (const c of candidates) {
+      const n = asNumber(c);
+      if (n != null && n > 0) return Math.round(n);
+    }
+    return null;
+  }
+
+  // ✅ PIÈCES (au cas où ton export a un champ dédié)
+  function readPieces(item) {
+    const candidates = [
+      item.pieces, item.nbPieces, item.rooms_total, item.totalRooms, item.roomCount,
+      item.nb_rooms, item.nbPiecesTotal
+    ];
+    for (const c of candidates) {
+      const n = asNumber(c);
+      if (n != null && n > 0) return Math.round(n);
+    }
+    return null;
+  }
+
+  // ✅ CHAMBRES = rooms (comme tu le demandes) + fallback
+  function readBedrooms(item) {
+    const candidates = [
+      item.rooms,          // ✅ ton cas
+      item.bedrooms,
+      item.nbBedrooms,
+      item.chambres,
+      item.nbChambres,
+      item.bedroomCount
     ];
     for (const c of candidates) {
       const n = asNumber(c);
@@ -131,27 +136,30 @@
   }
 
   function normalizeItem(item) {
-    const it = { ...item, photos: normalizePhotos(item.photos, 5) };
+    const it = { ...item };
+    it.photos = normalizePhotos(it.photos, 10);
 
-    // Harmonisation numérique (si string)
-    const surface = asNumber(it.surface);
-    if (surface != null) it.surface = surface;
+    const s = asNumber(it.surface);
+    if (s != null) it.surface = s;
 
-    const rooms = asNumber(it.rooms);
-    if (rooms != null) it.rooms = Math.round(rooms);
+    // On normalise ici :
+    // - bedrooms -> depuis rooms (ton cas)
+    // - pieces -> depuis champs dédiés si dispo
+    const pieces = readPieces(it);
+    const bedrooms = readBedrooms(it);
 
-    const bedrooms = asNumber(it.bedrooms);
-    if (bedrooms != null) it.bedrooms = Math.round(bedrooms);
+    if (pieces != null) it.pieces = pieces;
+    if (bedrooms != null) it.bedrooms = bedrooms;
 
-    const baths = readBathrooms(it);
-    if (baths != null) it.bathrooms = baths;
+    const ba = readBathrooms(it);
+    if (ba != null) it.bathrooms = ba;
 
     return it;
   }
 
   function getPhoto(item, idx) {
     const arr = Array.isArray(item.photos) ? item.photos : [];
-    if (arr.length === 0) return PLACEHOLDER_SVG;
+    if (!arr.length) return PLACEHOLDER_SVG;
     const i = ((idx % arr.length) + arr.length) % arr.length;
     return arr[i] || PLACEHOLDER_SVG;
   }
@@ -173,23 +181,14 @@
   }
 
   // ---------------------------
-  // Téléphone & parsing "agence"
+  // Contact parsing
   // ---------------------------
-  function digitsOnly(s) {
-    return safeText(s).replace(/[^\d]/g, "");
-  }
-
-  function formatFR10(d10) {
-    return d10.replace(/(\d{2})(?=\d)/g, "$1 ").trim();
-  }
-
-  function isLikelyFRPhone(d) {
-    return d.length === 10 && d.startsWith("0");
-  }
+  function digitsOnly(s) { return safeText(s).replace(/[^\d]/g, ""); }
+  function formatFR10(d10) { return d10.replace(/(\d{2})(?=\d)/g, "$1 ").trim(); }
+  function isLikelyFRPhone(d) { return d.length === 10 && d.startsWith("0"); }
 
   function extractContactFromAgence(agenceStr) {
     const s = safeText(agenceStr);
-
     const out = { agencyName: "", agencyPhone: "", advisorName: "", advisorMobile: "" };
     if (!s) return out;
 
@@ -216,25 +215,19 @@
 
   function pickAdvisorMobile(item, extracted) {
     if (extracted && extracted.advisorMobile) return extracted.advisorMobile;
-
     const d = digitsOnly(item.phone);
     if (isLikelyFRPhone(d)) return formatFR10(d);
-
     return "—";
   }
 
   // ---------------------------
-  // ✅ Icônes modernes (SVG inline)
+  // SVG icons
   // ---------------------------
   function iconSVG(name) {
-    // Stroke noir neutre; rendu premium
     switch (name) {
       case "surface":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 9V4h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M20 15v5h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M20 9V4h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M4 15v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 9V4h5M20 15v5h-5M20 9V4h-5M4 15v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>`;
       case "rooms":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -252,66 +245,41 @@
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 12h14v3a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5v-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M7 12V7a3 3 0 0 1 3-3h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M16 8h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M18 6v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M16 8h2M18 6v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
       default:
         return "";
     }
   }
 
-  function plural(n, one, many) {
-    if (n == null) return "";
-    return n > 1 ? many : one;
-  }
+  function plural(n, one, many) { return n > 1 ? many : one; }
 
-  // ✅ rendu stats premium
+  // ✅ rendu stats : pièces + chambres séparés proprement
   function renderStats(item) {
     if (!els.slideStats) return;
 
-    const surface = (item.surface != null && Number.isFinite(Number(item.surface)) && Number(item.surface) > 0)
-      ? Math.round(Number(item.surface))
-      : null;
-
-    const rooms = (item.rooms != null && Number.isFinite(Number(item.rooms)) && Number(item.rooms) > 0)
-      ? Math.round(Number(item.rooms))
-      : null;
-
-    const bedrooms = (item.bedrooms != null && Number.isFinite(Number(item.bedrooms)) && Number(item.bedrooms) > 0)
-      ? Math.round(Number(item.bedrooms))
-      : null;
-
-    const baths = (item.bathrooms != null && Number.isFinite(Number(item.bathrooms)) && Number(item.bathrooms) > 0)
-      ? Math.round(Number(item.bathrooms))
-      : null;
-
     const stats = [];
 
-    if (surface != null) stats.push({
-      key: "surface",
-      value: `${surface} m²`,
-      label: "Surface"
-    });
+    const surface = (item.surface != null && Number(item.surface) > 0) ? Math.round(Number(item.surface)) : null;
+    const pieces = (item.pieces != null && Number(item.pieces) > 0) ? Math.round(Number(item.pieces)) : null;
+    const bedrooms = (item.bedrooms != null && Number(item.bedrooms) > 0) ? Math.round(Number(item.bedrooms)) : null;
+    const baths = (item.bathrooms != null && Number(item.bathrooms) > 0) ? Math.round(Number(item.bathrooms)) : null;
 
-    if (rooms != null) stats.push({
-      key: "rooms",
-      value: `${rooms}`,
-      label: plural(rooms, "Pièce", "Pièces")
-    });
+    if (surface != null) stats.push({ key:"surface", value:`${surface} m²`, label:"Surface", icon:"surface" });
 
-    if (bedrooms != null) stats.push({
-      key: "bedrooms",
-      value: `${bedrooms}`,
-      label: plural(bedrooms, "Chambre", "Chambres")
-    });
+    // ✅ Si on n’a pas de champ "pièces" dédié, on évite le doublon :
+    // - on affiche "Pièces" uniquement si pieces existe
+    if (pieces != null) {
+      stats.push({ key:"pieces", value:`${pieces}`, label: plural(pieces, "Pièce", "Pièces"), icon:"rooms" });
+    }
 
-    if (baths != null) stats.push({
-      key: "bathrooms",
-      value: `${baths}`,
-      label: plural(baths, "Salle de bain", "Salles de bain")
-    });
+    // ✅ Chambres (ton cas = rooms)
+    if (bedrooms != null) {
+      stats.push({ key:"bedrooms", value:`${bedrooms}`, label: plural(bedrooms, "Chambre", "Chambres"), icon:"bedrooms" });
+    }
 
-    // Si rien → on cache proprement
+    if (baths != null) stats.push({ key:"bathrooms", value:`${baths}`, label: plural(baths, "Salle de bain", "Salles de bain"), icon:"bathrooms" });
+
     if (!stats.length) {
       els.slideStats.innerHTML = "";
       els.slideStats.classList.add("hidden");
@@ -321,7 +289,7 @@
     els.slideStats.classList.remove("hidden");
     els.slideStats.innerHTML = stats.map(s => `
       <div class="statChip" data-stat="${s.key}">
-        <div class="statIcon" aria-hidden="true">${iconSVG(s.key)}</div>
+        <div class="statIcon" aria-hidden="true">${iconSVG(s.icon)}</div>
         <div class="statText">
           <div class="statValue">${s.value}</div>
           <div class="statLabel">${s.label}</div>
@@ -331,7 +299,7 @@
   }
 
   // ---------------------------
-  // DPE helpers
+  // DPE
   // ---------------------------
   function setDpe(item) {
     const conso = item && item.dpe ? safeText(item.dpe.conso) : "";
@@ -343,23 +311,12 @@
     els.dpeCard.classList.toggle("hidden", !hasAny);
 
     if (els.dpeConsoImg) {
-      if (conso) {
-        els.dpeConsoImg.src = conso;
-        els.dpeConsoImg.classList.remove("hidden");
-      } else {
-        els.dpeConsoImg.removeAttribute("src");
-        els.dpeConsoImg.classList.add("hidden");
-      }
+      if (conso) { els.dpeConsoImg.src = conso; els.dpeConsoImg.classList.remove("hidden"); }
+      else { els.dpeConsoImg.removeAttribute("src"); els.dpeConsoImg.classList.add("hidden"); }
     }
-
     if (els.dpeGesImg) {
-      if (ges) {
-        els.dpeGesImg.src = ges;
-        els.dpeGesImg.classList.remove("hidden");
-      } else {
-        els.dpeGesImg.removeAttribute("src");
-        els.dpeGesImg.classList.add("hidden");
-      }
+      if (ges) { els.dpeGesImg.src = ges; els.dpeGesImg.classList.remove("hidden"); }
+      else { els.dpeGesImg.removeAttribute("src"); els.dpeGesImg.classList.add("hidden"); }
     }
   }
 
@@ -369,7 +326,6 @@
   function getParams() {
     const u = new URL(window.location.href);
     const p = u.searchParams;
-
     return {
       agence: (p.get("agence") || "").trim(),
       screen: clampInt(p.get("screen"), 1, 999, 1),
@@ -415,6 +371,40 @@
   }
 
   // ---------------------------
+  // Preload queue
+  // ---------------------------
+  const preloadCache = new Map();
+  function preload(url) {
+    if (!url) return Promise.resolve(false);
+    if (preloadCache.has(url)) return preloadCache.get(url);
+
+    const pr = new Promise((resolve) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.loading = "eager";
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+
+    preloadCache.set(url, pr);
+    if (preloadCache.size > 200) {
+      const firstKey = preloadCache.keys().next().value;
+      preloadCache.delete(firstKey);
+    }
+    return pr;
+  }
+
+  async function warmupItem(item, startIdx, count) {
+    const arr = Array.isArray(item.photos) ? item.photos : [];
+    if (!arr.length) return;
+    const n = Math.min(count, arr.length);
+    for (let k = 0; k < n; k++) {
+      await preload(getPhoto(item, startIdx + k));
+    }
+  }
+
+  // ---------------------------
   // Slide engine
   // ---------------------------
   const state = {
@@ -424,43 +414,50 @@
     usingA: true,
     photoTimer: null,
     tickTimer: null,
+    progTimer: null,
     nextItemAt: 0,
+    itemDurationMs: 0
   };
 
   function clearTimers() {
     if (state.photoTimer) clearInterval(state.photoTimer);
     if (state.tickTimer) clearInterval(state.tickTimer);
+    if (state.progTimer) clearInterval(state.progTimer);
     state.photoTimer = null;
     state.tickTimer = null;
+    state.progTimer = null;
   }
 
-  function setSlideItem(item) {
-    // Base slide
+  function computeItemDurationSec(item, rotateMinSec, photoRotateSec) {
+    const count = Array.isArray(item.photos) ? item.photos.length : 0;
+    const photoSlots = Math.max(1, count);
+    const fullPhotosDuration = photoSlots * photoRotateSec;
+    return Math.max(rotateMinSec, fullPhotosDuration);
+  }
+
+  function updateProgress() {
+    if (!els.slideProg || !state.itemDurationMs) return;
+    const now = Date.now();
+    const elapsed = Math.max(0, state.itemDurationMs - Math.max(0, state.nextItemAt - now));
+    const pct = Math.max(0, Math.min(1, elapsed / state.itemDurationMs));
+    els.slideProg.style.width = `${(pct * 100).toFixed(1)}%`;
+  }
+
+  function setSlideItem(item, rotateMinSec, photoRotateSec) {
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
     els.slideTitle.textContent = safeText(item.title || "Bien immobilier");
 
-    // META texte (on garde)
-    const parts = [];
+    // Meta texte — on garde simple
     const cityLine = safeText(item.city || "");
-    if (cityLine) parts.push(cityLine);
+    els.slideMeta.textContent = cityLine || "—";
 
-    if (item.surface) parts.push(`${Math.round(Number(item.surface))} m²`);
-    if (item.rooms) parts.push(`${item.rooms} pièce${Number(item.rooms) > 1 ? "s" : ""}`);
-    if (item.bedrooms) parts.push(`${item.bedrooms} chambre${Number(item.bedrooms) > 1 ? "s" : ""}`);
-    if (item.bathrooms) parts.push(`${item.bathrooms} sdb`);
-
-    els.slideMeta.textContent = parts.join(" • ") || "—";
-
-    // ✅ Stats premium (icônes)
+    // ✅ Stats + DPE
     renderStats(item);
-
-    // DPE
     setDpe(item);
 
-    // Contact : parse depuis item.agence
+    // Contact
     const extracted = extractContactFromAgence(item.agence);
-
     els.contactAdvisor.textContent = extracted.advisorName || "Conseiller GTI";
     els.contactAgencyPhone.textContent = extracted.agencyPhone || "—";
     els.contactAdvisorMobile.textContent = pickAdvisorMobile(item, extracted);
@@ -469,20 +466,24 @@
     state.photoIndex = 0;
     state.usingA = true;
 
-    els.slideImgA.src = getPhoto(item, 0);
-    els.slideImgB.src = getPhoto(item, 1);
+    const p0 = getPhoto(item, 0);
+    const p1 = getPhoto(item, 1);
 
+    els.slideImgA.src = p0;
+    els.slideImgB.src = p1;
     els.slideImgA.classList.add("is-visible");
     els.slideImgB.classList.remove("is-visible");
-  }
 
-  function preload(url) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve(true);
-      img.onerror = () => resolve(false);
-      img.src = url;
-    });
+    // Duration + progress
+    const durSec = computeItemDurationSec(item, rotateMinSec, photoRotateSec);
+    state.itemDurationMs = durSec * 1000;
+    state.nextItemAt = Date.now() + state.itemDurationMs;
+    if (els.slideProg) els.slideProg.style.width = "0%";
+
+    // Warmup
+    warmupItem(item, 1, 3).catch(()=>{});
+    const nextItem = state.items[(state.itemIndex + 1) % state.items.length];
+    if (nextItem) preload(getPhoto(nextItem, 0)).catch(()=>{});
   }
 
   async function swapPhoto(item) {
@@ -504,13 +505,7 @@
     });
 
     state.usingA = !state.usingA;
-  }
-
-  function computeItemDurationSec(item, rotateMinSec, photoRotateSec) {
-    const count = Array.isArray(item.photos) ? item.photos.length : 0;
-    const photoSlots = Math.max(1, count);
-    const fullPhotosDuration = photoSlots * photoRotateSec;
-    return Math.max(rotateMinSec, fullPhotosDuration);
+    warmupItem(item, state.photoIndex + 1, 2).catch(()=>{});
   }
 
   function startSlide(items, rotateMinSec, photoRotateSec) {
@@ -518,9 +513,7 @@
     state.items = items;
     state.itemIndex = 0;
 
-    const first = items[0];
-    setSlideItem(first);
-    state.nextItemAt = Date.now() + computeItemDurationSec(first, rotateMinSec, photoRotateSec) * 1000;
+    setSlideItem(items[0], rotateMinSec, photoRotateSec);
 
     state.photoTimer = setInterval(() => {
       const item = state.items[state.itemIndex];
@@ -531,11 +524,10 @@
       if (Date.now() < state.nextItemAt) return;
 
       state.itemIndex = (state.itemIndex + 1) % state.items.length;
-      const item = state.items[state.itemIndex];
-      setSlideItem(item);
-
-      state.nextItemAt = Date.now() + computeItemDurationSec(item, rotateMinSec, photoRotateSec) * 1000;
+      setSlideItem(state.items[state.itemIndex], rotateMinSec, photoRotateSec);
     }, 250);
+
+    state.progTimer = setInterval(updateProgress, 120);
 
     showView("slide");
   }
@@ -579,6 +571,7 @@
       const fp = fingerprint(items);
       if (fp !== lastFingerprint) {
         lastFingerprint = fp;
+        preload(getPhoto(items[0], 0)).catch(()=>{});
         startSlide(items, params.rotate, params.photoRotate);
       } else {
         showView("slide");
