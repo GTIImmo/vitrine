@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <title>Vitrine Digitale | GTI Immobilier</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main id="app" class="app" aria-live="polite">
+
+    <!-- HUD discret (infos écran / agence) -->
+    <header class="hud" aria-hidden="true">
+      <div class="hud__left">
+        <div class="pill" id="hudAgency">AGENCE</div>
+        <div class="pill pill--muted" id="hudMode">SLIDE</div>
+      </div>
+      <div class="hud__right">
+        <div class="pill pill--muted" id="hudInfo">…</div>
+      </div>
+    </header>
+
+    <!-- SLIDE -->
+    <section id="viewSlide" class="view view--slide">
+      <article class="slide" id="slide">
+        <div class="slide__media">
+          <img id="slideImgA" class="slide__img is-visible" alt="" />
+          <img id="slideImgB" class="slide__img" alt="" />
+          <div class="slide__gradient"></div>
+
+          <div class="priceBadge" id="slidePrice">—</div>
+          <div class="cornerTag" id="slideRef">—</div>
+        </div>
+
+        <div class="slide__panel">
+          <div class="panelTop">
+            <div class="slide__title" id="slideTitle">—</div>
+            <div class="slide__meta" id="slideMeta">—</div>
+          </div>
+
+          <div class="slide__cta">
+            <div class="cta__label">Contactez-nous</div>
+            <div class="cta__phone" id="slidePhone">—</div>
+            <div class="cta__hint">GTI Immobilier • Votre projet, notre équipe</div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- EMPTY / ERROR -->
+    <section id="viewEmpty" class="view view--empty hidden">
+      <div class="empty">
+        <div class="empty__title" id="emptyTitle">Aucune annonce à afficher</div>
+        <div class="empty__sub" id="emptySub">Vérifiez les paramètres ou la source JSON.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
