@@ -30,23 +30,25 @@ body{
 .app{height:100%;display:flex;flex-direction:column}
 
 /* HUD caché en vitrine (debug=1 pour l’afficher) */
-.hud{display:none;position:fixed;top:18px;left:18px;right:18px;z-index:50;justify-content:space-between;align-items:center;pointer-events:none;opacity:.92}
+.hud{
+  display:none;
+  position:fixed;top:18px;left:18px;right:18px;
+  z-index:50;
+  justify-content:space-between;align-items:center;
+  pointer-events:none;opacity:.92
+}
 body.debug .hud{display:flex;}
 .hud__left,.hud__right{display:flex;gap:10px;align-items:center}
 
 .pill{
-  padding:9px 12px;
-  border-radius:999px;
+  padding:9px 12px;border-radius:999px;
   border:1px solid var(--line);
   background: rgba(255,255,255,.72);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow2);
-  font-size:12px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  font-weight:900;
-  color: rgba(18,19,24,.82);
+  font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  font-weight:900;color: rgba(18,19,24,.82);
 }
 .pill--muted{color:rgba(18,19,24,.55)}
 
@@ -67,12 +69,13 @@ body.debug .hud{display:flex;}
 }
 
 .slide__img{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
+  position:absolute;inset:0;
+  width:100%;height:100%;
   object-fit:cover;
-  filter: brightness(1.08) contrast(1.05) saturate(1.05);
+
+  /* ✅ rendu lumineux (sans voile sombre) */
+  filter: brightness(1.10) contrast(1.06) saturate(1.06);
+
   opacity:0;
   transform: scale(1.015);
   transition: opacity .6s ease, transform 1.4s ease, filter .35s ease;
@@ -80,23 +83,18 @@ body.debug .hud{display:flex;}
 }
 .slide__img.is-visible{opacity:1;transform: scale(1.02)}
 
+/* Gradient plus léger → infos plus lisibles, pas “sombre” */
 .slide__gradient{
-  position:absolute;
-  inset:0;
+  position:absolute;inset:0;
   background:
-    radial-gradient(1000px 700px at 15% 25%, rgba(255,255,255,.20), transparent 55%),
-    linear-gradient(90deg, rgba(255,255,255,.05), rgba(0,0,0,.25));
+    radial-gradient(1000px 700px at 18% 22%, rgba(255,255,255,.22), transparent 55%),
+    linear-gradient(90deg, rgba(255,255,255,.06), rgba(0,0,0,.18));
 }
 
 .priceBadge{
-  position:absolute;
-  top:24px;
-  left:24px;
-  padding:14px 18px;
-  border-radius: 999px;
-  font-weight:950;
-  letter-spacing:.01em;
-  font-size:18px;
+  position:absolute;top:24px;left:24px;
+  padding:14px 18px;border-radius: 999px;
+  font-weight:950;letter-spacing:.01em;font-size:18px;
   color:#fff;
   background: linear-gradient(135deg, #c2185b, #a3154b);
   box-shadow: 0 12px 34px rgba(194,24,91,.32);
@@ -106,31 +104,27 @@ body.debug .hud{display:flex;}
 }
 
 .cornerTag{
-  position:absolute;
-  top:24px;
-  right:24px;
-  padding:10px 14px;
-  border-radius: 999px;
-  font-weight:900;
-  font-size:13px;
-  letter-spacing:.10em;
-  text-transform:uppercase;
-  background: rgba(255,255,255,.82);
+  position:absolute;top:24px;right:24px;
+  padding:10px 14px;border-radius: 999px;
+  font-weight:900;font-size:13px;letter-spacing:.10em;text-transform:uppercase;
+  background: rgba(255,255,255,.86);
   border: 1px solid var(--line);
-  color: rgba(18,19,24,.75);
+  color: rgba(18,19,24,.76);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
+/* PANEL : meilleure respiration, évite chevauchements */
 .slide__panel{
-  padding: 96px 50px 40px;
+  padding: 84px 50px 40px;
   background: #ffffff;
   border-left: 1px solid var(--line);
   display:flex;
   flex-direction:column;
   justify-content:space-between;
-  gap:22px;
+  gap:18px;
   box-shadow: -18px 0 60px rgba(0,0,0,.05);
+  min-height:0;
 }
 
 .panelTop{min-height:0}
@@ -138,9 +132,9 @@ body.debug .hud{display:flex;}
 .slide__title{
   font-size:48px;
   font-weight:950;
-  line-height:1.05;
+  line-height:1.06;
   letter-spacing:-.035em;
-  margin-bottom:16px;
+  margin-bottom:14px;
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -153,6 +147,61 @@ body.debug .hud{display:flex;}
   font-weight:650;
   font-size:20px;
   line-height:1.55;
+  margin-bottom: 10px;
+}
+
+/* ✅ DPE Card */
+.dpeCard{
+  border-radius: var(--radius2);
+  border:1px solid rgba(18,19,24,.08);
+  background: rgba(246,247,251,.62);
+  box-shadow: var(--shadow2);
+  padding: 14px 14px 12px;
+}
+
+.dpeHead{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.dpeTitle{
+  font-weight:950;
+  letter-spacing:-.02em;
+  font-size:16px;
+}
+.dpeHint{
+  color: var(--muted2);
+  font-weight:750;
+  font-size:12px;
+}
+
+.dpeGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+.dpeItem{
+  margin:0;
+  border-radius: 18px;
+  overflow:hidden;
+  border:1px solid rgba(18,19,24,.06);
+  background: rgba(255,255,255,.75);
+}
+.dpeImg{
+  display:block;
+  width:100%;
+  height:92px;
+  object-fit:cover;
+  background:#fff;
+}
+.dpeCaption{
+  padding:8px 10px;
+  font-size:12px;
+  font-weight:850;
+  color: rgba(18,19,24,.76);
+  letter-spacing:.02em;
 }
 
 /* ✅ CONTACT CARD (premium) */
@@ -188,7 +237,7 @@ body.debug .hud{display:flex;}
 .contactBadge{
   padding:8px 10px;
   border-radius:999px;
-  background: rgba(255,255,255,.75);
+  background: rgba(255,255,255,.78);
   border:1px solid rgba(18,19,24,.08);
   font-weight:900;
   letter-spacing:.12em;
@@ -209,7 +258,7 @@ body.debug .hud{display:flex;}
   gap:14px;
   padding:10px 12px;
   border-radius: 16px;
-  background: rgba(255,255,255,.65);
+  background: rgba(255,255,255,.68);
   border:1px solid rgba(18,19,24,.06);
 }
 
@@ -255,13 +304,15 @@ body.debug .hud{display:flex;}
     inset:auto 0 0 0;
     border-left:none;
     border-top:1px solid var(--line);
-    padding: 18px 16px 14px;
-    background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,.92));
+    padding: 16px 16px 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,.94));
     box-shadow: 0 -22px 60px rgba(0,0,0,.10);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    gap:12px;
   }
   .slide__title{font-size:30px}
   .slide__meta{font-size:16px}
   .contactValue--big{font-size:18px}
+  .dpeImg{height:78px}
 }
