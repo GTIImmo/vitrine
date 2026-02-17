@@ -92,41 +92,11 @@
     return out;
   }
 
-  // ✅ salles de bain : support large (selon exports)
+  // salles de bain : support large (selon tes exports)
   function readBathrooms(item) {
     const candidates = [
       item.bathrooms, item.bathroom, item.bathroomCount,
       item.nbBathrooms, item.sdb, item.nbSdb, item.nb_sdb, item.bains
-    ];
-    for (const c of candidates) {
-      const n = asNumber(c);
-      if (n != null && n > 0) return Math.round(n);
-    }
-    return null;
-  }
-
-  // ✅ PIÈCES (au cas où ton export a un champ dédié)
-  function readPieces(item) {
-    const candidates = [
-      item.pieces, item.nbPieces, item.rooms_total, item.totalRooms, item.roomCount,
-      item.nb_rooms, item.nbPiecesTotal
-    ];
-    for (const c of candidates) {
-      const n = asNumber(c);
-      if (n != null && n > 0) return Math.round(n);
-    }
-    return null;
-  }
-
-  // ✅ CHAMBRES = rooms (comme tu le demandes) + fallback
-  function readBedrooms(item) {
-    const candidates = [
-      item.rooms,          // ✅ ton cas
-      item.bedrooms,
-      item.nbBedrooms,
-      item.chambres,
-      item.nbChambres,
-      item.bedroomCount
     ];
     for (const c of candidates) {
       const n = asNumber(c);
@@ -142,14 +112,11 @@
     const s = asNumber(it.surface);
     if (s != null) it.surface = s;
 
-    // On normalise ici :
-    // - bedrooms -> depuis rooms (ton cas)
-    // - pieces -> depuis champs dédiés si dispo
-    const pieces = readPieces(it);
-    const bedrooms = readBedrooms(it);
+    const r = asNumber(it.rooms);
+    if (r != null) it.rooms = Math.round(r);
 
-    if (pieces != null) it.pieces = pieces;
-    if (bedrooms != null) it.bedrooms = bedrooms;
+    const b = asNumber(it.bedrooms);
+    if (b != null) it.bedrooms = Math.round(b);
 
     const ba = readBathrooms(it);
     if (ba != null) it.bathrooms = ba;
@@ -181,7 +148,7 @@
   }
 
   // ---------------------------
-  // Contact parsing
+  // Contact parsing (agence string)
   // ---------------------------
   function digitsOnly(s) { return safeText(s).replace(/[^\d]/g, ""); }
   function formatFR10(d10) { return d10.replace(/(\d{2})(?=\d)/g, "$1 ").trim(); }
@@ -221,7 +188,7 @@
   }
 
   // ---------------------------
-  // SVG icons
+  // SVG icons (modern)
   // ---------------------------
   function iconSVG(name) {
     switch (name) {
@@ -254,31 +221,19 @@
 
   function plural(n, one, many) { return n > 1 ? many : one; }
 
-  // ✅ rendu stats : pièces + chambres séparés proprement
   function renderStats(item) {
     if (!els.slideStats) return;
 
     const stats = [];
-
     const surface = (item.surface != null && Number(item.surface) > 0) ? Math.round(Number(item.surface)) : null;
-    const pieces = (item.pieces != null && Number(item.pieces) > 0) ? Math.round(Number(item.pieces)) : null;
+    const rooms = (item.rooms != null && Number(item.rooms) > 0) ? Math.round(Number(item.rooms)) : null;
     const bedrooms = (item.bedrooms != null && Number(item.bedrooms) > 0) ? Math.round(Number(item.bedrooms)) : null;
     const baths = (item.bathrooms != null && Number(item.bathrooms) > 0) ? Math.round(Number(item.bathrooms)) : null;
 
-    if (surface != null) stats.push({ key:"surface", value:`${surface} m²`, label:"Surface", icon:"surface" });
-
-    // ✅ Si on n’a pas de champ "pièces" dédié, on évite le doublon :
-    // - on affiche "Pièces" uniquement si pieces existe
-    if (pieces != null) {
-      stats.push({ key:"pieces", value:`${pieces}`, label: plural(pieces, "Pièce", "Pièces"), icon:"rooms" });
-    }
-
-    // ✅ Chambres (ton cas = rooms)
-    if (bedrooms != null) {
-      stats.push({ key:"bedrooms", value:`${bedrooms}`, label: plural(bedrooms, "Chambre", "Chambres"), icon:"bedrooms" });
-    }
-
-    if (baths != null) stats.push({ key:"bathrooms", value:`${baths}`, label: plural(baths, "Salle de bain", "Salles de bain"), icon:"bathrooms" });
+    if (surface != null) stats.push({ key:"surface", value:`${surface} m²`, label:"Surface" });
+    if (rooms != null) stats.push({ key:"rooms", value:`${rooms}`, label: plural(rooms, "Pièce", "Pièces") });
+    if (bedrooms != null) stats.push({ key:"bedrooms", value:`${bedrooms}`, label: plural(bedrooms, "Chambre", "Chambres") });
+    if (baths != null) stats.push({ key:"bathrooms", value:`${baths}`, label: plural(baths, "Salle de bain", "Salles de bain") });
 
     if (!stats.length) {
       els.slideStats.innerHTML = "";
@@ -289,7 +244,7 @@
     els.slideStats.classList.remove("hidden");
     els.slideStats.innerHTML = stats.map(s => `
       <div class="statChip" data-stat="${s.key}">
-        <div class="statIcon" aria-hidden="true">${iconSVG(s.icon)}</div>
+        <div class="statIcon" aria-hidden="true">${iconSVG(s.key)}</div>
         <div class="statText">
           <div class="statValue">${s.value}</div>
           <div class="statLabel">${s.label}</div>
@@ -371,9 +326,9 @@
   }
 
   // ---------------------------
-  // Preload queue
+  // Preload queue (PRO)
   // ---------------------------
-  const preloadCache = new Map();
+  const preloadCache = new Map(); // url -> Promise<boolean>
   function preload(url) {
     if (!url) return Promise.resolve(false);
     if (preloadCache.has(url)) return preloadCache.get(url);
@@ -388,6 +343,7 @@
     });
 
     preloadCache.set(url, pr);
+    // nettoyage soft
     if (preloadCache.size > 200) {
       const firstKey = preloadCache.keys().next().value;
       preloadCache.delete(firstKey);
@@ -448,21 +404,23 @@
     els.slideRef.textContent = safeText(item.ref || "");
     els.slideTitle.textContent = safeText(item.title || "Bien immobilier");
 
-    // Meta texte — on garde simple
+    // texte meta (on garde)
+    const parts = [];
     const cityLine = safeText(item.city || "");
-    els.slideMeta.textContent = cityLine || "—";
+    if (cityLine) parts.push(cityLine);
+    els.slideMeta.textContent = parts.join(" • ") || "—";
 
-    // ✅ Stats + DPE
+    // ✅ stats + DPE
     renderStats(item);
     setDpe(item);
 
-    // Contact
+    // contact
     const extracted = extractContactFromAgence(item.agence);
     els.contactAdvisor.textContent = extracted.advisorName || "Conseiller GTI";
     els.contactAgencyPhone.textContent = extracted.agencyPhone || "—";
     els.contactAdvisorMobile.textContent = pickAdvisorMobile(item, extracted);
 
-    // Photos
+    // photos
     state.photoIndex = 0;
     state.usingA = true;
 
@@ -474,13 +432,13 @@
     els.slideImgA.classList.add("is-visible");
     els.slideImgB.classList.remove("is-visible");
 
-    // Duration + progress
+    // duration + progress
     const durSec = computeItemDurationSec(item, rotateMinSec, photoRotateSec);
     state.itemDurationMs = durSec * 1000;
     state.nextItemAt = Date.now() + state.itemDurationMs;
     if (els.slideProg) els.slideProg.style.width = "0%";
 
-    // Warmup
+    // warmup : prochaines photos + 1ère photo du prochain bien
     warmupItem(item, 1, 3).catch(()=>{});
     const nextItem = state.items[(state.itemIndex + 1) % state.items.length];
     if (nextItem) preload(getPhoto(nextItem, 0)).catch(()=>{});
@@ -505,6 +463,8 @@
     });
 
     state.usingA = !state.usingA;
+
+    // warmup encore un peu en avance
     warmupItem(item, state.photoIndex + 1, 2).catch(()=>{});
   }
 
@@ -513,7 +473,8 @@
     state.items = items;
     state.itemIndex = 0;
 
-    setSlideItem(items[0], rotateMinSec, photoRotateSec);
+    const first = items[0];
+    setSlideItem(first, rotateMinSec, photoRotateSec);
 
     state.photoTimer = setInterval(() => {
       const item = state.items[state.itemIndex];
@@ -524,7 +485,8 @@
       if (Date.now() < state.nextItemAt) return;
 
       state.itemIndex = (state.itemIndex + 1) % state.items.length;
-      setSlideItem(state.items[state.itemIndex], rotateMinSec, photoRotateSec);
+      const item = state.items[state.itemIndex];
+      setSlideItem(item, rotateMinSec, photoRotateSec);
     }, 250);
 
     state.progTimer = setInterval(updateProgress, 120);
@@ -571,6 +533,7 @@
       const fp = fingerprint(items);
       if (fp !== lastFingerprint) {
         lastFingerprint = fp;
+        // warmup first item
         preload(getPhoto(items[0], 0)).catch(()=>{});
         startSlide(items, params.rotate, params.photoRotate);
       } else {
