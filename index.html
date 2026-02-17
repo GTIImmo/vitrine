@@ -16,7 +16,7 @@
 <body>
   <main id="app" class="app" aria-live="polite">
 
-    <!-- HUD discret (infos écran / agence) -->
+    <!-- HUD (caché par défaut en CSS) -->
     <header class="hud" aria-hidden="true">
       <div class="hud__left">
         <div class="pill" id="hudAgency">AGENCE</div>
@@ -45,11 +45,34 @@
             <div class="slide__meta" id="slideMeta">—</div>
           </div>
 
-          <div class="slide__cta">
-            <div class="cta__label">Contactez-nous</div>
-            <div class="cta__phone" id="slidePhone">—</div>
-            <div class="cta__hint">GTI Immobilier • Votre projet, notre équipe</div>
+          <!-- ✅ NOUVEAU BLOC CONTACT -->
+          <div class="contactCard" id="contactCard">
+            <div class="contactTop">
+              <div class="contactBrand">
+                <div class="contactBrand__name">GTI Immobilier</div>
+                <div class="contactBrand__tag">Votre projet, notre équipe</div>
+              </div>
+              <div class="contactBadge">CONTACT</div>
+            </div>
+
+            <div class="contactGrid">
+              <div class="contactRow">
+                <div class="contactLabel">Conseiller</div>
+                <div class="contactValue" id="contactAdvisor">—</div>
+              </div>
+
+              <div class="contactRow">
+                <div class="contactLabel">Tél agence</div>
+                <div class="contactValue contactValue--big" id="contactAgencyPhone">—</div>
+              </div>
+
+              <div class="contactRow">
+                <div class="contactLabel">Mobile</div>
+                <div class="contactValue contactValue--big" id="contactAdvisorMobile">—</div>
+              </div>
+            </div>
           </div>
+          <!-- /contact -->
         </div>
       </article>
     </section>
