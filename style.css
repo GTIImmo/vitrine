@@ -217,7 +217,7 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   COLONNE DROITE (premium + couleur)
+   COLONNE DROITE
 ========================= */
 .slide__panel{
   padding: 26px 24px 18px;
@@ -229,7 +229,7 @@ body.debug .hud{display:flex;}
   box-shadow: -18px 0 70px rgba(0,0,0,.08);
   min-height:0;
   display:grid;
-  grid-template-rows: auto 1fr auto; /* top / contact / dpe footer */
+  grid-template-rows: auto 1fr auto;
   gap: 12px;
 }
 
@@ -278,7 +278,7 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   CONTACT (logo noir + sans libellés)
+   CONTACT (OPTION 1: header barre premium)
 ========================= */
 .contactCard{
   border-radius: 26px;
@@ -290,58 +290,80 @@ body.debug .hud{display:flex;}
   overflow:hidden;
 }
 
+/* ✅ BARRE PREMIUM (nouveau) */
 .contactTop{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:12px;
-  margin-bottom:12px;
-}
-.contactBrand__head{display:flex;align-items:center;gap:10px}
+  gap:14px;
+  margin-bottom:14px;
 
-/* ✅ logo plus petit + fond noir premium */
-.contactLogo{
-  width:68px;height:68px;
+  padding:10px 10px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #111318, #0a0b10);
-  border: 1px solid rgba(255,255,255,.14);
-  box-shadow:
-    0 18px 50px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.10);
-  object-fit: contain;
-  padding:10px;
+  background: rgba(255,255,255,.30);
+  border: 1px solid rgba(255,255,255,.30);
+  box-shadow: 0 14px 44px rgba(0,0,0,.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.contactBrand__head{
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
-/* on garde ton HTML, mais on masque les textes de marque si présents */
+/* ✅ logo rectangle noir premium */
+.contactLogo{
+  width:64px;
+  height:44px;
+  border-radius: 14px;
+  padding:10px 12px;
+
+  background: linear-gradient(180deg, #101218, #07080c);
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.26),
+    inset 0 1px 0 rgba(255,255,255,.10);
+
+  object-fit: contain;
+}
+
+/* masque textes de marque si présents */
 .contactBrand__texts{display:none !important;}
 .contactBrand__name{display:none !important;}
 .contactBrand__tag{display:none !important;}
 
-/* bouton contact */
+/* CTA CONTACT aligné, plus fin */
 .contactBadge{
-  padding:12px 16px;border-radius:999px;
+  padding:10px 14px;
+  border-radius:999px;
+
   background: linear-gradient(135deg, var(--accent), var(--accentDeep));
-  border: 1px solid rgba(255,255,255,.20);
-  box-shadow: 0 14px 34px rgba(194,24,91,.26);
-  font-weight:950;letter-spacing:.12em;font-size:11px;text-transform:uppercase;
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: 0 12px 30px rgba(194,24,91,.22);
+
+  font-weight:950;
+  letter-spacing:.14em;
+  font-size:10.5px;
+  text-transform:uppercase;
   color:#fff;
   white-space:nowrap;
 }
 
 /* lignes contact */
-.contactGrid{display:flex;flex-direction:column;gap:10px}
+.contactGrid{display:flex;flex-direction:column;gap:12px}
 
-/* ✅ on supprime les libellés (Conseiller / Tel agence / Mobile) */
+/* supprime les libellés */
 .contactLabel{display:none !important;}
 
 .contactRow{
   display:flex;
   align-items:center;
-  justify-content:flex-start; /* tout sur une ligne */
+  justify-content:flex-start;
   gap:10px;
-  padding:10px 12px 10px 44px;
-  border-radius: 18px;
-  background: rgba(255,255,255,.84);
+  padding:12px 14px 12px 48px;
+  border-radius: 22px;
+  background: rgba(255,255,255,.86);
   border:1px solid rgba(18,19,24,.06);
   position:relative;
 }
@@ -350,7 +372,7 @@ body.debug .hud{display:flex;}
 .contactRow::before{
   content:"";
   position:absolute;
-  left:12px; top:50%;
+  left:14px; top:50%;
   width:22px; height:22px;
   transform: translateY(-50%);
   opacity:.92;
@@ -369,7 +391,7 @@ body.debug .hud{display:flex;}
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='7' y='2' width='10' height='20' rx='2' stroke='%23121318' stroke-width='2'/%3E%3Cpath d='M11 19h2' stroke='%23121318' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
-/* ✅ valeurs : une seule ligne, gros, propre */
+/* valeurs */
 .contactValue{
   font-weight:950;
   color: rgba(18,19,24,.92);
@@ -382,7 +404,6 @@ body.debug .hud{display:flex;}
   width:100%;
 }
 
-/* tailles adaptées colonne étroite */
 #contactCard .contactRow:nth-child(1) .contactValue{ font-size:16px; }
 #contactCard .contactRow:nth-child(2) .contactValue,
 #contactCard .contactRow:nth-child(3) .contactValue{ font-size:15px; }
@@ -512,14 +533,14 @@ body.debug .hud{display:flex;}
 /* Kiosque */
 @media (max-height: 980px){
   .slide__panel{ padding: 24px 22px 16px; gap:10px; }
-  .slide__title{ font-size: 41px; }
-  .contactRow{ padding-top:9px; padding-bottom:9px; }
-  #contactCard .contactRow:nth-child(1) .contactValue{ font-size:17px; }
+  .slide__title{ font-size: 36px; }
+  .contactRow{ padding-top:11px; padding-bottom:11px; }
+  #contactCard .contactRow:nth-child(1) .contactValue{ font-size:15.5px; }
   #contactCard .contactRow:nth-child(2) .contactValue,
-  #contactCard .contactRow:nth-child(3) .contactValue{ font-size:16px; }
+  #contactCard .contactRow:nth-child(3) .contactValue{ font-size:14.5px; }
   .qrBox{ width:110px; height:110px; }
   .dpeImg{ height:36px; }
-  .contactLogo{ width:62px; height:62px; padding:9px; }
+  .contactLogo{ width:60px; height:42px; padding:9px 11px; }
 }
 
 /* Responsive */
@@ -543,6 +564,6 @@ body.debug .hud{display:flex;}
   .slide__meta{font-size:15px}
   .mediaStats{ left:12px; right:12px; bottom:12px; }
   .qrBox{ width:104px; height:104px; }
-  .contactLogo{ width:58px; height:58px; padding:8px; }
-  .contactBadge{ padding:11px 14px; font-size:10.5px; }
+  .contactLogo{ width:58px; height:40px; padding:8px 10px; }
+  .contactBadge{ padding:10px 12px; font-size:10px; }
 }
