@@ -98,7 +98,7 @@ body.debug .hud{display:flex;}
   width:100%;height:100%;
   object-fit:cover;
 
-  /* un peu moins fort que ton 1.22 (plus naturel) */
+  /* ✅ moins agressif que 1.22 */
   filter: brightness(1.14) contrast(1.08) saturate(1.10);
 
   opacity:0;
@@ -191,6 +191,24 @@ body.debug .hud{display:flex;}
   border: 1px solid rgba(255,255,255,.36);
   box-shadow: 0 10px 26px rgba(0,0,0,.06);
 }
+
+/* ✅ priorité visuelle parking/terrasse */
+.statsRow--media .statChip.is-priority{
+  background: rgba(255,255,255,.98);
+  border: 1px solid rgba(194,24,91,.22);
+  box-shadow: 0 12px 30px rgba(194,24,91,.14);
+}
+.statsRow--media .statChip.is-priority .statIcon{
+  border-color: rgba(194,24,91,.22);
+  box-shadow: 0 10px 22px rgba(194,24,91,.14);
+}
+.statsRow--media .statChip.is-secondary{
+  opacity:.92;
+  background: rgba(255,255,255,.86);
+  border-color: rgba(255,255,255,.28);
+  box-shadow: none;
+}
+
 .statsRow--media .statIcon{
   width:30px;height:30px;border-radius:999px;
   display:grid;place-items:center;
@@ -201,6 +219,11 @@ body.debug .hud{display:flex;}
 .statsRow--media .statText{display:flex;flex-direction:column;line-height:1.1}
 .statsRow--media .statValue{font-weight:950;font-size:15px;letter-spacing:-.01em}
 .statsRow--media .statLabel{font-weight:850;font-size:10px;color: rgba(18,19,24,.54);margin-top:3px}
+
+/* ✅ petits ajustements pour que les nouveaux chips (parking/terrasse) passent mieux */
+.statsRow--media .statChip[data-stat="terrasse"] .statValue{letter-spacing:-.02em}
+.statsRow--media .statChip[data-stat="parkingInterieur"] .statValue,
+.statsRow--media .statChip[data-stat="parkingExterieur"] .statValue{min-width: 14px}
 
 /* progress */
 .progWrap{
@@ -281,7 +304,7 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   CONTACT — VERSION PREMIUM + ANTI DÉBORDEMENT
+   CONTACT (OPTION 1: header barre premium)
 ========================= */
 .contactCard{
   border-radius: 26px;
@@ -293,72 +316,58 @@ body.debug .hud{display:flex;}
   overflow:hidden;
 }
 
-/* header propre : logo / titre / badge */
+/* ✅ BARRE PREMIUM */
 .contactTop{
-  display:grid;
-  grid-template-columns: auto 1fr auto;
+  display:flex;
   align-items:center;
-  gap:12px;
-  margin-bottom:12px;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px;
 
-  padding:10px 12px;
-  border-radius: 20px;
-  background: rgba(255,255,255,.32);
-  border: 1px solid rgba(255,255,255,.32);
+  padding:10px 10px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.30);
+  border: 1px solid rgba(255,255,255,.30);
   box-shadow: 0 14px 44px rgba(0,0,0,.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
-
-/* ton HTML a un wrapper .contactBrand__head : on le transforme en “logo + titre” */
 .contactBrand__head{
-  display:contents; /* on laisse la grille gérer */
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
-/* logo noir premium (plus quali que “simple”) */
+/* ✅ logo rectangle noir premium */
 .contactLogo{
-  width:70px;
+  width:64px;
   height:44px;
   border-radius: 14px;
-  padding:9px 12px;
-  background:
-    linear-gradient(180deg, #121318, #07080c);
-  border: 1px solid rgba(255,255,255,.18);
+  padding:10px 12px;
+
+  background: linear-gradient(180deg, #101218, #07080c);
+  border: 1px solid rgba(255,255,255,.16);
   box-shadow:
-    0 18px 50px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.10),
-    inset 0 -1px 0 rgba(0,0,0,.55);
+    0 18px 50px rgba(0,0,0,.26),
+    inset 0 1px 0 rgba(255,255,255,.10);
+
   object-fit: contain;
 }
 
-/* ✅ vrai “titre” contact (sans dépendre de ton HTML) */
-.contactTop::before{
-  content:"Contact";
-  grid-column: 2 / 3;
-  align-self:center;
-  justify-self:start;
-
-  font-weight: 950;
-  letter-spacing: -.02em;
-  font-size: 16px;
-  color: rgba(18,19,24,.92);
-
-  padding-left:2px;
-}
-
-/* on masque les anciens textes de marque si présents */
-.contactBrand__texts,
-.contactBrand__name,
+/* masque textes de marque si présents */
+.contactBrand__texts{display:none !important;}
+.contactBrand__name{display:none !important;}
 .contactBrand__tag{display:none !important;}
 
-/* badge CONTACT plus chic */
+/* CTA CONTACT aligné, plus fin */
 .contactBadge{
-  grid-column: 3 / 4;
   padding:10px 14px;
   border-radius:999px;
+
   background: linear-gradient(135deg, var(--accent), var(--accentDeep));
   border: 1px solid rgba(255,255,255,.22);
   box-shadow: 0 12px 30px rgba(194,24,91,.22);
+
   font-weight:950;
   letter-spacing:.14em;
   font-size:10.5px;
@@ -368,19 +377,19 @@ body.debug .hud{display:flex;}
 }
 
 /* lignes contact */
-.contactGrid{display:flex;flex-direction:column;gap:10px}
+.contactGrid{display:flex;flex-direction:column;gap:12px}
 
 /* supprime les libellés */
 .contactLabel{display:none !important;}
 
 .contactRow{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   justify-content:flex-start;
   gap:10px;
   padding:12px 14px 12px 48px;
   border-radius: 22px;
-  background: rgba(255,255,255,.88);
+  background: rgba(255,255,255,.86);
   border:1px solid rgba(18,19,24,.06);
   position:relative;
 }
@@ -389,8 +398,9 @@ body.debug .hud{display:flex;}
 .contactRow::before{
   content:"";
   position:absolute;
-  left:14px; top:16px;
+  left:14px; top:50%;
   width:22px; height:22px;
+  transform: translateY(-50%);
   opacity:.92;
   background-repeat:no-repeat;
   background-position:center;
@@ -407,35 +417,22 @@ body.debug .hud{display:flex;}
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='7' y='2' width='10' height='20' rx='2' stroke='%23121318' stroke-width='2'/%3E%3Cpath d='M11 19h2' stroke='%23121318' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
-/* valeur générique */
+/* valeurs */
 .contactValue{
   font-weight:950;
   color: rgba(18,19,24,.92);
-  font-variant-numeric: tabular-nums;
-  letter-spacing:-.01em;
-  width:100%;
-}
-
-/* ✅ NOM conseiller : max 2 lignes, jamais de débordement */
-#contactCard .contactRow:nth-child(1) .contactValue{
-  font-size:16px;
-  line-height:1.15;
-  white-space:normal;
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-/* ✅ Téléphones : 1 ligne, compact, jamais coupé bizarrement */
-#contactCard .contactRow:nth-child(2) .contactValue,
-#contactCard .contactRow:nth-child(3) .contactValue{
-  font-size:15px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  font-variant-numeric: tabular-nums;
+  letter-spacing:-.01em;
+  text-align:left;
+  width:100%;
 }
+
+#contactCard .contactRow:nth-child(1) .contactValue{ font-size:16px; }
+#contactCard .contactRow:nth-child(2) .contactValue,
+#contactCard .contactRow:nth-child(3) .contactValue{ font-size:15px; }
 
 /* =========================
    QR
@@ -563,13 +560,14 @@ body.debug .hud{display:flex;}
 @media (max-height: 980px){
   .slide__panel{ padding: 24px 22px 16px; gap:10px; }
   .slide__title{ font-size: 36px; }
-  .contactLogo{ width:66px; height:42px; padding:9px 11px; }
-  .contactTop::before{ font-size:15px; }
+  .contactRow{ padding-top:11px; padding-bottom:11px; }
   #contactCard .contactRow:nth-child(1) .contactValue{ font-size:15.5px; }
   #contactCard .contactRow:nth-child(2) .contactValue,
   #contactCard .contactRow:nth-child(3) .contactValue{ font-size:14.5px; }
   .qrBox{ width:110px; height:110px; }
   .dpeImg{ height:36px; }
+  .contactLogo{ width:60px; height:42px; padding:9px 11px; }
+  .statsRow--media .statValue{font-size:14.5px}
 }
 
 /* Responsive */
@@ -593,6 +591,6 @@ body.debug .hud{display:flex;}
   .slide__meta{font-size:15px}
   .mediaStats{ left:12px; right:12px; bottom:12px; }
   .qrBox{ width:104px; height:104px; }
-  .contactLogo{ width:62px; height:40px; padding:8px 10px; }
+  .contactLogo{ width:58px; height:40px; padding:8px 10px; }
   .contactBadge{ padding:10px 12px; font-size:10px; }
 }
