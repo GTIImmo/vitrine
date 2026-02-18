@@ -105,6 +105,47 @@
     return null;
   }
 
+  // ✅ WC : support large
+  function readWC(item){
+    const candidates = [item.wc, item.WC, item.nbWc, item.nb_wc];
+    for (const c of candidates){
+      const n = asNumber(c);
+      if (n != null && n >= 0) return Math.round(n);
+    }
+    return null;
+  }
+
+  // ✅ niveaux/étages : support large
+  function readLevels(item){
+    const candidates = [item.levels, item.level, item.nbLevels, item.niveaux, item.etages];
+    for (const c of candidates){
+      const n = asNumber(c);
+      if (n != null && n > 0) return Math.round(n);
+    }
+    return null;
+  }
+
+  // ✅ terrain : support large
+  function readTerrain(item){
+    const candidates = [item.terrain, item.land, item.landSurface, item.surfterrain, item.surfaceTerrain];
+    for (const c of candidates){
+      const n = asNumber(c);
+      if (n != null && n > 0) return Math.round(n);
+    }
+    return null;
+  }
+
+  // ✅ cave : bool + textes OUI/NON
+  function readCellar(item){
+    const v = item.cellar ?? item.cave ?? item.hasCellar;
+    if (typeof v === "boolean") return v;
+    const s = safeText(v).toUpperCase();
+    if (!s) return null;
+    if (["OUI","YES","TRUE","1"].includes(s)) return true;
+    if (["NON","NO","FALSE","0"].includes(s)) return false;
+    return null;
+  }
+
   function normalizeItem(item) {
     const it = { ...item };
     it.photos = normalizePhotos(it.photos, 10);
@@ -120,6 +161,19 @@
 
     const ba = readBathrooms(it);
     if (ba != null) it.bathrooms = ba;
+
+    // ✅ ajout
+    const wc = readWC(it);
+    if (wc != null) it.wc = wc;
+
+    const lv = readLevels(it);
+    if (lv != null) it.levels = lv;
+
+    const terr = readTerrain(it);
+    if (terr != null) it.terrain = terr;
+
+    const cel = readCellar(it);
+    if (cel != null) it.cellar = cel;
 
     return it;
   }
@@ -214,6 +268,34 @@
           <path d="M7 12V7a3 3 0 0 1 3-3h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M16 8h2M18 6v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
+
+      // ✅ AJOUTS
+      case "wc":
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7 7a5 5 0 0 1 10 0v6a5 5 0 0 1-10 0V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M7 11h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M9 20h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>`;
+
+      case "levels":
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M7 20V10l5-4 5 4v10" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>`;
+
+      case "cellar":
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 10l8-5 8 5v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M9 21v-6a3 3 0 0 1 6 0v6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>`;
+
+      case "terrain":
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 19l7-14 2 4 7-3-6 13H4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M6 19h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>`;
+
       default:
         return "";
     }
@@ -230,10 +312,21 @@
     const bedrooms = (item.bedrooms != null && Number(item.bedrooms) > 0) ? Math.round(Number(item.bedrooms)) : null;
     const baths = (item.bathrooms != null && Number(item.bathrooms) > 0) ? Math.round(Number(item.bathrooms)) : null;
 
+    const wc = (item.wc != null && Number(item.wc) >= 0) ? Math.round(Number(item.wc)) : null;
+    const levels = (item.levels != null && Number(item.levels) > 0) ? Math.round(Number(item.levels)) : null;
+    const terrain = (item.terrain != null && Number(item.terrain) > 0) ? Math.round(Number(item.terrain)) : null;
+    const cellar = (typeof item.cellar === "boolean") ? item.cellar : null;
+
     if (surface != null) stats.push({ key:"surface", value:`${surface} m²`, label:"Surface" });
     if (rooms != null) stats.push({ key:"rooms", value:`${rooms}`, label: plural(rooms, "Pièce", "Pièces") });
     if (bedrooms != null) stats.push({ key:"bedrooms", value:`${bedrooms}`, label: plural(bedrooms, "Chambre", "Chambres") });
     if (baths != null) stats.push({ key:"bathrooms", value:`${baths}`, label: plural(baths, "Salle de bain", "Salles de bain") });
+
+    // ✅ AJOUTS
+    if (wc != null && wc > 0) stats.push({ key:"wc", value:`${wc}`, label:"WC" });
+    if (levels != null) stats.push({ key:"levels", value:`${levels}`, label: plural(levels, "Niveau", "Niveaux") });
+    if (terrain != null) stats.push({ key:"terrain", value:`${terrain} m²`, label:"Terrain" });
+    if (cellar != null) stats.push({ key:"cellar", value: cellar ? "Oui" : "Non", label:"Cave" });
 
     if (!stats.length) {
       els.slideStats.innerHTML = "";
