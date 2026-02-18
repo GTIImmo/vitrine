@@ -98,8 +98,8 @@ body.debug .hud{display:flex;}
   width:100%;height:100%;
   object-fit:cover;
 
-  /* ✅ vitrine lumineux mais plus naturel (brightness réduit) */
-  filter: brightness(1.12) contrast(1.07) saturate(1.08);
+  /* ✅ moins agressif que 1.22 */
+  filter: brightness(1.14) contrast(1.08) saturate(1.10);
 
   opacity:0;
   transform: scale(1.03);
@@ -113,9 +113,9 @@ body.debug .hud{display:flex;}
 .slide__gradient{
   position:absolute;inset:0;
   background:
-    radial-gradient(1100px 760px at 18% 18%, rgba(255,255,255,.18), transparent 60%),
-    linear-gradient(90deg, rgba(0,0,0,.00), rgba(0,0,0,.16)),
-    radial-gradient(1200px 900px at 55% 120%, rgba(0,0,0,.12), transparent 60%);
+    radial-gradient(1100px 760px at 18% 18%, rgba(255,255,255,.22), transparent 60%),
+    linear-gradient(90deg, rgba(0,0,0,.00), rgba(0,0,0,.12)),
+    radial-gradient(1200px 900px at 55% 120%, rgba(0,0,0,.08), transparent 60%);
   pointer-events:none;
   z-index:3;
 }
@@ -143,7 +143,7 @@ body.debug .hud{display:flex;}
   position:absolute;top:22px;right:22px;
   padding:10px 14px;border-radius:999px;
   font-weight:900;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
-  background: rgba(255,255,255,.86);
+  background: rgba(255,255,255,.90);
   border: 1px solid rgba(255,255,255,.30);
   color: rgba(18,19,24,.78);
   box-shadow: 0 12px 34px rgba(0,0,0,.10);
@@ -168,8 +168,8 @@ body.debug .hud{display:flex;}
   border-radius:18px;
   border:1px solid rgba(255,255,255,.24);
   background: rgba(255,255,255,.20);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 18px 60px rgba(0,0,0,.18);
 }
 .statsRow--media{
@@ -189,21 +189,24 @@ body.debug .hud{display:flex;}
   border-radius:999px;
   background: rgba(255,255,255,.92);
   border: 1px solid rgba(255,255,255,.36);
+  box-shadow: 0 10px 26px rgba(0,0,0,.06);
 }
 
-/* ✅ priorité (parking/terrasse) : plus visible que cave/niveaux */
+/* ✅ priorité visuelle parking/terrasse */
 .statsRow--media .statChip.is-priority{
-  background: linear-gradient(135deg, rgba(15,118,110,.16), rgba(194,24,91,.14));
-  border-color: rgba(18,19,24,.12);
-  box-shadow: 0 16px 44px rgba(0,0,0,.14);
-  padding: 10px 12px;
+  background: rgba(255,255,255,.98);
+  border: 1px solid rgba(194,24,91,.22);
+  box-shadow: 0 12px 30px rgba(194,24,91,.14);
 }
-.statsRow--media .statChip.is-priority .statValue{font-size:16px}
-.statsRow--media .statChip.is-priority .statLabel{color: rgba(18,19,24,.56)}
-
+.statsRow--media .statChip.is-priority .statIcon{
+  border-color: rgba(194,24,91,.22);
+  box-shadow: 0 10px 22px rgba(194,24,91,.14);
+}
 .statsRow--media .statChip.is-secondary{
-  opacity:.86;
-  transform: scale(.97);
+  opacity:.92;
+  background: rgba(255,255,255,.86);
+  border-color: rgba(255,255,255,.28);
+  box-shadow: none;
 }
 
 .statsRow--media .statIcon{
@@ -216,6 +219,11 @@ body.debug .hud{display:flex;}
 .statsRow--media .statText{display:flex;flex-direction:column;line-height:1.1}
 .statsRow--media .statValue{font-weight:950;font-size:15px;letter-spacing:-.01em}
 .statsRow--media .statLabel{font-weight:850;font-size:10px;color: rgba(18,19,24,.54);margin-top:3px}
+
+/* ✅ petits ajustements pour que les nouveaux chips (parking/terrasse) passent mieux */
+.statsRow--media .statChip[data-stat="terrasse"] .statValue{letter-spacing:-.02em}
+.statsRow--media .statChip[data-stat="parkingInterieur"] .statValue,
+.statsRow--media .statChip[data-stat="parkingExterieur"] .statValue{min-width: 14px}
 
 /* progress */
 .progWrap{
@@ -235,7 +243,7 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   COLONNE DROITE (premium + couleur)
+   COLONNE DROITE
 ========================= */
 .slide__panel{
   padding: 26px 24px 18px;
@@ -247,7 +255,7 @@ body.debug .hud{display:flex;}
   box-shadow: -18px 0 70px rgba(0,0,0,.08);
   min-height:0;
   display:grid;
-  grid-template-rows: auto 1fr auto; /* top / contact / dpe footer */
+  grid-template-rows: auto 1fr auto;
   gap: 12px;
 }
 
@@ -296,7 +304,7 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   CONTACT
+   CONTACT (OPTION 1: header barre premium)
 ========================= */
 .contactCard{
   border-radius: 26px;
@@ -308,52 +316,89 @@ body.debug .hud{display:flex;}
   overflow:hidden;
 }
 
+/* ✅ BARRE PREMIUM */
 .contactTop{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px;
+
+  padding:10px 10px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.30);
+  border: 1px solid rgba(255,255,255,.30);
+  box-shadow: 0 14px 44px rgba(0,0,0,.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.contactBrand__head{
+  display:flex;
+  align-items:center;
   gap:12px;
-  margin-bottom:10px;
 }
-.contactBrand__head{display:flex;align-items:center;gap:10px}
 
+/* ✅ logo rectangle noir premium */
 .contactLogo{
-  width:46px;height:46px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.94);
-  border: 1px solid rgba(18,19,24,.10);
-  box-shadow: 0 14px 40px rgba(0,0,0,.08);
+  width:64px;
+  height:44px;
+  border-radius: 14px;
+  padding:10px 12px;
+
+  background: linear-gradient(180deg, #101218, #07080c);
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.26),
+    inset 0 1px 0 rgba(255,255,255,.10);
+
   object-fit: contain;
-  padding:8px;
 }
-.contactBrand__texts{display:flex;flex-direction:column}
-.contactBrand__name{font-weight:950;font-size:18px;letter-spacing:-.02em;color: rgba(18,19,24,.92)}
-.contactBrand__tag{margin-top:3px;font-weight:650;font-size:11.5px;color: rgba(18,19,24,.62)}
 
+/* masque textes de marque si présents */
+.contactBrand__texts{display:none !important;}
+.contactBrand__name{display:none !important;}
+.contactBrand__tag{display:none !important;}
+
+/* CTA CONTACT aligné, plus fin */
 .contactBadge{
-  padding:8px 10px;border-radius:999px;
-  background: rgba(255,255,255,.86);
-  border:1px solid rgba(18,19,24,.08);
-  font-weight:900;letter-spacing:.12em;font-size:10.5px;text-transform:uppercase;
-  color: rgba(18,19,24,.72);
+  padding:10px 14px;
+  border-radius:999px;
+
+  background: linear-gradient(135deg, var(--accent), var(--accentDeep));
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: 0 12px 30px rgba(194,24,91,.22);
+
+  font-weight:950;
+  letter-spacing:.14em;
+  font-size:10.5px;
+  text-transform:uppercase;
+  color:#fff;
+  white-space:nowrap;
 }
 
-.contactGrid{display:flex;flex-direction:column;gap:8px}
+/* lignes contact */
+.contactGrid{display:flex;flex-direction:column;gap:12px}
+
+/* supprime les libellés */
+.contactLabel{display:none !important;}
+
 .contactRow{
   display:flex;
-  align-items:baseline;
-  justify-content:space-between;
-  gap:12px;
-  padding:9px 10px 9px 44px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.76);
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+  padding:12px 14px 12px 48px;
+  border-radius: 22px;
+  background: rgba(255,255,255,.86);
   border:1px solid rgba(18,19,24,.06);
   position:relative;
 }
+
+/* icônes */
 .contactRow::before{
   content:"";
   position:absolute;
-  left:12px; top:50%;
+  left:14px; top:50%;
   width:22px; height:22px;
   transform: translateY(-50%);
   opacity:.92;
@@ -372,26 +417,25 @@ body.debug .hud{display:flex;}
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='7' y='2' width='10' height='20' rx='2' stroke='%23121318' stroke-width='2'/%3E%3Cpath d='M11 19h2' stroke='%23121318' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
-.contactLabel{
-  color: rgba(18,19,24,.62);
-  font-weight:800;
-  font-size:12.5px;
-  letter-spacing:.02em;
-  white-space:nowrap;
-}
+/* valeurs */
 .contactValue{
   font-weight:950;
-  font-size:15.5px;
-  text-align:right;
   color: rgba(18,19,24,.92);
-}
-.contactValue--big{
-  font-size:17px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-variant-numeric: tabular-nums;
   letter-spacing:-.01em;
+  text-align:left;
+  width:100%;
 }
 
+#contactCard .contactRow:nth-child(1) .contactValue{ font-size:16px; }
+#contactCard .contactRow:nth-child(2) .contactValue,
+#contactCard .contactRow:nth-child(3) .contactValue{ font-size:15px; }
+
 /* =========================
-   QR (plus gros)
+   QR
 ========================= */
 .qrBlock{
   margin-top: 12px;
@@ -451,7 +495,7 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   DPE footer compact (nouvelle intégration)
+   DPE footer compact
 ========================= */
 .dpeCard--compact{
   padding: 10px 12px 12px;
@@ -515,10 +559,15 @@ body.debug .hud{display:flex;}
 /* Kiosque */
 @media (max-height: 980px){
   .slide__panel{ padding: 24px 22px 16px; gap:10px; }
-  .slide__title{ font-size: 41px; }
-  .contactRow{ padding-top:8px; padding-bottom:8px; }
+  .slide__title{ font-size: 36px; }
+  .contactRow{ padding-top:11px; padding-bottom:11px; }
+  #contactCard .contactRow:nth-child(1) .contactValue{ font-size:15.5px; }
+  #contactCard .contactRow:nth-child(2) .contactValue,
+  #contactCard .contactRow:nth-child(3) .contactValue{ font-size:14.5px; }
   .qrBox{ width:110px; height:110px; }
   .dpeImg{ height:36px; }
+  .contactLogo{ width:60px; height:42px; padding:9px 11px; }
+  .statsRow--media .statValue{font-size:14.5px}
 }
 
 /* Responsive */
@@ -540,7 +589,8 @@ body.debug .hud{display:flex;}
   }
   .slide__title{font-size:30px}
   .slide__meta{font-size:15px}
-  .contactValue--big{font-size:16px}
   .mediaStats{ left:12px; right:12px; bottom:12px; }
   .qrBox{ width:104px; height:104px; }
+  .contactLogo{ width:58px; height:40px; padding:8px 10px; }
+  .contactBadge{ padding:10px 12px; font-size:10px; }
 }
