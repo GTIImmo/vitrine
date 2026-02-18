@@ -303,6 +303,38 @@
 
   function plural(n, one, many) { return n > 1 ? many : one; }
 
+  // ---------------------------
+  // ✅ 1 LIGNE MAX sous la photo (auto-fit)
+  // ---------------------------
+  function limitStatsToOneLine(container) {
+    if (!container) return;
+    const chips = Array.from(container.querySelectorAll(".statChip"));
+    if (!chips.length) return;
+
+    // reset
+    chips.forEach(ch => { ch.style.display = ""; });
+
+    const maxW = container.clientWidth;
+    if (!maxW) return;
+
+    // Masque les derniers jusqu'à ce que ça rentre
+    let safety = 80;
+    while (container.scrollWidth > maxW && safety-- > 0) {
+      const last = [...container.querySelectorAll(".statChip")].reverse().find(x => x.style.display !== "none");
+      if (!last) break;
+      last.style.display = "none";
+    }
+  }
+
+  // ✅ relance auto si la largeur change (kiosque/rotation/zoom)
+  let __statsResizeRaf = 0;
+  function scheduleFitStats() {
+    if (!els.slideStats) return;
+    cancelAnimationFrame(__statsResizeRaf);
+    __statsResizeRaf = requestAnimationFrame(() => limitStatsToOneLine(els.slideStats));
+  }
+  window.addEventListener("resize", scheduleFitStats, { passive: true });
+
   // ✅ Priorités + limite anti “bloc trop long”
   function renderStats(item) {
     if (!els.slideStats) return;
@@ -319,30 +351,30 @@
     const terrain = (item.terrain != null && Number(item.terrain) > 0) ? Math.round(Number(item.terrain)) : null;
     const cellar = (typeof item.cellar === "boolean") ? item.cellar : null;
 
-    // Base (toujours en haut)
+    // Priorités (ordre important)
     if (surface != null) stats.push({ pr: 100, key:"surface", value:`${surface} m²`, label:"Surface" });
     if (rooms != null) stats.push({ pr: 90, key:"rooms", value:`${rooms}`, label: plural(rooms, "Pièce", "Pièces") });
     if (bedrooms != null) stats.push({ pr: 80, key:"bedrooms", value:`${bedrooms}`, label: plural(bedrooms, "Chambre", "Chambres") });
     if (baths != null) stats.push({ pr: 70, key:"bathrooms", value:`${baths}`, label: plural(baths, "Salle de bain", "Salles de bain") });
 
-    // Compléments (selon dispo)
     if (terrain != null) stats.push({ pr: 65, key:"terrain", value:`${terrain} m²`, label:"Terrain" });
     if (wc != null) stats.push({ pr: 60, key:"wc", value:`${wc}`, label:"WC" });
     if (levels != null) stats.push({ pr: 55, key:"levels", value:`${levels}`, label: plural(levels, "Niveau", "Niveaux") });
     if (cellar != null) stats.push({ pr: 50, key:"cellar", value: cellar ? "Oui" : "Non", label:"Cave" });
 
-    // Tri + limite (évite que ça prenne toute la place)
     stats.sort((a,b)=>b.pr-a.pr);
-    const limited = stats.slice(0, 8); // 6–8 chips max = vitrine propre
 
-    if (!limited.length) {
+    // ⚠️ On génère “un peu plus” puis on fait fitter sur 1 ligne
+    const preList = stats.slice(0, 10);
+
+    if (!preList.length) {
       els.slideStats.innerHTML = "";
       els.slideStats.classList.add("hidden");
       return;
     }
 
     els.slideStats.classList.remove("hidden");
-    els.slideStats.innerHTML = limited.map(s => `
+    els.slideStats.innerHTML = preList.map(s => `
       <div class="statChip" data-stat="${s.key}">
         <div class="statIcon" aria-hidden="true">${iconSVG(s.key)}</div>
         <div class="statText">
@@ -351,6 +383,9 @@
         </div>
       </div>
     `).join("");
+
+    // ✅ fit en 1 ligne après layout
+    scheduleFitStats();
   }
 
   // ---------------------------
@@ -510,7 +545,7 @@
     if (cityLine) parts.push(cityLine);
     els.slideMeta.textContent = parts.join(" • ") || "—";
 
-    renderStats(item);
+    renderStats(item);   // ✅ 1 ligne auto-fit ici
     setDpe(item);
 
     const extracted = extractContactFromAgence(item.agence);
@@ -631,6 +666,8 @@
         startSlide(items, params.rotate, params.photoRotate);
       } else {
         showView("slide");
+        // au cas où le kiosque a changé la largeur (zoom etc.)
+        scheduleFitStats();
       }
     } catch (e) {
       clearTimers();
