@@ -9,6 +9,8 @@
     viewSlide: $("#viewSlide"),
     viewEmpty: $("#viewEmpty"),
 
+    slide: $("#slide"),
+
     emptyTitle: $("#emptyTitle"),
     emptySub: $("#emptySub"),
 
@@ -546,16 +548,19 @@
     tickTimer: null,
     progTimer: null,
     nextItemAt: 0,
-    itemDurationMs: 0
+    itemDurationMs: 0,
+    changeTimer: null
   };
 
   function clearTimers() {
     if (state.photoTimer) clearInterval(state.photoTimer);
     if (state.tickTimer) clearInterval(state.tickTimer);
     if (state.progTimer) clearInterval(state.progTimer);
+    if (state.changeTimer) clearTimeout(state.changeTimer);
     state.photoTimer = null;
     state.tickTimer = null;
     state.progTimer = null;
+    state.changeTimer = null;
   }
 
   function computeItemDurationSec(item, rotateMinSec, photoRotateSec) {
@@ -574,6 +579,10 @@
   }
 
   function setSlideItem(item, rotateMinSec, photoRotateSec, params) {
+    // Transition globale (fade/slide) sur les blocs de contenu
+    if (state.changeTimer) { clearTimeout(state.changeTimer); state.changeTimer = null; }
+
+    const doUpdate = () => {
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
 
@@ -610,6 +619,16 @@
     warmupItem(item, 1, 3).catch(()=>{});
     const nextItem = state.items[(state.itemIndex + 1) % state.items.length];
     if (nextItem) preload(getPhoto(nextItem, 0)).catch(()=>{});
+    };
+
+    if (!els.slide) { doUpdate(); return; }
+
+    els.slide.classList.add("is-changing");
+    state.changeTimer = setTimeout(() => {
+      doUpdate();
+      requestAnimationFrame(() => els.slide.classList.remove("is-changing"));
+      state.changeTimer = null;
+    }, 140);
   }
 
   async function swapPhoto(item) {
