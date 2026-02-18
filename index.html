@@ -40,16 +40,16 @@
         </div>
 
         <div class="slide__panel">
-
-          <!-- HEADER (titre + meta + stats) -->
           <div class="panelTop">
             <div class="slide__title" id="slideTitle">—</div>
-            <div class="slide__meta" id="slideMeta">—</div>
-            <div class="statsRow" id="slideStats" aria-label="Caractéristiques du bien"></div>
-          </div>
 
-          <!-- DPE (zone flexible au centre) -->
-          <div class="dpeWrap">
+            <!-- ✅ META texte (on garde) -->
+            <div class="slide__meta" id="slideMeta">—</div>
+
+            <!-- ✅ STATS premium (icônes + valeurs) -->
+            <div class="statsRow" id="slideStats" aria-label="Caractéristiques du bien"></div>
+
+            <!-- ✅ DPE (caché si absent) -->
             <div class="dpeCard hidden" id="dpeCard" aria-label="Diagnostic de performance énergétique">
               <div class="dpeHead">
                 <div class="dpeTitle">DPE</div>
@@ -68,12 +68,14 @@
                 </figure>
               </div>
             </div>
+            <!-- /DPE -->
           </div>
 
-          <!-- CONTACT (fixe en bas) -->
+          <!-- CONTACT -->
           <div class="contactCard" id="contactCard">
             <div class="contactTop">
               <div class="contactBrand">
+                <!-- ✅ Ajout logo GTI (sans supprimer tes textes) -->
                 <div class="contactBrand__head">
                   <img
                     class="contactLogo"
@@ -108,7 +110,7 @@
               </div>
             </div>
           </div>
-
+          <!-- /contact -->
         </div>
       </article>
     </section>
