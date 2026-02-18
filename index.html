@@ -14,23 +14,21 @@
 </head>
 
 <body>
-  <main id="app" class="app" aria-live="polite">
+  <!-- HUD (DEBUG / PARAMS) -->
+  <div class="hud" aria-hidden="true">
+    <div class="hudLeft">
+      <div class="hudPill" id="hudAgency">—</div>
+      <div class="hudPill hudPill--ghost" id="hudMode">—</div>
+    </div>
+    <div class="hudRight">
+      <div class="hudPill hudPill--ghost" id="hudInfo">—</div>
+    </div>
+  </div>
 
-    <!-- HUD (caché par défaut, visible si debug=1) -->
-    <header class="hud" aria-hidden="true">
-      <div class="hud__left">
-        <div class="pill" id="hudAgency">AGENCE</div>
-        <div class="pill pill--muted" id="hudMode">SLIDE</div>
-      </div>
-      <div class="hud__right">
-        <div class="pill pill--muted" id="hudInfo">…</div>
-      </div>
-    </header>
-
-    <!-- SLIDE -->
-    <section id="viewSlide" class="view view--slide">
+  <!-- VIEW: SLIDE -->
+  <main class="app">
+    <section class="view view--slide" id="viewSlide">
       <article class="slide" id="slide">
-
         <!-- MEDIA -->
         <div class="slide__media">
           <!-- décor léger (ne dépend pas du JS) -->
@@ -39,6 +37,7 @@
 
           <img id="slideImgA" class="slide__img is-visible" alt="" />
           <img id="slideImgB" class="slide__img" alt="" />
+
           <div class="slide__gradient"></div>
 
           <div class="priceBadge" id="slidePrice">—</div>
@@ -56,7 +55,6 @@
 
         <!-- ✅ COLONNE DROITE -->
         <div class="slide__panel">
-
           <!-- TOP : titre + localisation -->
           <div class="panelTop">
             <div class="slide__title" id="slideTitle">—</div>
@@ -68,13 +66,7 @@
             <div class="contactTop">
               <div class="contactBrand">
                 <div class="contactBrand__head">
-                  <img
-                    class="contactLogo"
-                    src="https://www.gti-immobilier.fr/application/files/5617/3617/2343/GTI-Logos-Grisblanc.png"
-                    alt="GTI Immobilier"
-                    loading="eager"
-                    decoding="async"
-                  />
+                  <img class="contactLogo" src="https://www.gti-immobilier.fr/application/files/5617/3617/2343/GTI-Logos-Grisblanc.png" alt="GTI Immobilier" decoding="async" loading="eager" />
                   <div class="contactBrand__texts">
                     <div class="contactBrand__name">GTI Immobilier</div>
                     <div class="contactBrand__tag">Votre projet, notre équipe</div>
@@ -101,7 +93,7 @@
               </div>
             </div>
 
-            <!-- ✅ QR (réservé même si absent du JSON) -->
+            <!-- ✅ QR (réservé même si 'absent du JSON) -->
             <div class="qrBlock" id="qrBlock" aria-label="QR code pour plus d'informations">
               <div class="qrBox is-empty" id="qrBox">
                 <img id="qrImg" alt="QR code" decoding="async" loading="eager" />
@@ -119,32 +111,28 @@
               <div class="dpeTitle">DPE</div>
               <div class="dpeHint">Conso &amp; GES</div>
             </div>
-
             <div class="dpeInline">
               <div class="dpeThumb">
                 <span class="dpeMiniLabel">Conso</span>
                 <img id="dpeConsoImg" class="dpeImg" alt="DPE - Consommation" />
               </div>
-
               <div class="dpeThumb">
                 <span class="dpeMiniLabel">GES</span>
                 <img id="dpeGesImg" class="dpeImg" alt="DPE - GES" />
               </div>
             </div>
           </div>
-
         </div>
       </article>
     </section>
 
-    <!-- EMPTY -->
-    <section id="viewEmpty" class="view view--empty hidden">
+    <!-- VIEW: EMPTY -->
+    <section class="view view--empty" id="viewEmpty">
       <div class="empty">
-        <div class="empty__title" id="emptyTitle">Aucune annonce à afficher</div>
-        <div class="empty__sub" id="emptySub">Vérifiez les paramètres ou la source JSON.</div>
+        <div class="emptyTitle" id="emptyTitle">Aucun bien à afficher</div>
+        <div class="emptySub" id="emptySub">Vérifie la source JSON / les filtres URL.</div>
       </div>
     </section>
-
   </main>
 
   <script src="script.js"></script>
