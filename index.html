@@ -37,13 +37,16 @@
           <div class="cornerTag" id="slideRef">—</div>
         </div>
 
+        <!-- ✅ Colonne droite : Header / DPE / Contact -->
         <div class="slide__panel">
-          <div class="panelTop">
+          <div class="panelHeader">
             <div class="slide__title" id="slideTitle">—</div>
             <div class="slide__meta" id="slideMeta">—</div>
-
             <div class="statsRow" id="slideStats" aria-label="Caractéristiques du bien"></div>
+          </div>
 
+          <!-- ✅ DPE dans une zone dédiée (ne sera plus coupé) -->
+          <div class="panelDpe">
             <div class="dpeCard hidden" id="dpeCard" aria-label="Diagnostic de performance énergétique">
               <div class="dpeHead">
                 <div class="dpeTitle">DPE</div>
@@ -64,21 +67,20 @@
             </div>
           </div>
 
+          <!-- ✅ Contact compact (plus énorme) -->
           <div class="contactCard" id="contactCard">
             <div class="contactTop">
-              <div class="contactBrand">
-                <div class="contactBrand__head">
-                  <img
-                    class="contactLogo"
-                    src="https://www.gti-immobilier.fr/application/files/5617/3617/2343/GTI-Logos-Grisblanc.png"
-                    alt="GTI Immobilier"
-                    loading="eager"
-                    decoding="async"
-                  />
-                  <div class="contactBrand__texts">
-                    <div class="contactBrand__name">GTI Immobilier</div>
-                    <div class="contactBrand__tag">Votre projet, notre équipe</div>
-                  </div>
+              <div class="contactBrand__head">
+                <img
+                  class="contactLogo"
+                  src="https://www.gti-immobilier.fr/application/files/5617/3617/2343/GTI-Logos-Grisblanc.png"
+                  alt="GTI Immobilier"
+                  loading="eager"
+                  decoding="async"
+                />
+                <div class="contactBrand__texts">
+                  <div class="contactBrand__name">GTI Immobilier</div>
+                  <div class="contactBrand__tag">Votre projet, notre équipe</div>
                 </div>
               </div>
               <div class="contactBadge">CONTACT</div>
@@ -101,6 +103,7 @@
               </div>
             </div>
           </div>
+
         </div>
       </article>
     </section>
