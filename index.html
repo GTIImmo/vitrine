@@ -38,6 +38,11 @@
           <div class="priceBadge" id="slidePrice">—</div>
           <div class="cornerTag" id="slideRef">—</div>
 
+          <!-- ✅ STATS sous la photo (ID inchangé => JS inchangé) -->
+          <div class="mediaStats" aria-hidden="true">
+            <div class="statsRow statsRow--media" id="slideStats" aria-label="Caractéristiques du bien"></div>
+          </div>
+
           <!-- ✅ Progress bar (ton JS la gère déjà) -->
           <div class="progWrap" aria-hidden="true">
             <div class="progBar" id="slideProg"></div>
@@ -50,9 +55,6 @@
 
             <!-- META -->
             <div class="slide__meta" id="slideMeta">—</div>
-
-            <!-- STATS -->
-            <div class="statsRow" id="slideStats" aria-label="Caractéristiques du bien"></div>
 
             <!-- DPE -->
             <div class="dpeCard hidden" id="dpeCard" aria-label="Diagnostic de performance énergétique">
