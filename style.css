@@ -291,23 +291,6 @@ body.debug .hud{display:flex;}
   overflow:hidden;
 }
 
-.contactCard::after{
-  content:"Appelez maintenant • Visite sur rendez-vous";
-  display:block;
-  margin-top:10px;
-  padding:10px 12px;
-  border-radius: 16px;
-  text-align:center;
-  font-weight:950;
-  letter-spacing:.06em;
-  text-transform:uppercase;
-  font-size:10.5px;
-  color: rgba(18,19,24,.86);
-  background: rgba(255,255,255,.84);
-  border: 1px solid rgba(18,19,24,.08);
-  box-shadow: var(--shadow2);
-}
-
 .contactTop{
   display:flex;
   align-items:flex-start;
@@ -388,6 +371,38 @@ body.debug .hud{display:flex;}
 .contactValue--big{
   font-size:17px;
   letter-spacing:-.01em;
+}
+
+/* ✅ CTA visuel (barre) — correction d'alignement + wrap propre */
+.contactCard::after{
+  content:"Appelez maintenant • Visite sur rendez-vous";
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:100%;
+  box-sizing:border-box;
+
+  margin:12px 0 0;
+  padding:12px 14px;
+
+  border-radius: 18px;
+  text-align:center;
+
+  font-weight:950;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  font-size:11px;
+
+  color: rgba(18,19,24,.86);
+  background: rgba(255,255,255,.84);
+  border: 1px solid rgba(18,19,24,.08);
+  box-shadow: var(--shadow2);
+
+  white-space:normal;
+  hyphens:none;
+  word-break:keep-all;
+  text-wrap: balance;
 }
 
 /* =========================
