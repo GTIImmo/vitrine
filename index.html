@@ -3,127 +3,108 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="color-scheme" content="light" />
-  <title>Vitrine Digitale | GTI Immobilier</title>
+  <title>Vitrine GTI Immobilier</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <main id="app" class="app" aria-live="polite">
+  <main class="app">
 
-    <!-- HUD (caché par défaut, visible si debug=1) -->
-    <header class="hud" aria-hidden="true">
-      <div class="hud__left">
-        <div class="pill" id="hudAgency">AGENCE</div>
-        <div class="pill pill--muted" id="hudMode">SLIDE</div>
-      </div>
-      <div class="hud__right">
-        <div class="pill pill--muted" id="hudInfo">…</div>
-      </div>
-    </header>
+    <section class="slide" id="slide">
 
-    <!-- SLIDE -->
-    <section id="viewSlide" class="view view--slide">
-      <article class="slide" id="slide">
-        <div class="slide__media">
-          <img id="slideImgA" class="slide__img is-visible" alt="" />
-          <img id="slideImgB" class="slide__img" alt="" />
-          <div class="slide__gradient"></div>
+      <!-- PHOTO (gauche) -->
+      <section class="media" aria-label="Photo du bien">
+        <img id="imgA" class="media__img is-visible" alt="">
+        <img id="imgB" class="media__img" alt="">
 
-          <div class="priceBadge" id="slidePrice">—</div>
-          <div class="cornerTag" id="slideRef">—</div>
-
-          <!-- ✅ Progress bar (ton JS la gère déjà) -->
-          <div class="progWrap" aria-hidden="true">
-            <div class="progBar" id="slideProg"></div>
-          </div>
+        <div class="media__hud">
+          <div class="badge badge--price" id="price">—</div>
+          <div class="badge badge--ref" id="ref">—</div>
         </div>
 
-        <div class="slide__panel">
-          <div class="panelTop">
-            <div class="slide__title" id="slideTitle">—</div>
-
-            <!-- META -->
-            <div class="slide__meta" id="slideMeta">—</div>
-
-            <!-- STATS -->
-            <div class="statsRow" id="slideStats" aria-label="Caractéristiques du bien"></div>
-
-            <!-- DPE -->
-            <div class="dpeCard hidden" id="dpeCard" aria-label="Diagnostic de performance énergétique">
-              <div class="dpeHead">
-                <div class="dpeTitle">DPE</div>
-                <div class="dpeHint">Consommation &amp; GES</div>
-              </div>
-
-              <div class="dpeGrid">
-                <figure class="dpeItem">
-                  <img id="dpeConsoImg" class="dpeImg" alt="DPE - Consommation" />
-                  <figcaption class="dpeCaption">Consommation</figcaption>
-                </figure>
-
-                <figure class="dpeItem">
-                  <img id="dpeGesImg" class="dpeImg" alt="DPE - GES" />
-                  <figcaption class="dpeCaption">GES</figcaption>
-                </figure>
-              </div>
-            </div>
-            <!-- /DPE -->
-          </div>
-
-          <!-- CONTACT -->
-          <div class="contactCard" id="contactCard">
-            <div class="contactTop">
-              <div class="contactBrand">
-                <div class="contactBrand__head">
-                  <img
-                    class="contactLogo"
-                    src="https://www.gti-immobilier.fr/application/files/5617/3617/2343/GTI-Logos-Grisblanc.png"
-                    alt="GTI Immobilier"
-                    loading="eager"
-                    decoding="async"
-                  />
-                  <div class="contactBrand__texts">
-                    <div class="contactBrand__name">GTI Immobilier</div>
-                    <div class="contactBrand__tag">Votre projet, notre équipe</div>
-                  </div>
-                </div>
-              </div>
-              <div class="contactBadge">CONTACT</div>
-            </div>
-
-            <div class="contactGrid">
-              <div class="contactRow">
-                <div class="contactLabel">Conseiller</div>
-                <div class="contactValue" id="contactAdvisor">—</div>
-              </div>
-
-              <div class="contactRow">
-                <div class="contactLabel">Tél agence</div>
-                <div class="contactValue contactValue--big" id="contactAgencyPhone">—</div>
-              </div>
-
-              <div class="contactRow">
-                <div class="contactLabel">Mobile</div>
-                <div class="contactValue contactValue--big" id="contactAdvisorMobile">—</div>
-              </div>
-            </div>
-          </div>
-          <!-- /contact -->
+        <div class="media__progress" aria-hidden="true">
+          <div class="media__bar" id="prog"></div>
         </div>
-      </article>
+      </section>
+
+      <!-- PANNEAU (droite) -->
+      <aside class="panel" aria-label="Informations du bien">
+
+        <!-- 1) ENTÊTE -->
+        <header class="panel__header">
+          <div class="hTitle" id="title">—</div>
+          <div class="hMeta">
+            <span class="hCity" id="city">—</span>
+          </div>
+        </header>
+
+        <!-- 2) STATS (grille compacte 2×3) -->
+        <section class="statsCard" aria-label="Caractéristiques">
+          <div class="statsGrid" id="stats"></div>
+        </section>
+
+        <!-- 3) DPE compact (ruban fixe) -->
+        <section class="dpeStrip hidden" id="dpeStrip" aria-label="DPE">
+          <div class="dpeStrip__head">
+            <div class="dpeStrip__t">DPE</div>
+            <div class="dpeStrip__s">Consommation &amp; GES</div>
+          </div>
+          <div class="dpeStrip__imgs">
+            <div class="dpeBox">
+              <span class="dpeTag">CONSO</span>
+              <img id="dpeConso" alt="DPE Consommation">
+            </div>
+            <div class="dpeBox">
+              <span class="dpeTag">GES</span>
+              <img id="dpeGes" alt="DPE GES">
+            </div>
+          </div>
+        </section>
+
+        <!-- 4) CONTACT (toujours visible, réservé) -->
+        <section class="contact" aria-label="Contact">
+          <div class="contact__top">
+            <div class="brand">
+              <img class="brand__logo"
+                   src="https://www.gti-immobilier.fr/application/files/5617/3617/2343/GTI-Logos-Grisblanc.png"
+                   alt="GTI Immobilier" decoding="async" loading="eager">
+              <div class="brand__txt">
+                <div class="brand__name">GTI Immobilier</div>
+                <div class="brand__tag">Votre projet, notre équipe</div>
+              </div>
+            </div>
+            <div class="pill">CONTACT</div>
+          </div>
+
+          <div class="contact__rows">
+            <div class="row">
+              <div class="k">Conseiller</div>
+              <div class="v" id="cName">—</div>
+            </div>
+            <div class="row row--big">
+              <div class="k">Tél agence</div>
+              <div class="v v--big" id="cAgency">—</div>
+            </div>
+            <div class="row row--big">
+              <div class="k">Mobile</div>
+              <div class="v v--big" id="cMobile">—</div>
+            </div>
+          </div>
+        </section>
+
+      </aside>
     </section>
 
-    <!-- EMPTY -->
-    <section id="viewEmpty" class="view view--empty hidden">
-      <div class="empty">
-        <div class="empty__title" id="emptyTitle">Aucune annonce à afficher</div>
-        <div class="empty__sub" id="emptySub">Vérifiez les paramètres ou la source JSON.</div>
+    <!-- Écran vide -->
+    <section class="empty hidden" id="empty">
+      <div class="empty__box">
+        <div class="empty__t">Aucune annonce à afficher</div>
+        <div class="empty__s" id="emptyMsg">Vérifiez la source JSON / filtres.</div>
       </div>
     </section>
 
