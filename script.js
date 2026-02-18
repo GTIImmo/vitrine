@@ -92,7 +92,7 @@
     return out;
   }
 
-  // salles de bain : support large
+  // salles de bain : support large (selon tes exports)
   function readBathrooms(item) {
     const candidates = [
       item.bathrooms, item.bathroom, item.bathroomCount,
@@ -105,7 +105,7 @@
     return null;
   }
 
-  // WC
+  // ✅ WC : support large
   function readWC(item){
     const candidates = [item.wc, item.WC, item.nbWc, item.nb_wc];
     for (const c of candidates){
@@ -115,7 +115,7 @@
     return null;
   }
 
-  // niveaux/étages
+  // ✅ niveaux/étages : support large
   function readLevels(item){
     const candidates = [item.levels, item.level, item.nbLevels, item.niveaux, item.etages];
     for (const c of candidates){
@@ -125,7 +125,7 @@
     return null;
   }
 
-  // terrain
+  // ✅ terrain : support large
   function readTerrain(item){
     const candidates = [item.terrain, item.land, item.landSurface, item.surfterrain, item.surfaceTerrain];
     for (const c of candidates){
@@ -135,7 +135,7 @@
     return null;
   }
 
-  // cave
+  // ✅ cave : bool + textes OUI/NON
   function readCellar(item){
     const v = item.cellar ?? item.cave ?? item.hasCellar;
     if (typeof v === "boolean") return v;
@@ -162,6 +162,7 @@
     const ba = readBathrooms(it);
     if (ba != null) it.bathrooms = ba;
 
+    // ✅ ajout
     const wc = readWC(it);
     if (wc != null) it.wc = wc;
 
@@ -241,7 +242,7 @@
   }
 
   // ---------------------------
-  // SVG icons
+  // SVG icons (modern)
   // ---------------------------
   function iconSVG(name) {
     switch (name) {
@@ -267,28 +268,33 @@
           <path d="M7 12V7a3 3 0 0 1 3-3h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M16 8h2M18 6v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
+
       case "wc":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 7a5 5 0 0 1 10 0v6a5 5 0 0 1-10 0V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M7 11h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M9 20h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
+
       case "levels":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M7 20V10l5-4 5 4v10" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
         </svg>`;
+
       case "cellar":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 10l8-5 8 5v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M9 21v-6a3 3 0 0 1 6 0v6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
         </svg>`;
+
       case "terrain":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 19l7-14 2 4 7-3-6 13H4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M6 19h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
+
       default:
         return "";
     }
@@ -411,7 +417,7 @@
   }
 
   // ---------------------------
-  // Preload queue
+  // Preload queue (PRO)
   // ---------------------------
   const preloadCache = new Map(); // url -> Promise<boolean>
   function preload(url) {
@@ -488,23 +494,19 @@
     els.slideRef.textContent = safeText(item.ref || "");
     els.slideTitle.textContent = safeText(item.title || "Bien immobilier");
 
-    // meta
     const parts = [];
     const cityLine = safeText(item.city || "");
     if (cityLine) parts.push(cityLine);
     els.slideMeta.textContent = parts.join(" • ") || "—";
 
-    // stats + DPE
     renderStats(item);
     setDpe(item);
 
-    // contact
     const extracted = extractContactFromAgence(item.agence);
     els.contactAdvisor.textContent = extracted.advisorName || "Conseiller GTI";
     els.contactAgencyPhone.textContent = extracted.agencyPhone || "—";
     els.contactAdvisorMobile.textContent = pickAdvisorMobile(item, extracted);
 
-    // photos
     state.photoIndex = 0;
     state.usingA = true;
 
@@ -545,6 +547,7 @@
     });
 
     state.usingA = !state.usingA;
+
     warmupItem(item, state.photoIndex + 1, 2).catch(()=>{});
   }
 
@@ -570,6 +573,7 @@
     }, 250);
 
     state.progTimer = setInterval(updateProgress, 120);
+
     showView("slide");
   }
 
