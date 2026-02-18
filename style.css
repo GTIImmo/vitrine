@@ -244,7 +244,7 @@ body.debug .hud{display:flex;}
   padding: 18px 18px 14px;
 }
 .slide__title{
-  font-size: 44px;
+  font-size: 38px;
   font-weight: 950;
   line-height: 1.03;
   letter-spacing: -0.045em;
@@ -383,9 +383,9 @@ body.debug .hud{display:flex;}
 }
 
 /* tailles adaptées colonne étroite */
-#contactCard .contactRow:nth-child(1) .contactValue{ font-size:18px; }
+#contactCard .contactRow:nth-child(1) .contactValue{ font-size:16px; }
 #contactCard .contactRow:nth-child(2) .contactValue,
-#contactCard .contactRow:nth-child(3) .contactValue{ font-size:17px; }
+#contactCard .contactRow:nth-child(3) .contactValue{ font-size:15px; }
 
 /* =========================
    QR
