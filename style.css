@@ -1,3 +1,14 @@
+/* =========================================================
+   GTI VITRINE — STYLE PRO (1920×1080)
+   - Stats sous photo (bande premium)
+   - Panel droit stable (DPE + Contact toujours visibles)
+   - Micro-animations discrètes vitrine
+   - Gestion titres/valeurs longues
+   ========================================================= */
+
+/* -------------------------
+   Tokens
+------------------------- */
 :root{
   --bg:#f3f5f9;
   --surface:#ffffff;
@@ -12,9 +23,15 @@
 
   --shadow: 0 40px 110px rgba(0,0,0,.12);
   --shadow2: 0 18px 60px rgba(0,0,0,.08);
+  --shadow3: 0 12px 30px rgba(0,0,0,.10);
 
   --radius:22px;
   --radius2:30px;
+
+  --glass: rgba(255,255,255,.78);
+  --glass2: rgba(255,255,255,.64);
+
+  --ease: cubic-bezier(.2,.8,.2,1);
 
   /* SVG inline */
   --svg-user: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M20 21a8 8 0 1 0-16 0' stroke='%23111318' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M12 13a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z' stroke='%23111318' stroke-width='2'/%3E%3C/svg%3E");
@@ -23,85 +40,117 @@
   --svg-pin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 22s7-4.4 7-12a7 7 0 1 0-14 0c0 7.6 7 12 7 12Z' stroke='%23111318' stroke-width='2'/%3E%3Cpath d='M12 13a3 3 0 1 0-3-3 3 3 0 0 0 3 3Z' stroke='%23111318' stroke-width='2'/%3E%3C/svg%3E");
 }
 
+/* -------------------------
+   Reset + base
+------------------------- */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--text);
+  overflow:hidden;
   background:
     radial-gradient(1200px 800px at 20% 10%, rgba(194,24,91,.10), transparent 55%),
     radial-gradient(1000px 700px at 80% 20%, rgba(15,118,110,.10), transparent 55%),
     linear-gradient(180deg,#f4f6fa,#edf1f7);
-  color:var(--text);
-  overflow:hidden;
 }
+img{max-width:100%;display:block}
 .hidden{display:none!important}
 .app{height:100%;display:flex;flex-direction:column}
 
-/* HUD */
+/* -------------------------
+   HUD (debug=1)
+------------------------- */
 .hud{
   display:none;
-  position:fixed; top:18px; left:18px; right:18px;
+  position:fixed;
+  top:16px; left:16px; right:16px;
   z-index:50;
   justify-content:space-between;
   align-items:center;
   pointer-events:none;
   opacity:.94;
 }
-body.debug .hud{display:flex;}
+body.debug .hud{display:flex}
 .hud__left,.hud__right{display:flex;gap:10px;align-items:center}
+
 .pill{
-  padding:9px 12px;border-radius:999px;
+  padding:9px 12px;
+  border-radius:999px;
   border:1px solid var(--line);
-  background: rgba(255,255,255,.78);
+  background: var(--glass);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow2);
-  font-size:12px;letter-spacing:.12em;text-transform:uppercase;
-  font-weight:900;color: rgba(17,19,24,.82);
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  font-weight:900;
+  color: rgba(17,19,24,.82);
 }
 .pill--muted{color:rgba(17,19,24,.55)}
 
-/* Views */
+/* -------------------------
+   Views
+------------------------- */
 .view{height:100%;width:100%;display:flex;align-items:center;justify-content:center}
 .view--slide{padding:0}
 .view--empty{padding:24px}
 
-/* Slide */
+/* -------------------------
+   Slide layout
+------------------------- */
 .slide{
   width:100%;
   height:100%;
   display:grid;
-  grid-template-columns: 1.38fr .62fr; /* un peu + de place à la photo */
+  grid-template-columns: 1.40fr .60fr; /* photo dominante (vitrine) */
 }
 
-/* Media */
+/* =========================================================
+   MEDIA (Photo)
+========================================================= */
 .slide__media{
   position:relative;
   overflow:hidden;
   background:#e9edf3;
 }
+
+/* Photos A/B gérées par ton JS */
 .slide__img{
   position:absolute; inset:0;
   width:100%; height:100%;
   object-fit:cover;
+
+  /* Boost vitrine (lumineux) */
   filter: brightness(1.18) contrast(1.10) saturate(1.12);
+
   opacity:0;
   transform: scale(1.02);
-  transition: opacity .65s ease, transform 2.1s ease;
+  transition: opacity .65s var(--ease), transform 2.0s var(--ease);
+  will-change: opacity, transform, filter;
 }
-.slide__img.is-visible{opacity:1;transform: scale(1.05)}
+.slide__img.is-visible{
+  opacity:1;
+  transform: scale(1.05);
+}
+
+/* Lisibilité légère à droite, sans noircir */
 .slide__gradient{
   position:absolute; inset:0;
   background:
-    radial-gradient(900px 620px at 18% 18%, rgba(255,255,255,.20), transparent 60%),
-    linear-gradient(90deg, rgba(255,255,255,.02), rgba(0,0,0,.14));
+    radial-gradient(900px 620px at 18% 18%, rgba(255,255,255,.18), transparent 60%),
+    linear-gradient(90deg, rgba(255,255,255,.00), rgba(0,0,0,.14));
   pointer-events:none;
 }
 
-/* Badges */
+/* -------------------------
+   Badges sur photo
+------------------------- */
 .priceBadge{
-  position:absolute; top:26px; left:26px;
+  position:absolute;
+  top:24px; left:24px;
   padding:16px 24px;
   border-radius:999px;
   font-weight:950;
@@ -113,12 +162,13 @@ body.debug .hud{display:flex;}
   border: 1px solid rgba(255,255,255,.20);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+
   transform-origin:left center;
   animation: pricePulse 6s ease-in-out infinite;
 }
 @keyframes pricePulse{
-  0%,100%{ transform: translateY(0) scale(1); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
-  50%    { transform: translateY(-1px) scale(1.015); filter: drop-shadow(0 10px 18px rgba(194,24,91,.16)); }
+  0%,100%{ transform: translateY(0) scale(1); }
+  50%    { transform: translateY(-1px) scale(1.015); }
 }
 .priceBadge::after{
   content:"";
@@ -138,7 +188,8 @@ body.debug .hud{display:flex;}
 }
 
 .cornerTag{
-  position:absolute; top:26px; right:26px;
+  position:absolute;
+  top:24px; right:24px;
   padding:12px 18px;
   border-radius:999px;
   font-weight:900;
@@ -153,14 +204,16 @@ body.debug .hud{display:flex;}
   -webkit-backdrop-filter: blur(10px);
 }
 
-/* Progress */
+/* -------------------------
+   Progress bar
+------------------------- */
 .progWrap{
   position:absolute;
   left:0; right:0; bottom:0;
   height:6px;
   background: rgba(255,255,255,.22);
   border-top: 1px solid rgba(255,255,255,.22);
-  z-index:6;
+  z-index: 10;
 }
 .progBar{
   height:100%;
@@ -170,15 +223,16 @@ body.debug .hud{display:flex;}
   transition: width .12s linear;
 }
 
-/* =========================================
-   STATS SOUS LA PHOTO (bande premium)
-========================================= */
+/* =========================================================
+   STATS sous la photo (Bande premium)
+   -> nécessite que #slideStats soit dans .slide__media
+========================================================= */
 .mediaStats{
   position:absolute;
   left:0; right:0;
-  bottom:6px;             /* juste au-dessus de la barre */
+  bottom:6px; /* au-dessus du progWrap */
   padding: 14px 18px 14px;
-  z-index:5;
+  z-index: 9;
   pointer-events:none;
 }
 .mediaStats::before{
@@ -186,10 +240,13 @@ body.debug .hud{display:flex;}
   position:absolute;
   inset:0;
   border-top: 1px solid rgba(255,255,255,.22);
-  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.16));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.16));
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
+
+/* 2 lignes max (propre, vitrine) */
 .statsRow--media{
   position:relative;
   z-index:1;
@@ -197,14 +254,19 @@ body.debug .hud{display:flex;}
   flex-wrap:wrap;
   gap:10px;
   margin:0;
+
+  max-height: 96px;        /* ≈ 2 lignes */
+  overflow:hidden;
 }
+
+/* Chips premium */
 .statsRow--media .statChip{
   display:flex;
   align-items:center;
   gap:10px;
   padding: 10px 12px;
-  border-radius:999px;
-  background: rgba(255,255,255,.84);
+  border-radius: 999px;
+  background: rgba(255,255,255,.86);
   border: 1px solid rgba(255,255,255,.32);
   box-shadow: 0 16px 40px rgba(0,0,0,.12);
 }
@@ -217,32 +279,35 @@ body.debug .hud{display:flex;}
   border:1px solid rgba(17,19,24,.08);
 }
 .statsRow--media .statIcon svg{width:17px;height:17px;opacity:.92}
-.statsRow--media .statText{display:flex;flex-direction:column;line-height:1.1}
-.statsRow--media .statValue{font-weight:950;font-size:16px}
-.statsRow--media .statLabel{font-weight:800;font-size:10.5px;color: var(--muted2);margin-top:3px}
+.statsRow--media .statText{display:flex;flex-direction:column;line-height:1.05}
+.statsRow--media .statValue{font-weight:950;font-size:16px;letter-spacing:-.01em}
+.statsRow--media .statLabel{font-weight:850;font-size:10.5px;color: var(--muted2);margin-top:3px}
 
-/* Si beaucoup de chips, on compacte un peu */
+/* Compact si kiosque réduit la hauteur */
 @media (max-height: 860px){
   .mediaStats{ padding: 12px 16px 12px; }
-  .statsRow--media{ gap:8px; }
+  .statsRow--media{ gap:8px; max-height: 86px; }
   .statsRow--media .statChip{ padding: 9px 11px; }
   .statsRow--media .statValue{ font-size:15px; }
   .statsRow--media .statLabel{ font-size:10px; }
 }
 
-/* =========================================
-   PANEL DROIT (stabilisé)
-========================================= */
+/* =========================================================
+   PANEL DROIT (Stable, anti-coupe)
+========================================================= */
 .slide__panel{
-  padding: 28px 38px 22px;
+  padding: 26px 36px 20px;
   background:#fff;
   border-left: 1px solid var(--line);
   box-shadow: -26px 0 80px rgba(0,0,0,.09);
   min-height:0;
+
   display:grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr auto; /* top / middle / bottom */
   gap: 12px;
 }
+
+/* Top separator */
 .panelTop{min-height:0;overflow:hidden}
 .panelTop::after{
   content:"";
@@ -255,29 +320,34 @@ body.debug .hud{display:flex;}
 /* Title */
 .slide__title{
   font-size: 56px;
-  font-weight:950;
-  line-height:1.04;
-  letter-spacing:-.045em;
+  font-weight: 950;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
   margin: 0 0 10px;
+
   display:-webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow:hidden;
 }
 
-/* Localisation très visible */
+/* Location (badge) */
 .slide__meta{
   display:inline-flex;
   align-items:center;
   gap:10px;
   font-size: 18px;
-  font-weight:900;
+  font-weight: 900;
   color: rgba(17,19,24,.82);
+
   padding: 10px 12px;
   border-radius: 16px;
   background: rgba(17,19,24,.04);
   border: 1px solid rgba(17,19,24,.06);
   margin: 0 0 10px;
+
+  /* anti débordement */
+  max-width: 100%;
 }
 .slide__meta::before{
   content:"";
@@ -286,8 +356,15 @@ body.debug .hud{display:flex;}
   background: var(--svg-pin) center/18px 18px no-repeat;
   opacity:.92;
 }
+.slide__meta{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 
-/* DPE compact (car le panel est “propre”) */
+/* =========================================================
+   DPE (compact + net)
+========================================================= */
 .dpeCard{
   border-radius: var(--radius2);
   border:1px solid rgba(17,19,24,.08);
@@ -295,7 +372,10 @@ body.debug .hud{display:flex;}
   box-shadow: 0 14px 40px rgba(0,0,0,.06);
   overflow:hidden;
   padding: 10px;
+  transition: transform .4s var(--ease);
 }
+.dpeCard:hover{ transform: translateY(-1px); } /* même si non hover en vitrine */
+
 .dpeHead{
   display:flex;
   align-items:baseline;
@@ -303,31 +383,38 @@ body.debug .hud{display:flex;}
   gap:10px;
   margin-bottom:8px;
 }
-.dpeTitle{font-weight:950;font-size:14px;}
-.dpeHint{color: var(--muted2);font-weight:750;font-size:10.5px;}
-.dpeGrid{display:grid;grid-template-columns: 1fr 1fr;gap:8px;}
+.dpeTitle{font-weight:950;font-size:14px;letter-spacing:-.02em}
+.dpeHint{color: var(--muted2);font-weight:750;font-size:10.5px}
+
+.dpeGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
 .dpeItem{
   margin:0;
   border-radius: 16px;
   overflow:hidden;
   border:1px solid rgba(17,19,24,.06);
-  background: rgba(255,255,255,.82);
+  background: rgba(255,255,255,.86);
 }
 .dpeImg{
-  display:block;
   width:100%;
-  height: 54px;
+  height: 54px;       /* compact 1080p */
   object-fit: contain;
   background:#fff;
 }
 .dpeCaption{
   padding:6px 9px;
   font-size:10.5px;
-  font-weight:850;
+  font-weight: 850;
   color: rgba(17,19,24,.76);
+  letter-spacing:.02em;
 }
 
-/* Contact */
+/* =========================================================
+   CONTACT (toujours visible, anti-débordement)
+========================================================= */
 .contactCard{
   border-radius: var(--radius2);
   background: linear-gradient(135deg, rgba(15,118,110,.10), rgba(194,24,91,.08));
@@ -336,21 +423,31 @@ body.debug .hud{display:flex;}
   padding: 12px 12px 10px;
   position:relative;
   overflow:hidden;
+  animation: cardBreath 9s ease-in-out infinite;
 }
+@keyframes cardBreath{
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(-1px); }
+}
+
 .contactCard::before{
   content:"";
-  position:absolute; inset:-2px; border-radius: var(--radius2);
+  position:absolute; inset:-2px;
+  border-radius: var(--radius2);
   background:
     radial-gradient(600px 220px at 20% 10%, rgba(194,24,91,.18), transparent 60%),
     radial-gradient(600px 220px at 80% 30%, rgba(15,118,110,.14), transparent 60%);
-  pointer-events:none;opacity:.65;
+  pointer-events:none;
+  opacity:.65;
 }
+
+/* CTA visuel non cliquable */
 .contactCard::after{
   content:"Appelez-nous • Conseil immédiat";
   display:block;
   margin-top:10px;
   padding:10px 12px;
-  border-radius: 16px;
+  border-radius:16px;
   text-align:center;
   font-weight:950;
   letter-spacing:.06em;
@@ -362,40 +459,76 @@ body.debug .hud{display:flex;}
   box-shadow: 0 16px 44px rgba(0,0,0,.08);
 }
 
+/* Header contact */
 .contactTop{
-  display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
-  margin-bottom:10px; position:relative; z-index:1;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:10px;
+  position:relative;
+  z-index:1;
 }
 .contactBrand__head{display:flex;align-items:center;gap:12px}
+
 .contactLogo{
-  width:44px;height:44px;border-radius: 16px;
+  width:44px;height:44px;
+  border-radius:16px;
   background: rgba(255,255,255,.82);
-  border: 1px solid rgba(17,19,24,.08);
+  border:1px solid rgba(17,19,24,.08);
   box-shadow: 0 14px 40px rgba(0,0,0,.06);
   object-fit: contain;
   padding:7px;
 }
-.contactBrand__texts{display:flex;flex-direction:column}
-.contactBrand__name{font-weight:950;font-size:19px;letter-spacing:-.02em}
-.contactBrand__tag{margin-top:3px;color: var(--muted);font-weight:650;font-size:11.5px}
 
-.contactBadge{
-  padding:9px 12px;border-radius:999px;
-  background: rgba(255,255,255,.82);
-  border:1px solid rgba(17,19,24,.08);
-  font-weight:900;letter-spacing:.12em;font-size:11px;text-transform:uppercase;
-  position:relative;z-index:1;
+.contactBrand__texts{display:flex;flex-direction:column;min-width:0}
+.contactBrand__name{
+  font-weight:950;
+  font-size:19px;
+  letter-spacing:-.02em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width: 260px;
+}
+.contactBrand__tag{
+  margin-top:3px;
+  color: var(--muted);
+  font-weight:650;
+  font-size:11.5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width: 260px;
 }
 
-.contactGrid{display:flex;flex-direction:column;gap:8px; position:relative; z-index:1;}
+.contactBadge{
+  padding:9px 12px;
+  border-radius:999px;
+  background: rgba(255,255,255,.82);
+  border:1px solid rgba(17,19,24,.08);
+  font-weight:900;
+  letter-spacing:.12em;
+  font-size:11px;
+  text-transform:uppercase;
+  position:relative;
+  z-index:1;
+}
+
+/* Rows */
+.contactGrid{display:flex;flex-direction:column;gap:8px;position:relative;z-index:1}
 .contactRow{
-  display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
   padding:9px 11px 9px 44px;
-  border-radius: 16px;
+  border-radius:16px;
   background: rgba(255,255,255,.72);
   border:1px solid rgba(17,19,24,.06);
   position:relative;
 }
+
 .contactRow::before{
   content:"";
   position:absolute;
@@ -412,18 +545,39 @@ body.debug .hud{display:flex;}
 #contactCard .contactRow:nth-child(2)::before{ background-image: var(--svg-phone); }
 #contactCard .contactRow:nth-child(3)::before{ background-image: var(--svg-mobile); }
 
-.contactLabel{color: var(--muted);font-weight:750;font-size:13px;white-space:nowrap}
-.contactValue{font-weight:900;font-size:15px;text-align:right}
-.contactValue--big{font-size:20px;letter-spacing:-.01em}
+.contactLabel{
+  color: var(--muted);
+  font-weight:750;
+  font-size:13px;
+  white-space:nowrap;
+}
+.contactValue{
+  font-weight:900;
+  font-size:15px;
+  text-align:right;
 
-/* Écran bas (barres kiosque etc.) => on gagne un peu */
-@media (max-height: 780px){
-  .contactBrand__tag{display:none;}
-  .slide__title{font-size:52px;}
-  .dpeImg{height:50px;}
+  /* anti débordement */
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width: 260px;
+}
+.contactValue--big{
+  font-size:20px;
+  letter-spacing:-.01em;
 }
 
-/* EMPTY */
+/* Kiosque avec hauteur utile réduite => on gagne de la place */
+@media (max-height: 780px){
+  .slide__panel{ padding: 22px 32px 18px; gap: 10px; }
+  .slide__title{ font-size: 52px; }
+  .dpeImg{ height: 50px; }
+  .contactBrand__tag{ display:none; }
+}
+
+/* =========================================================
+   Empty view
+========================================================= */
 .empty{
   width:min(780px, 100%);
   border:1px solid var(--line);
@@ -437,7 +591,9 @@ body.debug .hud{display:flex;}
 .empty__title{font-weight:950;font-size:28px;letter-spacing:-.02em}
 .empty__sub{margin-top:8px;color:var(--muted);font-weight:650}
 
-/* Mobile */
+/* =========================================================
+   Responsive (si tu testes sur mobile)
+========================================================= */
 @media (max-width: 980px){
   .slide{grid-template-columns:1fr;}
   .slide__panel{
@@ -454,5 +610,4 @@ body.debug .hud{display:flex;}
     display:flex;
     flex-direction:column;
   }
-  .mediaStats{ bottom:6px; }
 }
