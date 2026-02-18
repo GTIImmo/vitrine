@@ -60,15 +60,19 @@ body.debug .hud{display:flex;}
 .view{height:100%;width:100%;display:flex;align-items:center;justify-content:center}
 .view--slide{padding:0}
 
-/* 1080p */
+/* =========================
+   LAYOUT 1080p (VITRINE)
+========================= */
 .slide{
   width:100%;
   height:100%;
   display:grid;
-  grid-template-columns: 1.5fr .5fr;
+  grid-template-columns: 1.5fr .5fr; /* + photo, - colonne (vitrine) */
 }
 
-/* MEDIA */
+/* =========================
+   MEDIA (PHOTO)
+========================= */
 .slide__media{
   position:relative;
   overflow:hidden;
@@ -93,11 +97,12 @@ body.debug .hud{display:flex;}
   z-index:2;
 }
 
+/* ✅ photo plus lumineuse (vitrine) */
 .slide__img{
   position:absolute;inset:0;
   width:100%;height:100%;
   object-fit:cover;
-  filter: brightness(1.16) contrast(1.08) saturate(1.10);
+  filter: brightness(1.28) contrast(1.10) saturate(1.12);
   opacity:0;
   transform: scale(1.03);
   transition: opacity .65s ease, transform 4.0s ease;
@@ -106,13 +111,13 @@ body.debug .hud{display:flex;}
 }
 .slide__img.is-visible{opacity:1;transform: scale(1.075)}
 
-/* overlay très léger */
+/* ✅ overlay plus clair (moins sombre derrière vitre) */
 .slide__gradient{
   position:absolute;inset:0;
   background:
-    radial-gradient(1100px 760px at 18% 18%, rgba(255,255,255,.18), transparent 60%),
-    linear-gradient(90deg, rgba(0,0,0,.00), rgba(0,0,0,.16)),
-    radial-gradient(1200px 900px at 55% 120%, rgba(0,0,0,.12), transparent 60%);
+    radial-gradient(1100px 760px at 18% 18%, rgba(255,255,255,.30), transparent 60%),
+    linear-gradient(90deg, rgba(0,0,0,.00), rgba(0,0,0,.08)),
+    radial-gradient(1200px 900px at 55% 120%, rgba(0,0,0,.06), transparent 60%);
   pointer-events:none;
   z-index:3;
 }
@@ -140,7 +145,7 @@ body.debug .hud{display:flex;}
   position:absolute;top:22px;right:22px;
   padding:10px 14px;border-radius:999px;
   font-weight:900;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
-  background: rgba(255,255,255,.86);
+  background: rgba(255,255,255,.90);
   border: 1px solid rgba(255,255,255,.30);
   color: rgba(18,19,24,.78);
   box-shadow: 0 12px 34px rgba(0,0,0,.10);
@@ -164,9 +169,9 @@ body.debug .hud{display:flex;}
   position:absolute; inset:0;
   border-radius:18px;
   border:1px solid rgba(255,255,255,.24);
-  background: rgba(255,255,255,.18);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255,.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 18px 60px rgba(0,0,0,.18);
 }
 .statsRow--media{
@@ -184,8 +189,8 @@ body.debug .hud{display:flex;}
   display:flex;align-items:center;gap:10px;
   padding: 9px 11px;
   border-radius:999px;
-  background: rgba(255,255,255,.90);
-  border: 1px solid rgba(255,255,255,.34);
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(255,255,255,.38);
 }
 .statsRow--media .statIcon{
   width:30px;height:30px;border-radius:999px;
@@ -216,20 +221,20 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   COLONNE DROITE (premium + couleur)
+   COLONNE DROITE (ADAPTÉE À 25%)
 ========================= */
 .slide__panel{
-  padding: 26px 24px 18px;
+  padding: 30px 22px 20px; /* adapté colonne étroite */
   background:
-    radial-gradient(900px 700px at 24% 10%, rgba(194,24,91,.10), transparent 62%),
-    radial-gradient(900px 700px at 90% 35%, rgba(15,118,110,.09), transparent 62%),
-    linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.78));
+    radial-gradient(900px 700px at 24% 10%, rgba(194,24,91,.06), transparent 62%),
+    radial-gradient(900px 700px at 90% 35%, rgba(15,118,110,.05), transparent 62%),
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.92));
   border-left: 1px solid rgba(18,19,24,.08);
   box-shadow: -18px 0 70px rgba(0,0,0,.08);
   min-height:0;
   display:grid;
-  grid-template-rows: auto 1fr auto; /* top / contact / dpe footer */
-  gap: 12px;
+  grid-template-rows: auto 1fr auto;
+  gap: 14px; /* un peu plus aéré */
 }
 
 /* TOP */
@@ -237,15 +242,15 @@ body.debug .hud{display:flex;}
   min-height:0;
   overflow:hidden;
   border-radius: 26px;
-  background: rgba(255,255,255,.90);
+  background: rgba(255,255,255,.94);
   border: 1px solid rgba(18,19,24,.08);
   box-shadow: var(--shadow2);
-  padding: 18px 18px 14px;
+  padding: 16px 16px 12px; /* adapté largeur */
 }
 .slide__title{
-  font-size: 44px;
+  font-size: 34px;        /* adapté colonne étroite */
   font-weight: 950;
-  line-height: 1.03;
+  line-height: 1.08;
   letter-spacing: -0.045em;
   margin: 0 0 10px;
   display:-webkit-box;
@@ -254,18 +259,18 @@ body.debug .hud{display:flex;}
   overflow:hidden;
 }
 
-/* localisation plus visible (couleur harmonisée) */
+/* localisation */
 .slide__meta{
   display:flex;
   align-items:center;
   gap:10px;
-  padding: 11px 12px;
+  padding: 9px 12px;
   border-radius: 16px;
   background: linear-gradient(135deg, rgba(194,24,91,.14), rgba(15,118,110,.14));
   border: 1px solid rgba(18,19,24,.10);
   color: rgba(18,19,24,.92);
   font-weight: 950;
-  font-size: 17px;
+  font-size: 14.5px;      /* légèrement réduit */
   margin: 0;
   box-shadow: 0 12px 34px rgba(0,0,0,.06);
 }
@@ -277,56 +282,64 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   CONTACT
+   CONTACT (vitrine: lisible, pas tassé)
 ========================= */
 .contactCard{
   border-radius: 26px;
-  background: linear-gradient(135deg, rgba(15,118,110,.13), rgba(194,24,91,.11));
+  background: linear-gradient(135deg, rgba(15,118,110,.12), rgba(194,24,91,.10));
   border:1px solid rgba(18,19,24,.08);
   box-shadow: 0 22px 70px rgba(0,0,0,.08);
-  padding: 14px 14px 12px;
+  padding: 16px 16px 14px;
   position:relative;
   overflow:hidden;
 }
+/* ✅ supprimé : .contactCard::after */
+
 .contactTop{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
-  gap:12px;
-  margin-bottom:10px;
+  gap:10px;
+  margin-bottom:12px;
 }
 .contactBrand__head{display:flex;align-items:center;gap:10px}
 
 .contactLogo{
-  width:46px;height:46px;
+  width:44px;height:44px;
   border-radius: 16px;
-  background: rgba(255,255,255,.94);
+  background: rgba(255,255,255,.96);
   border: 1px solid rgba(18,19,24,.10);
   box-shadow: 0 14px 40px rgba(0,0,0,.08);
   object-fit: contain;
   padding:8px;
 }
 .contactBrand__texts{display:flex;flex-direction:column}
-.contactBrand__name{font-weight:950;font-size:18px;letter-spacing:-.02em;color: rgba(18,19,24,.92)}
+.contactBrand__name{font-weight:950;font-size:17px;letter-spacing:-.02em;color: rgba(18,19,24,.92)}
 .contactBrand__tag{margin-top:3px;font-weight:650;font-size:11.5px;color: rgba(18,19,24,.62)}
 
+/* ✅ badge plus contrasté (vitrine) */
 .contactBadge{
-  padding:8px 10px;border-radius:999px;
-  background: rgba(255,255,255,.86);
-  border:1px solid rgba(18,19,24,.08);
-  font-weight:900;letter-spacing:.12em;font-size:10.5px;text-transform:uppercase;
-  color: rgba(18,19,24,.72);
+  padding:8px 12px;
+  border-radius:999px;
+  background: linear-gradient(135deg, var(--accent), var(--accentDeep));
+  color:#fff;
+  font-weight:900;
+  letter-spacing:.12em;
+  font-size:10.5px;
+  text-transform:uppercase;
+  box-shadow: 0 10px 28px rgba(194,24,91,.25);
+  border: 1px solid rgba(255,255,255,.22);
 }
 
-.contactGrid{display:flex;flex-direction:column;gap:8px}
+.contactGrid{display:flex;flex-direction:column;gap:10px}
 .contactRow{
   display:flex;
   align-items:baseline;
   justify-content:space-between;
-  gap:12px;
-  padding:9px 10px 9px 44px;
+  gap:10px;
+  padding:10px 12px 10px 44px;
   border-radius: 16px;
-  background: rgba(255,255,255,.76);
+  background: rgba(255,255,255,.84);
   border:1px solid rgba(18,19,24,.06);
   position:relative;
 }
@@ -355,38 +368,40 @@ body.debug .hud{display:flex;}
 .contactLabel{
   color: rgba(18,19,24,.62);
   font-weight:800;
-  font-size:12.5px;
+  font-size:12px;
   letter-spacing:.02em;
   white-space:nowrap;
 }
 .contactValue{
   font-weight:950;
-  font-size:15.5px;
+  font-size:14px;
   text-align:right;
   color: rgba(18,19,24,.92);
 }
+
+/* ✅ numéros lisibles de loin (vitrine) */
 .contactValue--big{
-  font-size:17px;
+  font-size:18px;
   letter-spacing:-.01em;
 }
 
 /* =========================
-   QR (plus gros)
+   QR (lisible malgré colonne étroite)
 ========================= */
 .qrBlock{
   margin-top: 12px;
   display:flex;
   align-items:center;
-  gap:14px;
-  padding: 12px 14px;
+  gap:12px;
+  padding: 14px 14px;
   border-radius: 20px;
-  background: rgba(255,255,255,.88);
+  background: rgba(255,255,255,.92);
   border: 1px solid rgba(18,19,24,.08);
   box-shadow: 0 16px 46px rgba(0,0,0,.08);
 }
 .qrBox{
-  width:124px;
-  height:124px;
+  width:120px;
+  height:120px;
   border-radius: 18px;
   background: #fff;
   border: 1px solid rgba(18,19,24,.10);
@@ -431,20 +446,20 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   DPE footer compact (nouvelle intégration)
+   DPE footer compact (largeur adaptée)
 ========================= */
 .dpeCard--compact{
   padding: 10px 12px 12px;
   border-radius: 22px;
   background:
-    radial-gradient(520px 220px at 15% 0%, rgba(194,24,91,.10), transparent 60%),
-    radial-gradient(520px 220px at 90% 0%, rgba(15,118,110,.10), transparent 60%),
-    rgba(255,255,255,.90);
+    radial-gradient(520px 220px at 15% 0%, rgba(194,24,91,.08), transparent 60%),
+    radial-gradient(520px 220px at 90% 0%, rgba(15,118,110,.08), transparent 60%),
+    rgba(255,255,255,.94);
   border: 1px solid rgba(18,19,24,.08);
   box-shadow: 0 14px 44px rgba(0,0,0,.08);
 }
 .dpeHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
-.dpeTitle{font-weight:950;font-size:13.5px;letter-spacing:-.02em}
+.dpeTitle{font-weight:950;font-size:13px;letter-spacing:-.02em}
 .dpeHint{font-weight:800;font-size:11px;color: rgba(18,19,24,.55)}
 
 .dpeInline{
@@ -454,7 +469,7 @@ body.debug .hud{display:flex;}
 }
 .dpeThumb{
   border-radius: 18px;
-  background: rgba(255,255,255,.94);
+  background: rgba(255,255,255,.96);
   border: 1px solid rgba(18,19,24,.07);
   overflow:hidden;
   padding: 8px 10px 10px;
@@ -463,14 +478,14 @@ body.debug .hud{display:flex;}
   display:inline-flex;
   align-items:center;
   font-weight: 950;
-  font-size: 10.5px;
+  font-size: 10px;
   letter-spacing:.10em;
   text-transform: uppercase;
   color: rgba(18,19,24,.72);
 }
 .dpeImg{
   width:100%;
-  height:38px;
+  height:40px;
   object-fit:contain;
   display:block;
   margin-top:6px;
@@ -492,12 +507,13 @@ body.debug .hud{display:flex;}
 .empty__title{font-weight:950;font-size:28px;letter-spacing:-.02em}
 .empty__sub{margin-top:8px;color:var(--muted);font-weight:650}
 
-/* Kiosque */
+/* Kiosque (hauteur réduite) */
 @media (max-height: 980px){
-  .slide__panel{ padding: 24px 22px 16px; gap:10px; }
-  .slide__title{ font-size: 41px; }
-  .contactRow{ padding-top:8px; padding-bottom:8px; }
-  .qrBox{ width:110px; height:110px; }
+  .slide__panel{ padding: 24px 18px 16px; gap:12px; }
+  .slide__title{ font-size: 32px; }
+  .contactRow{ padding-top:9px; padding-bottom:9px; }
+  .contactValue--big{ font-size: 17px; }
+  .qrBox{ width:112px; height:112px; }
   .dpeImg{ height:36px; }
 }
 
@@ -510,7 +526,7 @@ body.debug .hud{display:flex;}
     border-left:none;
     border-top:1px solid var(--line);
     padding: 16px 16px 14px;
-    background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.92));
+    background: linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.94));
     box-shadow: 0 -22px 60px rgba(0,0,0,.10);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -520,7 +536,7 @@ body.debug .hud{display:flex;}
   }
   .slide__title{font-size:30px}
   .slide__meta{font-size:15px}
-  .contactValue--big{font-size:16px}
+  .contactValue--big{font-size:17px}
   .mediaStats{ left:12px; right:12px; bottom:12px; }
   .qrBox{ width:104px; height:104px; }
 }
