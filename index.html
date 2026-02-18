@@ -30,8 +30,9 @@
     <!-- SLIDE -->
     <section id="viewSlide" class="view view--slide">
       <article class="slide" id="slide">
-        <div class="slide__media">
 
+        <!-- MEDIA -->
+        <div class="slide__media">
           <!-- décor léger (ne dépend pas du JS) -->
           <div class="mediaGlow" aria-hidden="true"></div>
           <div class="mediaFrame" aria-hidden="true"></div>
@@ -43,7 +44,7 @@
           <div class="priceBadge" id="slidePrice">—</div>
           <div class="cornerTag" id="slideRef">—</div>
 
-          <!-- ✅ STATS sous la photo (ID inchangé => ton JS ne change pas) -->
+          <!-- STATS sous la photo (ID inchangé => JS OK) -->
           <div class="mediaStats" aria-hidden="true">
             <div class="statsRow statsRow--media" id="slideStats" aria-label="Caractéristiques du bien"></div>
           </div>
@@ -53,7 +54,10 @@
           </div>
         </div>
 
+        <!-- ✅ COLONNE DROITE -->
         <div class="slide__panel">
+
+          <!-- TOP : titre + localisation -->
           <div class="panelTop">
             <div class="slide__title" id="slideTitle">—</div>
             <div class="slide__meta" id="slideMeta">—</div>
@@ -97,25 +101,20 @@
               </div>
             </div>
 
-            <!-- ✅ QR (place réservée, ton JS pourra l’alimenter plus tard) -->
-            <div class="qrBlock" id="qrBlock" aria-label="QR Code">
+            <!-- ✅ QR (réservé même si absent du JSON) -->
+            <div class="qrBlock" id="qrBlock" aria-label="QR code pour plus d'informations">
               <div class="qrBox is-empty" id="qrBox">
-                <!-- (optionnel) plus tard: <img id="qrImg" alt="QR Code"> -->
+                <img id="qrImg" alt="QR code" decoding="async" loading="eager" />
               </div>
               <div class="qrText">
                 <div class="qrTitle">Scanner</div>
                 <div class="qrSub">Plus d’infos / visite</div>
               </div>
             </div>
-
-            <!-- ✅ CTA (vrai bloc, plus stable que ::after) -->
-            <div class="contactCTA" id="contactCTA">
-              APPELEZ MAINTENANT • VISITE SUR RENDEZ-VOUS
-            </div>
           </div>
 
-          <!-- DPE (en bas, dernier) -->
-          <div class="dpeCard dpeCard--compact hidden" id="dpeCard" aria-label="Diagnostic de performance énergétique">
+          <!-- ✅ DPE EN DERNIER (footer compact tendance) -->
+          <div class="dpeCard hidden dpeCard--compact" id="dpeCard" aria-label="Diagnostic de performance énergétique">
             <div class="dpeHead">
               <div class="dpeTitle">DPE</div>
               <div class="dpeHint">Conso &amp; GES</div>
@@ -123,12 +122,12 @@
 
             <div class="dpeInline">
               <div class="dpeThumb">
-                <div class="dpeMiniLabel">CONSO</div>
+                <span class="dpeMiniLabel">Conso</span>
                 <img id="dpeConsoImg" class="dpeImg" alt="DPE - Consommation" />
               </div>
 
               <div class="dpeThumb">
-                <div class="dpeMiniLabel">GES</div>
+                <span class="dpeMiniLabel">GES</span>
                 <img id="dpeGesImg" class="dpeImg" alt="DPE - GES" />
               </div>
             </div>
