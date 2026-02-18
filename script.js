@@ -43,8 +43,6 @@
           </linearGradient>
         </defs>
         <rect width="100%" height="100%" fill="url(#g)"/>
-        <circle cx="420" cy="420" r="220" fill="rgba(194,24,91,.12)"/>
-        <circle cx="980" cy="300" r="260" fill="rgba(15,118,110,.12)"/>
         <text x="50%" y="52%" fill="rgba(18,19,24,.82)" font-family="Inter, Arial" font-size="52" font-weight="900" text-anchor="middle">
           GTI Immobilier
         </text>
@@ -198,7 +196,7 @@
 
   function extractContactFromAgence(agenceStr) {
     const s = safeText(agenceStr);
-    const out = { agencyName: "", agencyPhone: "", advisorName: "", advisorMobile: "" };
+    const out = { agencyPhone: "", advisorName: "", advisorMobile: "" };
     if (!s) return out;
 
     const mAgencyPhone = s.match(/T[ÉE]L\s*:\s*([0-9 .-]{8,})/i);
@@ -229,49 +227,21 @@
   function iconSVG(name) {
     switch (name) {
       case "surface":
-        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 9V4h5M20 15v5h-5M20 9V4h-5M4 15v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>`;
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9V4h5M20 15v5h-5M20 9V4h-5M4 15v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
       case "rooms":
-        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 10.5V20h16v-9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M3 10.5 12 4l9 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M10 20v-6h4v6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        </svg>`;
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5V20h16v-9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 10.5 12 4l9 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20v-6h4v6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`;
       case "bedrooms":
-        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M3 18v-7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>`;
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 18v-7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
       case "bathrooms":
-        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 12h14v3a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5v-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M7 12V7a3 3 0 0 1 3-3h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M16 8h2M18 6v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>`;
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14v3a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5v-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 12V7a3 3 0 0 1 3-3h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 8h2M18 6v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
       case "wc":
-        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M7 7a5 5 0 0 1 10 0v6a5 5 0 0 1-10 0V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M7 11h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M9 20h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>`;
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 7a5 5 0 0 1 10 0v6a5 5 0 0 1-10 0V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 11h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 20h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
       case "levels":
-        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M7 20V10l5-4 5 4v10" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        </svg>`;
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 20V10l5-4 5 4v10" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`;
       case "cellar":
-        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 10l8-5 8 5v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M9 21v-6a3 3 0 0 1 6 0v6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        </svg>`;
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10l8-5 8 5v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 21v-6a3 3 0 0 1 6 0v6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`;
       case "terrain":
-        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 19l7-14 2 4 7-3-6 13H4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M6 19h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>`;
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19l7-14 2 4 7-3-6 13H4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M6 19h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
       default:
         return "";
     }
@@ -303,13 +273,6 @@
     if (terrain != null) stats.push({ key:"terrain", value:`${terrain} m²`, label:"Terrain" });
     if (cellar != null) stats.push({ key:"cellar", value: cellar ? "Oui" : "Non", label:"Cave" });
 
-    if (!stats.length) {
-      els.slideStats.innerHTML = "";
-      els.slideStats.classList.add("hidden");
-      return;
-    }
-
-    els.slideStats.classList.remove("hidden");
     els.slideStats.innerHTML = stats.map(s => `
       <div class="statChip" data-stat="${s.key}">
         <div class="statIcon" aria-hidden="true">${iconSVG(s.key)}</div>
@@ -324,34 +287,27 @@
   function setDpe(item) {
     const conso = item && item.dpe ? safeText(item.dpe.conso) : "";
     const ges = item && item.dpe ? safeText(item.dpe.ges) : "";
-
     const hasAny = !!(conso || ges);
-    if (!els.dpeCard) return;
 
+    if (!els.dpeCard) return;
     els.dpeCard.classList.toggle("hidden", !hasAny);
 
     if (els.dpeConsoImg) {
-      if (conso) { els.dpeConsoImg.src = conso; els.dpeConsoImg.classList.remove("hidden"); }
-      else { els.dpeConsoImg.removeAttribute("src"); els.dpeConsoImg.classList.add("hidden"); }
+      if (conso) els.dpeConsoImg.src = conso;
+      else els.dpeConsoImg.removeAttribute("src");
     }
     if (els.dpeGesImg) {
-      if (ges) { els.dpeGesImg.src = ges; els.dpeGesImg.classList.remove("hidden"); }
-      else { els.dpeGesImg.removeAttribute("src"); els.dpeGesImg.classList.add("hidden"); }
+      if (ges) els.dpeGesImg.src = ges;
+      else els.dpeGesImg.removeAttribute("src");
     }
   }
 
-  // ✅ Nettoyage titre : supprime “X pièce(s)” du titre
+  // ✅ supprime "5 pièce(s)" du titre (déjà dans stats)
   function cleanTitle(rawTitle){
     let t = safeText(rawTitle || "");
     if (!t) return "Bien immobilier";
-
-    // supprime "5 pièce(s)" / "5 pièces" / "5 piece(s)"
     t = t.replace(/\s*[-–—]?\s*\d+\s*pi[eè]ce(?:\(\s*s\s*\)|s)?\s*$/i, "");
-
-    // supprime aussi si c'est au milieu (rare) : "Maison 5 pièces rénovée" => "Maison rénovée"
     t = t.replace(/\b\d+\s*pi[eè]ce(?:\(\s*s\s*\)|s)\b/ig, "").replace(/\s{2,}/g, " ").trim();
-
-    // clean final
     t = t.replace(/\s+[-–—]\s*$/g, "").trim();
     return t || "Bien immobilier";
   }
@@ -388,19 +344,10 @@
     $("#viewSlide").classList.toggle("hidden", name !== "slide");
     $("#viewEmpty").classList.toggle("hidden", name !== "empty");
   }
-
   function showEmpty(title, sub) {
     $("#emptyTitle").textContent = title;
     $("#emptySub").textContent = sub;
     showView("empty");
-  }
-
-  function setHud(params, count, generatedAt) {
-    if (!params.debug) return;
-    document.body.classList.add("debug");
-    if (els.hudAgency) els.hudAgency.textContent = params.agence ? params.agence.toUpperCase() : "TOUTES AGENCES";
-    if (els.hudMode) els.hudMode.textContent = "SLIDE";
-    if (els.hudInfo) els.hudInfo.textContent = `Écran ${params.screen}/${params.screens} • ${count} annonces • ${generatedAt || "…"}`;
   }
 
   const preloadCache = new Map();
@@ -423,15 +370,6 @@
       preloadCache.delete(firstKey);
     }
     return pr;
-  }
-
-  async function warmupItem(item, startIdx, count) {
-    const arr = Array.isArray(item.photos) ? item.photos : [];
-    if (!arr.length) return;
-    const n = Math.min(count, arr.length);
-    for (let k = 0; k < n; k++) {
-      await preload(getPhoto(item, startIdx + k));
-    }
   }
 
   const state = {
@@ -457,30 +395,14 @@
 
   function computeItemDurationSec(item, rotateMinSec, photoRotateSec) {
     const count = Array.isArray(item.photos) ? item.photos.length : 0;
-    const photoSlots = Math.max(1, count);
-    const fullPhotosDuration = photoSlots * photoRotateSec;
-    return Math.max(rotateMinSec, fullPhotosDuration);
-  }
-
-  function updateProgress() {
-    if (!els.slideProg || !state.itemDurationMs) return;
-    const now = Date.now();
-    const elapsed = Math.max(0, state.itemDurationMs - Math.max(0, state.nextItemAt - now));
-    const pct = Math.max(0, Math.min(1, elapsed / state.itemDurationMs));
-    els.slideProg.style.width = `${(pct * 100).toFixed(1)}%`;
+    return Math.max(rotateMinSec, Math.max(1, count) * photoRotateSec);
   }
 
   function setSlideItem(item, rotateMinSec, photoRotateSec) {
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
-
-    // ✅ titre nettoyé (plus de “5 pièce(s)”)
     els.slideTitle.textContent = cleanTitle(item.title || "Bien immobilier");
-
-    const parts = [];
-    const cityLine = safeText(item.city || "");
-    if (cityLine) parts.push(cityLine);
-    els.slideMeta.textContent = parts.join(" • ") || "—";
+    els.slideMeta.textContent = safeText(item.city || "") || "—";
 
     renderStats(item);
     setDpe(item);
@@ -504,9 +426,7 @@
     const durSec = computeItemDurationSec(item, rotateMinSec, photoRotateSec);
     state.itemDurationMs = durSec * 1000;
     state.nextItemAt = Date.now() + state.itemDurationMs;
-    if (els.slideProg) els.slideProg.style.width = "0%";
 
-    warmupItem(item, 1, 3).catch(()=>{});
     const nextItem = state.items[(state.itemIndex + 1) % state.items.length];
     if (nextItem) preload(getPhoto(nextItem, 0)).catch(()=>{});
   }
@@ -530,8 +450,6 @@
     });
 
     state.usingA = !state.usingA;
-
-    warmupItem(item, state.photoIndex + 1, 2).catch(()=>{});
   }
 
   function startSlide(items, rotateMinSec, photoRotateSec) {
@@ -539,23 +457,17 @@
     state.items = items;
     state.itemIndex = 0;
 
-    const first = items[0];
-    setSlideItem(first, rotateMinSec, photoRotateSec);
+    setSlideItem(items[0], rotateMinSec, photoRotateSec);
 
     state.photoTimer = setInterval(() => {
-      const item = state.items[state.itemIndex];
-      swapPhoto(item);
+      swapPhoto(state.items[state.itemIndex]);
     }, photoRotateSec * 1000);
 
     state.tickTimer = setInterval(() => {
       if (Date.now() < state.nextItemAt) return;
-
       state.itemIndex = (state.itemIndex + 1) % state.items.length;
-      const item = state.items[state.itemIndex];
-      setSlideItem(item, rotateMinSec, photoRotateSec);
+      setSlideItem(state.items[state.itemIndex], rotateMinSec, photoRotateSec);
     }, 250);
-
-    state.progTimer = setInterval(updateProgress, 120);
 
     showView("slide");
   }
@@ -569,13 +481,10 @@
 
   async function runOnce() {
     const params = getParams();
-    document.body.classList.toggle("debug", !!params.debug);
-
     try {
       const data = await fetchCatalogue(params.src);
 
-      let items = Array.isArray(data.items) ? data.items : [];
-      items = items.map(normalizeItem);
+      let items = (data.items || []).map(normalizeItem);
 
       if (params.agence) {
         const target = normalizeAgency(params.agence);
@@ -584,8 +493,6 @@
 
       items = sortItems(items);
       items = splitAcrossScreens(items, params.screen, params.screens, params.seed);
-
-      setHud(params, items.length, data.generatedAt);
 
       if (!items.length) {
         clearTimers();
@@ -598,8 +505,6 @@
         lastFingerprint = fp;
         preload(getPhoto(items[0], 0)).catch(()=>{});
         startSlide(items, params.rotate, params.photoRotate);
-      } else {
-        showView("slide");
       }
     } catch (e) {
       clearTimers();
