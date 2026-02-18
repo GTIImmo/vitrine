@@ -216,10 +216,10 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   COLONNE DROITE (premium + couleur)
+   COLONNE DROITE (aérée + premium)
 ========================= */
 .slide__panel{
-  padding: 26px 24px 18px;
+  padding: 34px 32px 26px;          /* + d’air */
   background:
     radial-gradient(900px 700px at 24% 10%, rgba(194,24,91,.10), transparent 62%),
     radial-gradient(900px 700px at 90% 35%, rgba(15,118,110,.09), transparent 62%),
@@ -229,7 +229,7 @@ body.debug .hud{display:flex;}
   min-height:0;
   display:grid;
   grid-template-rows: auto 1fr auto; /* top / contact / dpe footer */
-  gap: 12px;
+  gap: 18px;                         /* + d’air */
 }
 
 /* TOP */
@@ -243,9 +243,9 @@ body.debug .hud{display:flex;}
   padding: 18px 18px 14px;
 }
 .slide__title{
-  font-size: 44px;
+  font-size: 38px;                   /* réduit */
   font-weight: 950;
-  line-height: 1.03;
+  line-height: 1.08;
   letter-spacing: -0.045em;
   margin: 0 0 10px;
   display:-webkit-box;
@@ -254,18 +254,18 @@ body.debug .hud{display:flex;}
   overflow:hidden;
 }
 
-/* localisation plus visible (couleur harmonisée) */
+/* localisation plus visible (mais plus fine) */
 .slide__meta{
   display:flex;
   align-items:center;
   gap:10px;
-  padding: 11px 12px;
+  padding: 9px 12px;                 /* réduit */
   border-radius: 16px;
   background: linear-gradient(135deg, rgba(194,24,91,.14), rgba(15,118,110,.14));
   border: 1px solid rgba(18,19,24,.10);
   color: rgba(18,19,24,.92);
   font-weight: 950;
-  font-size: 17px;
+  font-size: 15px;                   /* réduit */
   margin: 0;
   box-shadow: 0 12px 34px rgba(0,0,0,.06);
 }
@@ -284,16 +284,18 @@ body.debug .hud{display:flex;}
   background: linear-gradient(135deg, rgba(15,118,110,.13), rgba(194,24,91,.11));
   border:1px solid rgba(18,19,24,.08);
   box-shadow: 0 22px 70px rgba(0,0,0,.08);
-  padding: 14px 14px 12px;
+  padding: 18px 18px 16px;           /* + d’air */
   position:relative;
   overflow:hidden;
 }
+/* ✅ SUPPRIMÉ : .contactCard::after (bandeau "Appelez maintenant") */
+
 .contactTop{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
   gap:12px;
-  margin-bottom:10px;
+  margin-bottom:12px;
 }
 .contactBrand__head{display:flex;align-items:center;gap:10px}
 
@@ -318,13 +320,13 @@ body.debug .hud{display:flex;}
   color: rgba(18,19,24,.72);
 }
 
-.contactGrid{display:flex;flex-direction:column;gap:8px}
+.contactGrid{display:flex;flex-direction:column;gap:12px} /* + d’air */
 .contactRow{
   display:flex;
   align-items:baseline;
   justify-content:space-between;
   gap:12px;
-  padding:9px 10px 9px 44px;
+  padding:10px 12px 10px 46px;       /* léger + */
   border-radius: 16px;
   background: rgba(255,255,255,.76);
   border:1px solid rgba(18,19,24,.06);
@@ -361,24 +363,24 @@ body.debug .hud{display:flex;}
 }
 .contactValue{
   font-weight:950;
-  font-size:15.5px;
+  font-size:15px;                    /* léger - */
   text-align:right;
   color: rgba(18,19,24,.92);
 }
 .contactValue--big{
-  font-size:17px;
+  font-size:15.5px;                  /* réduit */
   letter-spacing:-.01em;
 }
 
 /* =========================
-   QR (plus gros)
+   QR (aéré)
 ========================= */
 .qrBlock{
-  margin-top: 12px;
+  margin-top: 14px;
   display:flex;
   align-items:center;
   gap:14px;
-  padding: 12px 14px;
+  padding: 16px 18px;                /* + d’air */
   border-radius: 20px;
   background: rgba(255,255,255,.88);
   border: 1px solid rgba(18,19,24,.08);
@@ -419,19 +421,19 @@ body.debug .hud{display:flex;}
 .qrText{display:flex;flex-direction:column;line-height:1.05}
 .qrTitle{
   font-weight:950;
-  font-size:14px;
+  font-size:15px;                    /* léger + */
   letter-spacing:.02em;
   color: rgba(18,19,24,.92);
 }
 .qrSub{
   margin-top:6px;
   font-weight:750;
-  font-size:12px;
+  font-size:13px;                    /* léger + */
   color: rgba(18,19,24,.60);
 }
 
 /* =========================
-   DPE footer compact (nouvelle intégration)
+   DPE footer compact
 ========================= */
 .dpeCard--compact{
   padding: 10px 12px 12px;
@@ -494,10 +496,10 @@ body.debug .hud{display:flex;}
 
 /* Kiosque */
 @media (max-height: 980px){
-  .slide__panel{ padding: 24px 22px 16px; gap:10px; }
-  .slide__title{ font-size: 41px; }
-  .contactRow{ padding-top:8px; padding-bottom:8px; }
-  .qrBox{ width:110px; height:110px; }
+  .slide__panel{ padding: 28px 26px 18px; gap:14px; }
+  .slide__title{ font-size: 36px; }
+  .contactRow{ padding-top:9px; padding-bottom:9px; }
+  .qrBox{ width:112px; height:112px; }
   .dpeImg{ height:36px; }
 }
 
@@ -520,7 +522,7 @@ body.debug .hud{display:flex;}
   }
   .slide__title{font-size:30px}
   .slide__meta{font-size:15px}
-  .contactValue--big{font-size:16px}
+  .contactValue--big{font-size:15.5px}
   .mediaStats{ left:12px; right:12px; bottom:12px; }
   .qrBox{ width:104px; height:104px; }
 }
