@@ -65,7 +65,7 @@ body.debug .hud{display:flex;}
   width:100%;
   height:100%;
   display:grid;
-  grid-template-columns: 1.42fr .58fr; /* photo + large, panel + premium */
+  grid-template-columns: 1.42fr .58fr;
 }
 
 /* MEDIA */
@@ -87,7 +87,7 @@ body.debug .hud{display:flex;}
 }
 .slide__img.is-visible{opacity:1;transform: scale(1.075)}
 
-/* overlay très léger (pas sombre) */
+/* overlay léger */
 .slide__gradient{
   position:absolute;inset:0;
   background:
@@ -127,7 +127,7 @@ body.debug .hud{display:flex;}
   -webkit-backdrop-filter: blur(10px);
 }
 
-/* STATS sous photo (1 ligne gérée par ton JS) */
+/* STATS sous photo */
 .mediaStats{
   position:absolute;
   left:18px; right:18px;
@@ -194,29 +194,28 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   COLONNE DROITE (refonte)
-   Apple TV “LIGHT” + cartes
+   COLONNE DROITE (plus colorée)
 ========================= */
 .slide__panel{
   padding: 26px 24px 18px;
   background:
-    radial-gradient(900px 700px at 28% 10%, rgba(194,24,91,.06), transparent 60%),
-    radial-gradient(900px 700px at 90% 35%, rgba(15,118,110,.05), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.74));
+    radial-gradient(900px 700px at 24% 10%, rgba(194,24,91,.09), transparent 62%),
+    radial-gradient(900px 700px at 90% 35%, rgba(15,118,110,.08), transparent 62%),
+    linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.76));
   border-left: 1px solid rgba(18,19,24,.08);
   box-shadow: -18px 0 70px rgba(0,0,0,.08);
   min-height:0;
   display:grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr auto; /* Top / Contact (grand) / DPE (bas) */
   gap: 12px;
 }
 
-/* Carte infos (titre + localisation + dpe) */
+/* TOP : titre + localisation */
 .panelTop{
   min-height:0;
   overflow:hidden;
   border-radius: 26px;
-  background: rgba(255,255,255,.86);
+  background: rgba(255,255,255,.88);
   border: 1px solid rgba(18,19,24,.08);
   box-shadow: var(--shadow2);
   padding: 18px 18px 14px;
@@ -232,18 +231,22 @@ body.debug .hud{display:flex;}
   -webkit-box-orient: vertical;
   overflow:hidden;
 }
+
+/* ✅ localisation + couleur harmonisée */
 .slide__meta{
   display:flex;
   align-items:center;
   gap:10px;
-  padding: 10px 12px;
+  padding: 11px 12px;
   border-radius: 16px;
-  background: rgba(18,19,24,.04);
-  border: 1px solid rgba(18,19,24,.06);
-  color: rgba(18,19,24,.82);
-  font-weight: 900;
+
+  background: linear-gradient(135deg, rgba(194,24,91,.10), rgba(15,118,110,.10));
+  border: 1px solid rgba(18,19,24,.08);
+  color: rgba(18,19,24,.88);
+  font-weight: 950;
   font-size: 17px;
-  margin: 0 0 12px;
+  margin: 0;
+  box-shadow: 0 12px 34px rgba(0,0,0,.06);
 }
 .slide__meta::before{
   content:"";
@@ -252,30 +255,12 @@ body.debug .hud{display:flex;}
   opacity:.92;
 }
 
-/* DPE compact (pour laisser de la place au contact) */
-.dpeCard{
-  border-radius: 22px;
-  border:1px solid rgba(18,19,24,.08);
-  background: rgba(246,247,251,.68);
-  box-shadow: 0 12px 34px rgba(0,0,0,.06);
-  overflow:hidden;
-  padding: 10px 10px 8px;
-}
-.dpeHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
-.dpeTitle{font-weight:950;font-size:14px;letter-spacing:-.02em}
-.dpeHint{font-weight:750;font-size:11px;color: rgba(18,19,24,.55)}
-.dpeGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.dpeItem{margin:0;border-radius:18px;overflow:hidden;border:1px solid rgba(18,19,24,.06);background:#fff}
-.dpeImg{display:block;width:100%;height:48px;object-fit:contain;background:#fff}
-.dpeCaption{padding:6px 10px;font-size:10.5px;font-weight:900;color: rgba(18,19,24,.74)}
-
 /* =========================
-   CONTACT (re-design)
-   + QR placeholder (prévu)
+   CONTACT (grand bloc)
 ========================= */
 .contactCard{
   border-radius: 26px;
-  background: linear-gradient(135deg, rgba(15,118,110,.10), rgba(194,24,91,.08));
+  background: linear-gradient(135deg, rgba(15,118,110,.12), rgba(194,24,91,.10));
   border:1px solid rgba(18,19,24,.08);
   box-shadow: 0 22px 70px rgba(0,0,0,.08);
   padding: 14px 14px 12px;
@@ -283,7 +268,6 @@ body.debug .hud{display:flex;}
   overflow:hidden;
 }
 
-/* CTA visuel discret */
 .contactCard::after{
   content:"Appelez maintenant • Visite sur rendez-vous";
   display:block;
@@ -295,8 +279,8 @@ body.debug .hud{display:flex;}
   letter-spacing:.06em;
   text-transform:uppercase;
   font-size:10.5px;
-  color: rgba(18,19,24,.82);
-  background: rgba(255,255,255,.78);
+  color: rgba(18,19,24,.86);
+  background: rgba(255,255,255,.82);
   border: 1px solid rgba(18,19,24,.08);
   box-shadow: var(--shadow2);
 }
@@ -310,11 +294,10 @@ body.debug .hud{display:flex;}
 }
 .contactBrand__head{display:flex;align-items:center;gap:10px}
 
-/* Logo lisible */
 .contactLogo{
   width:46px;height:46px;
   border-radius: 16px;
-  background: rgba(255,255,255,.92);
+  background: rgba(255,255,255,.94);
   border: 1px solid rgba(18,19,24,.10);
   box-shadow: 0 14px 40px rgba(0,0,0,.08);
   object-fit: contain;
@@ -326,13 +309,12 @@ body.debug .hud{display:flex;}
 
 .contactBadge{
   padding:8px 10px;border-radius:999px;
-  background: rgba(255,255,255,.82);
+  background: rgba(255,255,255,.86);
   border:1px solid rgba(18,19,24,.08);
   font-weight:900;letter-spacing:.12em;font-size:10.5px;text-transform:uppercase;
   color: rgba(18,19,24,.72);
 }
 
-/* lignes contact compactes */
 .contactGrid{display:flex;flex-direction:column;gap:8px}
 .contactRow{
   display:flex;
@@ -341,7 +323,7 @@ body.debug .hud{display:flex;}
   gap:12px;
   padding:9px 10px 9px 44px;
   border-radius: 16px;
-  background: rgba(255,255,255,.70);
+  background: rgba(255,255,255,.74);
   border:1px solid rgba(18,19,24,.06);
   position:relative;
 }
@@ -386,24 +368,23 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   QR (place réservée)
-   -> s’affiche même sans image
+   QR (plus gros + premium)
 ========================= */
 .qrBlock{
-  margin-top: 10px;
+  margin-top: 12px;
   display:flex;
   align-items:center;
-  gap:12px;
-  padding: 10px 12px;
-  border-radius: 18px;
-  background: rgba(255,255,255,.72);
+  gap:14px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.82);
   border: 1px solid rgba(18,19,24,.08);
-  box-shadow: 0 12px 34px rgba(0,0,0,.06);
+  box-shadow: 0 16px 46px rgba(0,0,0,.08);
 }
 .qrBox{
-  width:72px;
-  height:72px;
-  border-radius: 16px;
+  width:108px;   /* ✅ plus gros */
+  height:108px;  /* ✅ plus gros */
+  border-radius: 18px;
   background: #fff;
   border: 1px solid rgba(18,19,24,.10);
   display:grid;
@@ -411,6 +392,7 @@ body.debug .hud{display:flex;}
   overflow:hidden;
   flex: 0 0 auto;
   position:relative;
+  box-shadow: 0 16px 44px rgba(0,0,0,.10);
 }
 .qrBox img{
   width:100%;
@@ -430,9 +412,41 @@ body.debug .hud{display:flex;}
 }
 .qrBox.is-empty::after{opacity:1;}
 .qrBox.is-empty img{opacity:0;}
-.qrText{display:flex;flex-direction:column;line-height:1.1}
-.qrTitle{font-weight:950;font-size:13px;letter-spacing:.02em;color: rgba(18,19,24,.90)}
-.qrSub{margin-top:4px;font-weight:700;font-size:11px;color: rgba(18,19,24,.58)}
+.qrText{display:flex;flex-direction:column;line-height:1.05}
+.qrTitle{
+  font-weight:950;
+  font-size:14px;
+  letter-spacing:.02em;
+  color: rgba(18,19,24,.92);
+}
+.qrSub{
+  margin-top:6px;
+  font-weight:750;
+  font-size:12px;
+  color: rgba(18,19,24,.60);
+}
+
+/* =========================
+   DPE en bas (dernier)
+========================= */
+.dpeCard{
+  border-radius: 22px;
+  border:1px solid rgba(18,19,24,.08);
+  background: rgba(246,247,251,.74);
+  box-shadow: 0 12px 34px rgba(0,0,0,.06);
+  overflow:hidden;
+  padding: 10px 10px 8px;
+}
+.dpeHead{
+  display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  margin-bottom:8px
+}
+.dpeTitle{font-weight:950;font-size:14px;letter-spacing:-.02em}
+.dpeHint{font-weight:750;font-size:11px;color: rgba(18,19,24,.55)}
+.dpeGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dpeItem{margin:0;border-radius:18px;overflow:hidden;border:1px solid rgba(18,19,24,.06);background:#fff}
+.dpeImg{display:block;width:100%;height:46px;object-fit:contain;background:#fff}
+.dpeCaption{padding:6px 10px;font-size:10.5px;font-weight:900;color: rgba(18,19,24,.74)}
 
 /* EMPTY */
 .view--empty{padding:24px}
@@ -449,13 +463,13 @@ body.debug .hud{display:flex;}
 .empty__title{font-weight:950;font-size:28px;letter-spacing:-.02em}
 .empty__sub{margin-top:8px;color:var(--muted);font-weight:650}
 
-/* Kiosque : si la hauteur est un poil plus faible */
+/* Kiosque */
 @media (max-height: 980px){
   .slide__panel{ padding: 24px 22px 16px; gap:10px; }
   .slide__title{ font-size: 41px; }
-  .dpeImg{ height: 46px; }
+  .dpeImg{ height: 44px; }
   .contactRow{ padding-top:8px; padding-bottom:8px; }
-  .qrBox{ width:64px; height:64px; }
+  .qrBox{ width:96px; height:96px; }
 }
 
 /* Responsive */
@@ -478,7 +492,7 @@ body.debug .hud{display:flex;}
   .slide__title{font-size:30px}
   .slide__meta{font-size:15px}
   .contactValue--big{font-size:16px}
-  .dpeImg{height:46px}
+  .dpeImg{height:44px}
   .mediaStats{ left:12px; right:12px; bottom:12px; }
-  .qrBox{ width:64px; height:64px; }
+  .qrBox{ width:92px; height:92px; }
 }
