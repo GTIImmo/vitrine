@@ -43,7 +43,7 @@
           <div class="priceBadge" id="slidePrice">—</div>
           <div class="cornerTag" id="slideRef">—</div>
 
-          <!-- ✅ STATS sous la photo (ID inchangé => ton JS ne change pas) -->
+          <!-- STATS sous la photo -->
           <div class="mediaStats" aria-hidden="true">
             <div class="statsRow statsRow--media" id="slideStats" aria-label="Caractéristiques du bien"></div>
           </div>
@@ -53,31 +53,13 @@
           </div>
         </div>
 
+        <!-- ✅ COLONNE DROITE -->
         <div class="slide__panel">
+
+          <!-- TOP : titre + localisation -->
           <div class="panelTop">
             <div class="slide__title" id="slideTitle">—</div>
-
             <div class="slide__meta" id="slideMeta">—</div>
-
-            <!-- DPE -->
-            <div class="dpeCard hidden" id="dpeCard" aria-label="Diagnostic de performance énergétique">
-              <div class="dpeHead">
-                <div class="dpeTitle">DPE</div>
-                <div class="dpeHint">Consommation &amp; GES</div>
-              </div>
-
-              <div class="dpeGrid">
-                <figure class="dpeItem">
-                  <img id="dpeConsoImg" class="dpeImg" alt="DPE - Consommation" />
-                  <figcaption class="dpeCaption">Consommation</figcaption>
-                </figure>
-
-                <figure class="dpeItem">
-                  <img id="dpeGesImg" class="dpeImg" alt="DPE - GES" />
-                  <figcaption class="dpeCaption">GES</figcaption>
-                </figure>
-              </div>
-            </div>
           </div>
 
           <!-- CONTACT -->
@@ -118,7 +100,7 @@
               </div>
             </div>
 
-            <!-- ✅ QR CODE (place réservée, même si absent du JSON) -->
+            <!-- ✅ QR (place réservée, même si absent du JSON) -->
             <div class="qrBlock" id="qrBlock" aria-label="QR code pour plus d'informations">
               <div class="qrBox is-empty">
                 <img id="qrImg" alt="QR code" decoding="async" loading="eager" />
@@ -128,9 +110,28 @@
                 <div class="qrSub">Plus d’infos / visite</div>
               </div>
             </div>
-            <!-- /QR -->
-
           </div>
+
+          <!-- ✅ DPE EN DERNIER (compact / footer) -->
+          <div class="dpeCard hidden dpeCard--compact" id="dpeCard" aria-label="Diagnostic de performance énergétique">
+            <div class="dpeHead">
+              <div class="dpeTitle">DPE</div>
+              <div class="dpeHint">Conso &amp; GES</div>
+            </div>
+
+            <div class="dpeInline">
+              <div class="dpeThumb">
+                <span class="dpeMiniLabel">Conso</span>
+                <img id="dpeConsoImg" class="dpeImg" alt="DPE - Consommation" />
+              </div>
+
+              <div class="dpeThumb">
+                <span class="dpeMiniLabel">GES</span>
+                <img id="dpeGesImg" class="dpeImg" alt="DPE - GES" />
+              </div>
+            </div>
+          </div>
+
         </div>
       </article>
     </section>
