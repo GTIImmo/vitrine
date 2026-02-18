@@ -31,6 +31,11 @@
     <section id="viewSlide" class="view view--slide">
       <article class="slide" id="slide">
         <div class="slide__media">
+
+          <!-- décor léger (ne dépend pas du JS) -->
+          <div class="mediaGlow" aria-hidden="true"></div>
+          <div class="mediaFrame" aria-hidden="true"></div>
+
           <img id="slideImgA" class="slide__img is-visible" alt="" />
           <img id="slideImgB" class="slide__img" alt="" />
           <div class="slide__gradient"></div>
@@ -38,12 +43,11 @@
           <div class="priceBadge" id="slidePrice">—</div>
           <div class="cornerTag" id="slideRef">—</div>
 
-          <!-- ✅ STATS sous la photo (ID inchangé => JS inchangé) -->
+          <!-- ✅ STATS sous la photo (ID inchangé => ton JS ne change pas) -->
           <div class="mediaStats" aria-hidden="true">
             <div class="statsRow statsRow--media" id="slideStats" aria-label="Caractéristiques du bien"></div>
           </div>
 
-          <!-- ✅ Progress bar (ton JS la gère déjà) -->
           <div class="progWrap" aria-hidden="true">
             <div class="progBar" id="slideProg"></div>
           </div>
@@ -53,7 +57,6 @@
           <div class="panelTop">
             <div class="slide__title" id="slideTitle">—</div>
 
-            <!-- META -->
             <div class="slide__meta" id="slideMeta">—</div>
 
             <!-- DPE -->
@@ -75,7 +78,6 @@
                 </figure>
               </div>
             </div>
-            <!-- /DPE -->
           </div>
 
           <!-- CONTACT -->
@@ -116,7 +118,6 @@
               </div>
             </div>
           </div>
-          <!-- /contact -->
         </div>
       </article>
     </section>
