@@ -19,7 +19,7 @@
 
     slideImgA: $("#slideImgA"),
     slideImgB: $("#slideImgB"),
-    slideProg: $("#slideProg"),   // ✅ présent maintenant dans le HTML
+    slideProg: $("#slideProg"),
 
     slideStats: $("#slideStats"),
 
@@ -30,6 +30,11 @@
     dpeCard: $("#dpeCard"),
     dpeConsoImg: $("#dpeConsoImg"),
     dpeGesImg: $("#dpeGesImg"),
+
+    // ✅ QR
+    qrBlock: $("#qrBlock"),
+    qrBox: $("#qrBox"),
+    qrImg: $("#qrImg"),
   };
 
   const PLACEHOLDER_SVG =
@@ -77,16 +82,14 @@
     }
   }
 
-  // ✅ Nettoie le titre : retire “X pièce(s)” + coupe si trop long
+  // Nettoie le titre : retire “X pièce(s)” + coupe si trop long
   function cleanTitle(raw) {
     let t = safeText(raw || "Bien immobilier");
     if (!t) return "Bien immobilier";
 
-    // retire " 5 pièce(s)" (avec ou sans tiret)
     t = t.replace(/\s*[-–—]?\s*\d+\s*pi[eè]ce(?:\(\s*s\s*\)|s)?\s*$/i, "");
     t = t.replace(/\b\d+\s*pi[eè]ce(?:\(\s*s\s*\)|s)\b/ig, "").replace(/\s{2,}/g, " ").trim();
 
-    // coupe doux si vraiment énorme (sécurité)
     const max = 38;
     if (t.length > max) t = t.slice(0, max - 1).trim() + "…";
     return t || "Bien immobilier";
@@ -304,20 +307,18 @@
   function plural(n, one, many) { return n > 1 ? many : one; }
 
   // ---------------------------
-  // ✅ 1 LIGNE MAX sous la photo (auto-fit)
+  // 1 LIGNE MAX sous la photo (auto-fit)
   // ---------------------------
   function limitStatsToOneLine(container) {
     if (!container) return;
     const chips = Array.from(container.querySelectorAll(".statChip"));
     if (!chips.length) return;
 
-    // reset
     chips.forEach(ch => { ch.style.display = ""; });
 
     const maxW = container.clientWidth;
     if (!maxW) return;
 
-    // Masque les derniers jusqu'à ce que ça rentre
     let safety = 80;
     while (container.scrollWidth > maxW && safety-- > 0) {
       const last = [...container.querySelectorAll(".statChip")].reverse().find(x => x.style.display !== "none");
@@ -326,7 +327,6 @@
     }
   }
 
-  // ✅ relance auto si la largeur change (kiosque/rotation/zoom)
   let __statsResizeRaf = 0;
   function scheduleFitStats() {
     if (!els.slideStats) return;
@@ -335,7 +335,6 @@
   }
   window.addEventListener("resize", scheduleFitStats, { passive: true });
 
-  // ✅ Priorités + limite anti “bloc trop long”
   function renderStats(item) {
     if (!els.slideStats) return;
 
@@ -351,7 +350,6 @@
     const terrain = (item.terrain != null && Number(item.terrain) > 0) ? Math.round(Number(item.terrain)) : null;
     const cellar = (typeof item.cellar === "boolean") ? item.cellar : null;
 
-    // Priorités (ordre important)
     if (surface != null) stats.push({ pr: 100, key:"surface", value:`${surface} m²`, label:"Surface" });
     if (rooms != null) stats.push({ pr: 90, key:"rooms", value:`${rooms}`, label: plural(rooms, "Pièce", "Pièces") });
     if (bedrooms != null) stats.push({ pr: 80, key:"bedrooms", value:`${bedrooms}`, label: plural(bedrooms, "Chambre", "Chambres") });
@@ -364,7 +362,6 @@
 
     stats.sort((a,b)=>b.pr-a.pr);
 
-    // ⚠️ On génère “un peu plus” puis on fait fitter sur 1 ligne
     const preList = stats.slice(0, 10);
 
     if (!preList.length) {
@@ -384,7 +381,6 @@
       </div>
     `).join("");
 
-    // ✅ fit en 1 ligne après layout
     scheduleFitStats();
   }
 
@@ -411,6 +407,47 @@
   }
 
   // ---------------------------
+  // QR (prêt)
+  // - item.qr / item.qrUrl / item.qr_code / item.qrcode / item.qr_code_url
+  // - ou paramètre URL: ?qr=https://...png
+  // ---------------------------
+  function pickQrUrl(item, params) {
+    const fromParams = safeText(params && params.qr);
+    if (fromParams) return fromParams;
+
+    const candidates = [
+      item && item.qr,
+      item && item.qrUrl,
+      item && item.qr_url,
+      item && item.qrcode,
+      item && item.qrCode,
+      item && item.qr_code,
+      item && item.qr_code_url
+    ];
+    for (const c of candidates) {
+      const u = safeText(c);
+      if (u) return u;
+    }
+    return "";
+  }
+
+  function setQr(item, params) {
+    if (!els.qrBlock || !els.qrBox || !els.qrImg) return;
+
+    const qrUrl = pickQrUrl(item, params);
+    if (!qrUrl) {
+      els.qrImg.removeAttribute("src");
+      els.qrBox.classList.add("is-empty");
+      els.qrBlock.classList.remove("hidden");
+      return;
+    }
+
+    els.qrImg.src = qrUrl;
+    els.qrBox.classList.remove("is-empty");
+    els.qrBlock.classList.remove("hidden");
+  }
+
+  // ---------------------------
   // Params / fetch
   // ---------------------------
   function getParams() {
@@ -428,6 +465,9 @@
 
       src: (p.get("src") || "exports/catalogue_vitrine.json").trim(),
       debug: p.get("debug") === "1",
+
+      // ✅ optionnel : qr global si tu veux forcer un QR pour tous les biens
+      qr: (p.get("qr") || "").trim(),
     };
   }
 
@@ -461,7 +501,7 @@
   }
 
   // ---------------------------
-  // Preload queue (PRO)
+  // Preload queue
   // ---------------------------
   const preloadCache = new Map();
   function preload(url) {
@@ -533,20 +573,18 @@
     els.slideProg.style.width = `${(pct * 100).toFixed(1)}%`;
   }
 
-  function setSlideItem(item, rotateMinSec, photoRotateSec) {
+  function setSlideItem(item, rotateMinSec, photoRotateSec, params) {
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
 
-    // ✅ titre clean (plus de "5 pièce(s)" dans le titre)
     els.slideTitle.textContent = cleanTitle(item.title || "Bien immobilier");
 
-    const parts = [];
     const cityLine = safeText(item.city || "");
-    if (cityLine) parts.push(cityLine);
-    els.slideMeta.textContent = parts.join(" • ") || "—";
+    els.slideMeta.textContent = cityLine || "—";
 
-    renderStats(item);   // ✅ 1 ligne auto-fit ici
+    renderStats(item);
     setDpe(item);
+    setQr(item, params); // ✅ QR
 
     const extracted = extractContactFromAgence(item.agence);
     els.contactAdvisor.textContent = extracted.advisorName || "Conseiller GTI";
@@ -597,13 +635,13 @@
     warmupItem(item, state.photoIndex + 1, 2).catch(()=>{});
   }
 
-  function startSlide(items, rotateMinSec, photoRotateSec) {
+  function startSlide(items, rotateMinSec, photoRotateSec, params) {
     clearTimers();
     state.items = items;
     state.itemIndex = 0;
 
     const first = items[0];
-    setSlideItem(first, rotateMinSec, photoRotateSec);
+    setSlideItem(first, rotateMinSec, photoRotateSec, params);
 
     state.photoTimer = setInterval(() => {
       const item = state.items[state.itemIndex];
@@ -615,7 +653,7 @@
 
       state.itemIndex = (state.itemIndex + 1) % state.items.length;
       const item = state.items[state.itemIndex];
-      setSlideItem(item, rotateMinSec, photoRotateSec);
+      setSlideItem(item, rotateMinSec, photoRotateSec, params);
     }, 250);
 
     state.progTimer = setInterval(updateProgress, 120);
@@ -663,10 +701,9 @@
       if (fp !== lastFingerprint) {
         lastFingerprint = fp;
         preload(getPhoto(items[0], 0)).catch(()=>{});
-        startSlide(items, params.rotate, params.photoRotate);
+        startSlide(items, params.rotate, params.photoRotate, params);
       } else {
         showView("slide");
-        // au cas où le kiosque a changé la largeur (zoom etc.)
         scheduleFitStats();
       }
     } catch (e) {
