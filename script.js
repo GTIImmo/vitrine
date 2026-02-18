@@ -54,9 +54,6 @@
       </svg>
     `);
 
-  // ---------------------------
-  // Helpers
-  // ---------------------------
   function clampInt(v, min, max, def) {
     const n = parseInt(v, 10);
     if (!Number.isFinite(n)) return def;
@@ -92,7 +89,6 @@
     return out;
   }
 
-  // salles de bain : support large (selon tes exports)
   function readBathrooms(item) {
     const candidates = [
       item.bathrooms, item.bathroom, item.bathroomCount,
@@ -105,7 +101,6 @@
     return null;
   }
 
-  // ✅ WC : support large
   function readWC(item){
     const candidates = [item.wc, item.WC, item.nbWc, item.nb_wc];
     for (const c of candidates){
@@ -115,7 +110,6 @@
     return null;
   }
 
-  // ✅ niveaux/étages : support large
   function readLevels(item){
     const candidates = [item.levels, item.level, item.nbLevels, item.niveaux, item.etages];
     for (const c of candidates){
@@ -125,7 +119,6 @@
     return null;
   }
 
-  // ✅ terrain : support large
   function readTerrain(item){
     const candidates = [item.terrain, item.land, item.landSurface, item.surfterrain, item.surfaceTerrain];
     for (const c of candidates){
@@ -135,7 +128,6 @@
     return null;
   }
 
-  // ✅ cave : bool + textes OUI/NON
   function readCellar(item){
     const v = item.cellar ?? item.cave ?? item.hasCellar;
     if (typeof v === "boolean") return v;
@@ -162,7 +154,6 @@
     const ba = readBathrooms(it);
     if (ba != null) it.bathrooms = ba;
 
-    // ✅ ajout
     const wc = readWC(it);
     if (wc != null) it.wc = wc;
 
@@ -201,9 +192,6 @@
     return items.filter((_, index) => ((index + seed) % screens) === (screen - 1));
   }
 
-  // ---------------------------
-  // Contact parsing (agence string)
-  // ---------------------------
   function digitsOnly(s) { return safeText(s).replace(/[^\d]/g, ""); }
   function formatFR10(d10) { return d10.replace(/(\d{2})(?=\d)/g, "$1 ").trim(); }
   function isLikelyFRPhone(d) { return d.length === 10 && d.startsWith("0"); }
@@ -212,9 +200,6 @@
     const s = safeText(agenceStr);
     const out = { agencyName: "", agencyPhone: "", advisorName: "", advisorMobile: "" };
     if (!s) return out;
-
-    const mName = s.match(/^(.+?)\s*T[ÉE]L\s*:/i);
-    if (mName) out.agencyName = safeText(mName[1]);
 
     const mAgencyPhone = s.match(/T[ÉE]L\s*:\s*([0-9 .-]{8,})/i);
     if (mAgencyPhone) {
@@ -241,9 +226,6 @@
     return "—";
   }
 
-  // ---------------------------
-  // SVG icons (modern)
-  // ---------------------------
   function iconSVG(name) {
     switch (name) {
       case "surface":
@@ -268,33 +250,28 @@
           <path d="M7 12V7a3 3 0 0 1 3-3h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M16 8h2M18 6v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
-
       case "wc":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 7a5 5 0 0 1 10 0v6a5 5 0 0 1-10 0V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M7 11h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M9 20h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
-
       case "levels":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M7 20V10l5-4 5 4v10" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
         </svg>`;
-
       case "cellar":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 10l8-5 8 5v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M9 21v-6a3 3 0 0 1 6 0v6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
         </svg>`;
-
       case "terrain":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 19l7-14 2 4 7-3-6 13H4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M6 19h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
-
       default:
         return "";
     }
@@ -344,9 +321,6 @@
     `).join("");
   }
 
-  // ---------------------------
-  // DPE
-  // ---------------------------
   function setDpe(item) {
     const conso = item && item.dpe ? safeText(item.dpe.conso) : "";
     const ges = item && item.dpe ? safeText(item.dpe.ges) : "";
@@ -366,9 +340,22 @@
     }
   }
 
-  // ---------------------------
-  // Params / fetch
-  // ---------------------------
+  // ✅ Nettoyage titre : supprime “X pièce(s)” du titre
+  function cleanTitle(rawTitle){
+    let t = safeText(rawTitle || "");
+    if (!t) return "Bien immobilier";
+
+    // supprime "5 pièce(s)" / "5 pièces" / "5 piece(s)"
+    t = t.replace(/\s*[-–—]?\s*\d+\s*pi[eè]ce(?:\(\s*s\s*\)|s)?\s*$/i, "");
+
+    // supprime aussi si c'est au milieu (rare) : "Maison 5 pièces rénovée" => "Maison rénovée"
+    t = t.replace(/\b\d+\s*pi[eè]ce(?:\(\s*s\s*\)|s)\b/ig, "").replace(/\s{2,}/g, " ").trim();
+
+    // clean final
+    t = t.replace(/\s+[-–—]\s*$/g, "").trim();
+    return t || "Bien immobilier";
+  }
+
   function getParams() {
     const u = new URL(window.location.href);
     const p = u.searchParams;
@@ -416,10 +403,7 @@
     if (els.hudInfo) els.hudInfo.textContent = `Écran ${params.screen}/${params.screens} • ${count} annonces • ${generatedAt || "…"}`;
   }
 
-  // ---------------------------
-  // Preload queue (PRO)
-  // ---------------------------
-  const preloadCache = new Map(); // url -> Promise<boolean>
+  const preloadCache = new Map();
   function preload(url) {
     if (!url) return Promise.resolve(false);
     if (preloadCache.has(url)) return preloadCache.get(url);
@@ -450,9 +434,6 @@
     }
   }
 
-  // ---------------------------
-  // Slide engine
-  // ---------------------------
   const state = {
     items: [],
     itemIndex: 0,
@@ -492,7 +473,9 @@
   function setSlideItem(item, rotateMinSec, photoRotateSec) {
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
-    els.slideTitle.textContent = safeText(item.title || "Bien immobilier");
+
+    // ✅ titre nettoyé (plus de “5 pièce(s)”)
+    els.slideTitle.textContent = cleanTitle(item.title || "Bien immobilier");
 
     const parts = [];
     const cityLine = safeText(item.city || "");
@@ -577,9 +560,6 @@
     showView("slide");
   }
 
-  // ---------------------------
-  // Refresh loop
-  // ---------------------------
   let refreshTimer = null;
   let lastFingerprint = "";
 
