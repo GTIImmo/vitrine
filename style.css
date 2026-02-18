@@ -75,6 +75,25 @@ body.debug .hud{display:flex;}
   background:#e9edf3;
 }
 
+/* décor léger */
+.mediaGlow{
+  position:absolute;inset:-60px;
+  background:
+    radial-gradient(700px 500px at 18% 20%, rgba(194,24,91,.10), transparent 55%),
+    radial-gradient(700px 500px at 86% 18%, rgba(15,118,110,.10), transparent 55%);
+  pointer-events:none;
+  z-index:1;
+}
+.mediaFrame{
+  position:absolute;inset:16px;
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,.20);
+  box-shadow: 0 40px 110px rgba(0,0,0,.16);
+  pointer-events:none;
+  z-index:2;
+}
+
+/* images */
 .slide__img{
   position:absolute;inset:0;
   width:100%;height:100%;
@@ -84,6 +103,7 @@ body.debug .hud{display:flex;}
   transform: scale(1.03);
   transition: opacity .65s ease, transform 4.0s ease;
   will-change: opacity, transform;
+  z-index:0;
 }
 .slide__img.is-visible{opacity:1;transform: scale(1.075)}
 
@@ -91,10 +111,11 @@ body.debug .hud{display:flex;}
 .slide__gradient{
   position:absolute;inset:0;
   background:
-    radial-gradient(1100px 760px at 18% 18%, rgba(255,255,255,.20), transparent 60%),
+    radial-gradient(1100px 760px at 18% 18%, rgba(255,255,255,.18), transparent 60%),
     linear-gradient(90deg, rgba(0,0,0,.00), rgba(0,0,0,.16)),
     radial-gradient(1200px 900px at 55% 120%, rgba(0,0,0,.12), transparent 60%);
   pointer-events:none;
+  z-index:3;
 }
 
 /* PRICE + REF */
@@ -110,6 +131,7 @@ body.debug .hud{display:flex;}
   -webkit-backdrop-filter: blur(10px);
   transform-origin:left center;
   animation: pricePulse 6s ease-in-out infinite;
+  z-index:4;
 }
 @keyframes pricePulse{
   0%,100%{transform:translateY(0) scale(1)}
@@ -125,6 +147,7 @@ body.debug .hud{display:flex;}
   box-shadow: 0 12px 34px rgba(0,0,0,.10);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  z-index:4;
 }
 
 /* STATS sous photo */
@@ -199,23 +222,23 @@ body.debug .hud{display:flex;}
 .slide__panel{
   padding: 26px 24px 18px;
   background:
-    radial-gradient(900px 700px at 24% 10%, rgba(194,24,91,.09), transparent 62%),
-    radial-gradient(900px 700px at 90% 35%, rgba(15,118,110,.08), transparent 62%),
-    linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.76));
+    radial-gradient(900px 700px at 24% 10%, rgba(194,24,91,.10), transparent 62%),
+    radial-gradient(900px 700px at 90% 35%, rgba(15,118,110,.09), transparent 62%),
+    linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.78));
   border-left: 1px solid rgba(18,19,24,.08);
   box-shadow: -18px 0 70px rgba(0,0,0,.08);
   min-height:0;
   display:grid;
-  grid-template-rows: auto 1fr auto; /* Top / Contact (grand) / DPE (bas) */
+  grid-template-rows: auto 1fr auto; /* Top / Contact / DPE footer */
   gap: 12px;
 }
 
-/* TOP : titre + localisation */
+/* TOP */
 .panelTop{
   min-height:0;
   overflow:hidden;
   border-radius: 26px;
-  background: rgba(255,255,255,.88);
+  background: rgba(255,255,255,.90);
   border: 1px solid rgba(18,19,24,.08);
   box-shadow: var(--shadow2);
   padding: 18px 18px 14px;
@@ -232,7 +255,7 @@ body.debug .hud{display:flex;}
   overflow:hidden;
 }
 
-/* ✅ localisation + couleur harmonisée */
+/* ✅ localisation colorée + premium */
 .slide__meta{
   display:flex;
   align-items:center;
@@ -240,9 +263,9 @@ body.debug .hud{display:flex;}
   padding: 11px 12px;
   border-radius: 16px;
 
-  background: linear-gradient(135deg, rgba(194,24,91,.10), rgba(15,118,110,.10));
-  border: 1px solid rgba(18,19,24,.08);
-  color: rgba(18,19,24,.88);
+  background: linear-gradient(135deg, rgba(194,24,91,.12), rgba(15,118,110,.12));
+  border: 1px solid rgba(18,19,24,.10);
+  color: rgba(18,19,24,.90);
   font-weight: 950;
   font-size: 17px;
   margin: 0;
@@ -256,11 +279,11 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   CONTACT (grand bloc)
+   CONTACT
 ========================= */
 .contactCard{
   border-radius: 26px;
-  background: linear-gradient(135deg, rgba(15,118,110,.12), rgba(194,24,91,.10));
+  background: linear-gradient(135deg, rgba(15,118,110,.13), rgba(194,24,91,.11));
   border:1px solid rgba(18,19,24,.08);
   box-shadow: 0 22px 70px rgba(0,0,0,.08);
   padding: 14px 14px 12px;
@@ -280,7 +303,7 @@ body.debug .hud{display:flex;}
   text-transform:uppercase;
   font-size:10.5px;
   color: rgba(18,19,24,.86);
-  background: rgba(255,255,255,.82);
+  background: rgba(255,255,255,.84);
   border: 1px solid rgba(18,19,24,.08);
   box-shadow: var(--shadow2);
 }
@@ -323,7 +346,7 @@ body.debug .hud{display:flex;}
   gap:12px;
   padding:9px 10px 9px 44px;
   border-radius: 16px;
-  background: rgba(255,255,255,.74);
+  background: rgba(255,255,255,.76);
   border:1px solid rgba(18,19,24,.06);
   position:relative;
 }
@@ -377,13 +400,13 @@ body.debug .hud{display:flex;}
   gap:14px;
   padding: 12px 14px;
   border-radius: 20px;
-  background: rgba(255,255,255,.82);
+  background: rgba(255,255,255,.86);
   border: 1px solid rgba(18,19,24,.08);
   box-shadow: 0 16px 46px rgba(0,0,0,.08);
 }
 .qrBox{
-  width:108px;   /* ✅ plus gros */
-  height:108px;  /* ✅ plus gros */
+  width:112px;
+  height:112px;
   border-radius: 18px;
   background: #fff;
   border: 1px solid rgba(18,19,24,.10);
@@ -427,26 +450,52 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================
-   DPE en bas (dernier)
+   DPE compact footer (tendance)
 ========================= */
-.dpeCard{
+.dpeCard--compact{
+  padding: 10px 12px 12px;
   border-radius: 22px;
-  border:1px solid rgba(18,19,24,.08);
-  background: rgba(246,247,251,.74);
-  box-shadow: 0 12px 34px rgba(0,0,0,.06);
+  background:
+    radial-gradient(520px 220px at 15% 0%, rgba(194,24,91,.10), transparent 60%),
+    radial-gradient(520px 220px at 90% 0%, rgba(15,118,110,.10), transparent 60%),
+    rgba(255,255,255,.90);
+  border: 1px solid rgba(18,19,24,.08);
+  box-shadow: 0 14px 44px rgba(0,0,0,.08);
+}
+.dpeHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
+.dpeTitle{font-weight:950;font-size:13.5px;letter-spacing:-.02em}
+.dpeHint{font-weight:800;font-size:11px;color: rgba(18,19,24,.55)}
+
+.dpeInline{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.dpeThumb{
+  position:relative;
+  border-radius: 18px;
+  background: rgba(255,255,255,.94);
+  border: 1px solid rgba(18,19,24,.07);
   overflow:hidden;
-  padding: 10px 10px 8px;
+  padding: 8px 10px 10px;
 }
-.dpeHead{
-  display:flex;align-items:baseline;justify-content:space-between;gap:10px;
-  margin-bottom:8px
+.dpeMiniLabel{
+  display:inline-flex;
+  align-items:center;
+  font-weight: 950;
+  font-size: 10.5px;
+  letter-spacing:.10em;
+  text-transform: uppercase;
+  color: rgba(18,19,24,.72);
 }
-.dpeTitle{font-weight:950;font-size:14px;letter-spacing:-.02em}
-.dpeHint{font-weight:750;font-size:11px;color: rgba(18,19,24,.55)}
-.dpeGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.dpeItem{margin:0;border-radius:18px;overflow:hidden;border:1px solid rgba(18,19,24,.06);background:#fff}
-.dpeImg{display:block;width:100%;height:46px;object-fit:contain;background:#fff}
-.dpeCaption{padding:6px 10px;font-size:10.5px;font-weight:900;color: rgba(18,19,24,.74)}
+.dpeImg{
+  width:100%;
+  height:38px;
+  object-fit:contain;
+  display:block;
+  margin-top:6px;
+  background: transparent;
+}
 
 /* EMPTY */
 .view--empty{padding:24px}
@@ -467,9 +516,9 @@ body.debug .hud{display:flex;}
 @media (max-height: 980px){
   .slide__panel{ padding: 24px 22px 16px; gap:10px; }
   .slide__title{ font-size: 41px; }
-  .dpeImg{ height: 44px; }
   .contactRow{ padding-top:8px; padding-bottom:8px; }
-  .qrBox{ width:96px; height:96px; }
+  .qrBox{ width:100px; height:100px; }
+  .dpeImg{ height:36px; }
 }
 
 /* Responsive */
@@ -492,7 +541,6 @@ body.debug .hud{display:flex;}
   .slide__title{font-size:30px}
   .slide__meta{font-size:15px}
   .contactValue--big{font-size:16px}
-  .dpeImg{height:44px}
   .mediaStats{ left:12px; right:12px; bottom:12px; }
-  .qrBox{ width:92px; height:92px; }
+  .qrBox{ width:96px; height:96px; }
 }
