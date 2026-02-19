@@ -102,12 +102,12 @@ body.debug .hud{display:flex;}
   filter: brightness(1.14) contrast(1.08) saturate(1.10);
 
   opacity:0;
-  transform: scale(1.03);
+  transform: scale(1.00);
   transition: opacity .65s ease, transform 4.0s ease;
   will-change: opacity, transform;
   z-index:0;
 }
-.slide__img.is-visible{opacity:1;transform: scale(1.075)}
+.slide__img.is-visible{opacity:1;transform: scale(1.02)}
 
 /* overlay très léger */
 .slide__gradient{
