@@ -330,29 +330,22 @@
           <path d="M4 19l7-14 2 4 7-3-6 13H4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M6 19h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
-
-      // ✅ parking intérieur
       case "parkingInterieur":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 20V4h7a5 5 0 0 1 0 10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M7 14h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
-
-      // ✅ parking extérieur (P + repère)
       case "parkingExterieur":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 20V4h7a5 5 0 0 1 0 10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M12 22s6-3.8 6-10a6 6 0 1 0-12 0c0 6.2 6 10 6 10Z" stroke="currentColor" stroke-width="2"/>
         </svg>`;
-
-      // ✅ terrasse
       case "terrasse":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M6 18V9h12v9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M8 9V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
-
       default:
         return "";
     }
@@ -415,16 +408,16 @@
     if (bedrooms != null) stats.push({ pr: 80, key:"bedrooms", value:`${bedrooms}`, label: plural(bedrooms, "Chambre", "Chambres") });
     if (baths != null) stats.push({ pr: 70, key:"bathrooms", value:`${baths}`, label: plural(baths, "Salle de bain", "Salles de bain") });
 
-    // ✅ PRIORITAIRES : parking/terrasse AVANT cave/niveaux
-    if (pInt > 0) stats.push({ pr: 69, key:"parkingInterieur", value:`${pInt}`, label: plural(pInt, "Parking int.", "Parkings int.") , cls:"is-priority" });
-    if (pExt > 0) stats.push({ pr: 68, key:"parkingExterieur", value:`${pExt}`, label: plural(pExt, "Parking ext.", "Parkings ext.") , cls:"is-priority" });
+    // ✅ PRIORITAIRES : parking/terrasse
+    if (pInt > 0) stats.push({ pr: 69, key:"parkingInterieur", value:`${pInt}`, label: plural(pInt, "Parking int.", "Parkings int."), cls:"is-priority" });
+    if (pExt > 0) stats.push({ pr: 68, key:"parkingExterieur", value:`${pExt}`, label: plural(pExt, "Parking ext.", "Parkings ext."), cls:"is-priority" });
     if (terr > 0) stats.push({ pr: 67, key:"terrasse", value:`${terr} m²`, label:"Terrasse", cls:"is-priority" });
 
     // autres
     if (terrain != null) stats.push({ pr: 65, key:"terrain", value:`${terrain} m²`, label:"Terrain" });
     if (wc != null) stats.push({ pr: 60, key:"wc", value:`${wc}`, label:"WC" });
 
-    // ✅ secondaires : niveaux + cave
+    // secondaires
     if (levels != null) stats.push({ pr: 55, key:"levels", value:`${levels}`, label: plural(levels, "Niveau", "Niveaux"), cls:"is-secondary" });
     if (cellar != null) stats.push({ pr: 50, key:"cellar", value: cellar ? "Oui" : "Non", label:"Cave", cls:"is-secondary" });
 
@@ -612,8 +605,6 @@
     progTimer: null,
     nextItemAt: 0,
     itemDurationMs: 0,
-
-    // ✅ ajout : bloque swapPhoto pendant la transition
     isTransitioning: false
   };
 
@@ -680,7 +671,7 @@
     if (nextItem) preload(getPhoto(nextItem, 0)).catch(()=>{});
   }
 
-  // ✅ ajout : transition visible entre biens
+  // ✅ Transition "book" très visible (sans texte)
   function transitionToItem(item, rotateMinSec, photoRotateSec, params) {
     const slideEl = document.getElementById("slide");
     if (!slideEl) {
@@ -689,22 +680,37 @@
     }
 
     state.isTransitioning = true;
+
+    // lance sweep + sortie
     slideEl.classList.add("is-changing");
+    slideEl.classList.remove("is-active");
+    slideEl.classList.add("is-exit");
 
-    // on laisse l’effet “prendre” puis on remplace le contenu
+    // au milieu : on remplace le contenu "caché" (pendant l’effet)
     setTimeout(() => {
-      setSlideItem(item, rotateMinSec, photoRotateSec, params);
-    }, 220);
+      slideEl.classList.remove("is-exit");
+      slideEl.classList.add("is-enter");
 
-    // fin transition (et on réautorise swapPhoto)
+      setSlideItem(item, rotateMinSec, photoRotateSec, params);
+
+      // micro-delay pour laisser le DOM appliquer is-enter
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          slideEl.classList.remove("is-enter");
+          slideEl.classList.add("is-active");
+        });
+      });
+    }, 420);
+
+    // fin
     setTimeout(() => {
       slideEl.classList.remove("is-changing");
       state.isTransitioning = false;
-    }, 720);
+    }, 820);
   }
 
   async function swapPhoto(item) {
-    // ✅ bloque pendant le switch d’annonce pour garder l’effet propre
+    // ✅ ne change pas de photo pendant un changement de bien
     if (state.isTransitioning) return;
 
     const photos = Array.isArray(item.photos) ? item.photos : [];
@@ -734,6 +740,12 @@
     state.items = items;
     state.itemIndex = 0;
 
+    const slideEl = document.getElementById("slide");
+    if (slideEl) {
+      slideEl.classList.remove("is-exit","is-enter","is-changing");
+      slideEl.classList.add("is-active");
+    }
+
     const first = items[0];
     setSlideItem(first, rotateMinSec, photoRotateSec, params);
 
@@ -744,11 +756,11 @@
 
     state.tickTimer = setInterval(() => {
       if (Date.now() < state.nextItemAt) return;
+      if (state.isTransitioning) return;
 
       state.itemIndex = (state.itemIndex + 1) % state.items.length;
       const item = state.items[state.itemIndex];
 
-      // ✅ au lieu de setSlideItem direct => transition visible
       transitionToItem(item, rotateMinSec, photoRotateSec, params);
     }, 250);
 
