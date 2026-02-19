@@ -415,7 +415,7 @@
     if (bedrooms != null) stats.push({ pr: 80, key:"bedrooms", value:`${bedrooms}`, label: plural(bedrooms, "Chambre", "Chambres") });
     if (baths != null) stats.push({ pr: 70, key:"bathrooms", value:`${baths}`, label: plural(baths, "Salle de bain", "Salles de bain") });
 
-    // ✅ PRIORITAIRES (demandé) : parking/terrasse AVANT cave/niveaux
+    // ✅ PRIORITAIRES : parking/terrasse AVANT cave/niveaux
     if (pInt > 0) stats.push({ pr: 69, key:"parkingInterieur", value:`${pInt}`, label: plural(pInt, "Parking int.", "Parkings int.") , cls:"is-priority" });
     if (pExt > 0) stats.push({ pr: 68, key:"parkingExterieur", value:`${pExt}`, label: plural(pExt, "Parking ext.", "Parkings ext.") , cls:"is-priority" });
     if (terr > 0) stats.push({ pr: 67, key:"terrasse", value:`${terr} m²`, label:"Terrasse", cls:"is-priority" });
@@ -611,7 +611,10 @@
     tickTimer: null,
     progTimer: null,
     nextItemAt: 0,
-    itemDurationMs: 0
+    itemDurationMs: 0,
+
+    // ✅ ajout : bloque swapPhoto pendant la transition
+    isTransitioning: false
   };
 
   function clearTimers() {
@@ -677,7 +680,33 @@
     if (nextItem) preload(getPhoto(nextItem, 0)).catch(()=>{});
   }
 
+  // ✅ ajout : transition visible entre biens
+  function transitionToItem(item, rotateMinSec, photoRotateSec, params) {
+    const slideEl = document.getElementById("slide");
+    if (!slideEl) {
+      setSlideItem(item, rotateMinSec, photoRotateSec, params);
+      return;
+    }
+
+    state.isTransitioning = true;
+    slideEl.classList.add("is-changing");
+
+    // on laisse l’effet “prendre” puis on remplace le contenu
+    setTimeout(() => {
+      setSlideItem(item, rotateMinSec, photoRotateSec, params);
+    }, 220);
+
+    // fin transition (et on réautorise swapPhoto)
+    setTimeout(() => {
+      slideEl.classList.remove("is-changing");
+      state.isTransitioning = false;
+    }, 720);
+  }
+
   async function swapPhoto(item) {
+    // ✅ bloque pendant le switch d’annonce pour garder l’effet propre
+    if (state.isTransitioning) return;
+
     const photos = Array.isArray(item.photos) ? item.photos : [];
     if (photos.length <= 1) return;
 
@@ -718,7 +747,9 @@
 
       state.itemIndex = (state.itemIndex + 1) % state.items.length;
       const item = state.items[state.itemIndex];
-      setSlideItem(item, rotateMinSec, photoRotateSec, params);
+
+      // ✅ au lieu de setSlideItem direct => transition visible
+      transitionToItem(item, rotateMinSec, photoRotateSec, params);
     }, 250);
 
     state.progTimer = setInterval(updateProgress, 120);
