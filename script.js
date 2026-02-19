@@ -90,39 +90,9 @@
     t = t.replace(/\s*[-–—]?\s*\d+\s*pi[eè]ce(?:\(\s*s\s*\)|s)?\s*$/i, "");
     t = t.replace(/\b\d+\s*pi[eè]ce(?:\(\s*s\s*\)|s)\b/ig, "").replace(/\s{2,}/g, " ").trim();
 
-    const max = 46; // un peu plus long car on a le badge type au-dessus
+    const max = 38;
     if (t.length > max) t = t.slice(0, max - 1).trim() + "…";
     return t || "Bien immobilier";
-  }
-
-  // ✅ Type “Maison / Appartement …” (premium)
-  function extractTypeAndTitle(rawTitle) {
-    const t0 = safeText(rawTitle || "");
-    const t = t0 || "Bien immobilier";
-
-    // types courants (tu peux en ajouter)
-    const types = [
-      "Maison", "Appartement", "Villa", "Terrain", "Immeuble", "Local", "Bureau",
-      "Studio", "Garage", "Parking", "Chalet", "Loft"
-    ];
-
-    // ex: "Maison - Centre ville ..." / "Appartement T3 ..." / "Villa ..."
-    const re = new RegExp(`^\\s*(${types.map(x => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\b`, "i");
-    const m = t.match(re);
-
-    let type = "";
-    let rest = t;
-
-    if (m) {
-      type = m[1];
-      rest = t.replace(re, "").trim();
-      rest = rest.replace(/^[-–—:|]+/g, "").trim();
-    }
-
-    // si on n’a pas de type => on garde “Bien”
-    if (!type) type = "Bien";
-
-    return { type, title: cleanTitle(rest || t) };
   }
 
   function normalizePhotos(photos, max = 10) {
@@ -312,46 +282,6 @@
   }
 
   // ---------------------------
-  // Localisation premium (ville + CP)
-  // ---------------------------
-  function parseCityZip(cityRaw) {
-    const s = safeText(cityRaw);
-    if (!s) return { city:"—", zip:"" };
-
-    // capture CP 5 chiffres n’importe où
-    const m = s.match(/\b(\d{5})\b/);
-    const zip = m ? m[1] : "";
-
-    let city = s;
-    if (zip) {
-      city = s.replace(zip, "").replace(/[(),-]/g, " ").replace(/\s{2,}/g, " ").trim();
-      city = city.replace(/\bFR\b/i, "").trim();
-    }
-
-    return { city: city || s, zip };
-  }
-
-  function renderMeta(cityRaw) {
-    const { city, zip } = parseCityZip(cityRaw);
-    if (!els.slideMeta) return;
-
-    if (zip) {
-      els.slideMeta.innerHTML = `<span class="metaCity">${escapeHtml(city)}</span><span class="metaZip">${escapeHtml(zip)}</span>`;
-    } else {
-      els.slideMeta.innerHTML = `<span class="metaCity">${escapeHtml(city)}</span>`;
-    }
-  }
-
-  function escapeHtml(str) {
-    return String(str)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  // ---------------------------
   // SVG icons (modern)
   // ---------------------------
   function iconSVG(name) {
@@ -435,8 +365,6 @@
   // ---------------------------
   function limitStatsToOneLine(container) {
     if (!container) return;
-
-    // ✅ IMPORTANT : on n’efface pas les priority d’abord
     const chips = Array.from(container.querySelectorAll(".statChip"));
     if (!chips.length) return;
 
@@ -445,20 +373,11 @@
     const maxW = container.clientWidth;
     if (!maxW) return;
 
-    let safety = 120;
-
-    // on préfère cacher les "secondary" en premier
-    const hideOrder = () => {
-      const all = Array.from(container.querySelectorAll(".statChip")).filter(x => x.style.display !== "none");
-      const secondary = all.filter(x => x.classList.contains("is-secondary"));
-      if (secondary.length) return secondary[secondary.length - 1];
-      return all[all.length - 1] || null;
-    };
-
+    let safety = 80;
     while (container.scrollWidth > maxW && safety-- > 0) {
-      const toHide = hideOrder();
-      if (!toHide) break;
-      toHide.style.display = "none";
+      const last = [...container.querySelectorAll(".statChip")].reverse().find(x => x.style.display !== "none");
+      if (!last) break;
+      last.style.display = "none";
     }
   }
 
@@ -524,8 +443,8 @@
       <div class="statChip ${s.cls ? s.cls : ""}" data-stat="${s.key}">
         <div class="statIcon" aria-hidden="true">${iconSVG(s.key)}</div>
         <div class="statText">
-          <div class="statValue">${escapeHtml(s.value)}</div>
-          <div class="statLabel">${escapeHtml(s.label)}</div>
+          <div class="statValue">${s.value}</div>
+          <div class="statLabel">${s.label}</div>
         </div>
       </div>
     `).join("");
@@ -723,15 +642,10 @@
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
 
-    // ✅ Titre premium (badge type + titre)
-    const tt = extractTypeAndTitle(item.title || "Bien immobilier");
-    els.slideTitle.innerHTML = `
-      <span class="titleType">${escapeHtml(tt.type)}</span>
-      <span class="titleMain">${escapeHtml(tt.title)}</span>
-    `;
+    els.slideTitle.textContent = cleanTitle(item.title || "Bien immobilier");
 
-    // ✅ Meta premium (ville + CP séparés)
-    renderMeta(item.city || "");
+    const cityLine = safeText(item.city || "");
+    els.slideMeta.textContent = cityLine || "—";
 
     renderStats(item);
     setDpe(item);
@@ -819,9 +733,7 @@
   let lastFingerprint = "";
 
   function fingerprint(items) {
-    return items.map(i =>
-      `${i.id}|${i.updatedAt}|${(i.photos && i.photos.length) || 0}|${i.dpe ? "dpe" : ""}|${i.parkingInterieur||0}|${i.parkingExterieur||0}|${i.terrasse||0}`
-    ).join(";;");
+    return items.map(i => `${i.id}|${i.updatedAt}|${(i.photos && i.photos.length) || 0}|${i.dpe ? "dpe" : ""}|${i.parkingInterieur||0}|${i.parkingExterieur||0}|${i.terrasse||0}`).join(";;");
   }
 
   async function runOnce() {
