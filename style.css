@@ -107,7 +107,7 @@ body.debug .hud{display:flex;}
   will-change: opacity, transform;
   z-index:0;
 }
-.slide__img.is-visible{opacity:1;transform: scale(1.02)}
+.slide__img.is-visible{opacity:1;transform: scale(1.05)}
 
 /* overlay très léger */
 .slide__gradient{
