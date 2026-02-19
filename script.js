@@ -1,3 +1,4 @@
+// script.js
 (function () {
   const $ = (sel) => document.querySelector(sel);
 
@@ -12,8 +13,14 @@
     emptyTitle: $("#emptyTitle"),
     emptySub: $("#emptySub"),
 
+    slide: $("#slide"),
+    panel: $("#panel"),
+    panelTop: $("#panelTop"),
+    media: $("#media"),
+
     slidePrice: $("#slidePrice"),
     slideRef: $("#slideRef"),
+    slideType: $("#slideType"),
     slideTitle: $("#slideTitle"),
     slideMeta: $("#slideMeta"),
 
@@ -31,7 +38,6 @@
     dpeConsoImg: $("#dpeConsoImg"),
     dpeGesImg: $("#dpeGesImg"),
 
-    // ✅ QR
     qrBlock: $("#qrBlock"),
     qrBox: $("#qrBox"),
     qrImg: $("#qrImg"),
@@ -87,14 +93,93 @@
     let t = safeText(raw || "Bien immobilier");
     if (!t) return "Bien immobilier";
 
+    // enlève "— 5 pièces" / " - 5 pièces"
     t = t.replace(/\s*[-–—]?\s*\d+\s*pi[eè]ce(?:\(\s*s\s*\)|s)?\s*$/i, "");
+    // enlève occurrences "5 pièces" dans le texte
     t = t.replace(/\b\d+\s*pi[eè]ce(?:\(\s*s\s*\)|s)\b/ig, "").replace(/\s{2,}/g, " ").trim();
 
-    const max = 38;
+    // limite un peu plus long car on a un eyebrow au-dessus
+    const max = 42;
     if (t.length > max) t = t.slice(0, max - 1).trim() + "…";
     return t || "Bien immobilier";
   }
 
+  // essaie d'inférer un type premium (Maison / Appartement / Terrain / Immeuble…)
+  function inferType(item) {
+    const candidates = [
+      item.type, item.offer_type, item.product_offer_type, item.bien_type,
+      item.category, item.kind, item.nature
+    ].map(safeText).filter(Boolean);
+
+    const raw = (candidates[0] || safeText(item.title) || "").toLowerCase();
+
+    const map = [
+      ["appartement", "Appartement"],
+      ["maison", "Maison"],
+      ["villa", "Villa"],
+      ["terrain", "Terrain"],
+      ["immeuble", "Immeuble"],
+      ["local", "Local"],
+      ["bureau", "Bureau"],
+      ["commerce", "Commerce"],
+      ["parking", "Parking"],
+      ["garage", "Garage"],
+    ];
+
+    for (const [k, label] of map) {
+      if (raw.includes(k)) return label;
+    }
+    return "Bien";
+  }
+
+  // ---------------------------
+  // Localisation plus propre : Ville + badge CP
+  // ---------------------------
+  function extractZipAndCity(cityRaw) {
+    const s = safeText(cityRaw);
+    if (!s) return { city: "—", zip: "" };
+
+    // 1) "42000 SAINT-ÉTIENNE" ou "42000 Saint-Étienne"
+    let m = s.match(/^\s*(\d{5})\s+(.+)\s*$/);
+    if (m) return { zip: m[1], city: m[2].trim() };
+
+    // 2) "Saint-Étienne 42000"
+    m = s.match(/^\s*(.+?)\s+(\d{5})\s*$/);
+    if (m) return { zip: m[2], city: m[1].trim() };
+
+    // 3) "Saint-Étienne (42000)" / "Saint-Étienne - 42000"
+    m = s.match(/^\s*(.+?)\s*[\(\-–—]\s*(\d{5})\s*\)?\s*$/);
+    if (m) return { zip: m[2], city: m[1].trim() };
+
+    // 4) si ça contient " - " etc, on garde avant la séparation
+    const parts = s.split(/[-–—|]/).map(x => x.trim()).filter(Boolean);
+    if (parts.length >= 1) return { city: parts[0], zip: "" };
+
+    return { city: s, zip: "" };
+  }
+
+  function setMeta(cityRaw) {
+    const { city, zip } = extractZipAndCity(cityRaw);
+    if (!els.slideMeta) return;
+
+    // HTML léger pour permettre le badge CP
+    els.slideMeta.innerHTML = zip
+      ? `<span class="metaCity">${escapeHtml(city)}</span><span class="metaZip">${escapeHtml(zip)}</span>`
+      : `<span class="metaCity">${escapeHtml(city)}</span>`;
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  // ---------------------------
+  // Photos
+  // ---------------------------
   function normalizePhotos(photos, max = 10) {
     if (!Array.isArray(photos)) return [];
     const out = [];
@@ -156,7 +241,7 @@
     return null;
   }
 
-  // ✅ parking / terrasse : support large (0 si absent)
+  // parking / terrasse
   function readParkingInt(item){
     const candidates = [item.parkingInterieur, item.parkingInterior, item.parking_int, item.nbParkingInterieur, item.nbParkingInt];
     for (const c of candidates){
@@ -210,7 +295,6 @@
     const cel = readCellar(it);
     if (cel != null) it.cellar = cel;
 
-    // ✅ parking/terrasse normalisés
     it.parkingInterieur = readParkingInt(it);
     it.parkingExterieur = readParkingExt(it);
     it.terrasse = readTerrace(it);
@@ -331,28 +415,22 @@
           <path d="M6 19h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
 
-      // ✅ parking intérieur
       case "parkingInterieur":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 20V4h7a5 5 0 0 1 0 10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M7 14h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
-
-      // ✅ parking extérieur (P + repère)
       case "parkingExterieur":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 20V4h7a5 5 0 0 1 0 10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M12 22s6-3.8 6-10a6 6 0 1 0-12 0c0 6.2 6 10 6 10Z" stroke="currentColor" stroke-width="2"/>
         </svg>`;
-
-      // ✅ terrasse
       case "terrasse":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M6 18V9h12v9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M8 9V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>`;
-
       default:
         return "";
     }
@@ -365,6 +443,7 @@
   // ---------------------------
   function limitStatsToOneLine(container) {
     if (!container) return;
+
     const chips = Array.from(container.querySelectorAll(".statChip"));
     if (!chips.length) return;
 
@@ -404,27 +483,24 @@
     const terrain = (item.terrain != null && Number(item.terrain) > 0) ? Math.round(Number(item.terrain)) : null;
     const cellar = (typeof item.cellar === "boolean") ? item.cellar : null;
 
-    // ✅ nouveaux champs
     const pInt = (item.parkingInterieur != null && Number(item.parkingInterieur) > 0) ? Math.round(Number(item.parkingInterieur)) : 0;
     const pExt = (item.parkingExterieur != null && Number(item.parkingExterieur) > 0) ? Math.round(Number(item.parkingExterieur)) : 0;
     const terr = (item.terrasse != null && Number(item.terrasse) > 0) ? Math.round(Number(item.terrasse)) : 0;
 
-    // Base
     if (surface != null) stats.push({ pr: 100, key:"surface", value:`${surface} m²`, label:"Surface" });
     if (rooms != null) stats.push({ pr: 90, key:"rooms", value:`${rooms}`, label: plural(rooms, "Pièce", "Pièces") });
     if (bedrooms != null) stats.push({ pr: 80, key:"bedrooms", value:`${bedrooms}`, label: plural(bedrooms, "Chambre", "Chambres") });
     if (baths != null) stats.push({ pr: 70, key:"bathrooms", value:`${baths}`, label: plural(baths, "Salle de bain", "Salles de bain") });
 
-    // ✅ PRIORITAIRES (demandé) : parking/terrasse AVANT cave/niveaux
+    // ✅ prioritaires
     if (pInt > 0) stats.push({ pr: 69, key:"parkingInterieur", value:`${pInt}`, label: plural(pInt, "Parking int.", "Parkings int.") , cls:"is-priority" });
     if (pExt > 0) stats.push({ pr: 68, key:"parkingExterieur", value:`${pExt}`, label: plural(pExt, "Parking ext.", "Parkings ext.") , cls:"is-priority" });
     if (terr > 0) stats.push({ pr: 67, key:"terrasse", value:`${terr} m²`, label:"Terrasse", cls:"is-priority" });
 
-    // autres
     if (terrain != null) stats.push({ pr: 65, key:"terrain", value:`${terrain} m²`, label:"Terrain" });
     if (wc != null) stats.push({ pr: 60, key:"wc", value:`${wc}`, label:"WC" });
 
-    // ✅ secondaires : niveaux + cave
+    // secondaires
     if (levels != null) stats.push({ pr: 55, key:"levels", value:`${levels}`, label: plural(levels, "Niveau", "Niveaux"), cls:"is-secondary" });
     if (cellar != null) stats.push({ pr: 50, key:"cellar", value: cellar ? "Oui" : "Non", label:"Cave", cls:"is-secondary" });
 
@@ -600,6 +676,17 @@
   }
 
   // ---------------------------
+  // Swap animation helper (Idée A)
+  // ---------------------------
+  let swapTO = null;
+  function triggerSwapFX(){
+    if (!els.slide) return;
+    els.slide.classList.add("is-swapping");
+    clearTimeout(swapTO);
+    swapTO = setTimeout(() => els.slide.classList.remove("is-swapping"), 520);
+  }
+
+  // ---------------------------
   // Slide engine
   // ---------------------------
   const state = {
@@ -638,14 +725,16 @@
     els.slideProg.style.width = `${(pct * 100).toFixed(1)}%`;
   }
 
-  function setSlideItem(item, rotateMinSec, photoRotateSec, params) {
+  function setSlideItem(item, rotateMinSec, photoRotateSec, params, withFx=true) {
+    if (withFx) triggerSwapFX();
+
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
 
+    if (els.slideType) els.slideType.textContent = inferType(item).toUpperCase();
     els.slideTitle.textContent = cleanTitle(item.title || "Bien immobilier");
 
-    const cityLine = safeText(item.city || "");
-    els.slideMeta.textContent = cityLine || "—";
+    setMeta(item.city || "");
 
     renderStats(item);
     setDpe(item);
@@ -706,7 +795,7 @@
     state.itemIndex = 0;
 
     const first = items[0];
-    setSlideItem(first, rotateMinSec, photoRotateSec, params);
+    setSlideItem(first, rotateMinSec, photoRotateSec, params, false);
 
     state.photoTimer = setInterval(() => {
       const item = state.items[state.itemIndex];
@@ -718,7 +807,7 @@
 
       state.itemIndex = (state.itemIndex + 1) % state.items.length;
       const item = state.items[state.itemIndex];
-      setSlideItem(item, rotateMinSec, photoRotateSec, params);
+      setSlideItem(item, rotateMinSec, photoRotateSec, params, true);
     }, 250);
 
     state.progTimer = setInterval(updateProgress, 120);
