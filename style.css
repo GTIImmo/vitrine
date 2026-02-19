@@ -1,3 +1,4 @@
+/* style.css */
 :root{
   --bg:#f6f7fb;
   --surface:#ffffff;
@@ -16,6 +17,15 @@
 
   --radius:20px;
   --radius2:28px;
+
+  /* tuning vitrine */
+  --imgBright: 1.14;        /* ↓ était 1.22 */
+  --imgContrast: 1.07;
+  --imgSaturate: 1.10;
+
+  /* animation changement de bien */
+  --swapDur: 460ms;
+  --swapEase: cubic-bezier(.2,.9,.2,1);
 }
 
 *{box-sizing:border-box}
@@ -98,8 +108,8 @@ body.debug .hud{display:flex;}
   width:100%;height:100%;
   object-fit:cover;
 
-  /* ✅ moins agressif que 1.22 */
-  filter: brightness(1.14) contrast(1.08) saturate(1.10);
+  /* vitrine lumineux (plus naturel) */
+  filter: brightness(var(--imgBright)) contrast(var(--imgContrast)) saturate(var(--imgSaturate));
 
   opacity:0;
   transform: scale(1.03);
@@ -118,6 +128,16 @@ body.debug .hud{display:flex;}
     radial-gradient(1200px 900px at 55% 120%, rgba(0,0,0,.08), transparent 60%);
   pointer-events:none;
   z-index:3;
+}
+
+/* ✅ FLASH transition (Idée A) */
+.slide.is-swapping .slide__gradient{
+  animation: swapFlash var(--swapDur) var(--swapEase) both;
+}
+@keyframes swapFlash{
+  0%{opacity:0}
+  40%{opacity:1}
+  100%{opacity:0}
 }
 
 /* PRICE + REF */
@@ -139,6 +159,7 @@ body.debug .hud{display:flex;}
   0%,100%{transform:translateY(0) scale(1)}
   50%{transform:translateY(-1px) scale(1.015)}
 }
+
 .cornerTag{
   position:absolute;top:22px;right:22px;
   padding:10px 14px;border-radius:999px;
@@ -189,26 +210,7 @@ body.debug .hud{display:flex;}
   border-radius:999px;
   background: rgba(255,255,255,.92);
   border: 1px solid rgba(255,255,255,.36);
-  box-shadow: 0 10px 26px rgba(0,0,0,.06);
 }
-
-/* ✅ priorité visuelle parking/terrasse */
-.statsRow--media .statChip.is-priority{
-  background: rgba(255,255,255,.98);
-  border: 1px solid rgba(194,24,91,.22);
-  box-shadow: 0 12px 30px rgba(194,24,91,.14);
-}
-.statsRow--media .statChip.is-priority .statIcon{
-  border-color: rgba(194,24,91,.22);
-  box-shadow: 0 10px 22px rgba(194,24,91,.14);
-}
-.statsRow--media .statChip.is-secondary{
-  opacity:.92;
-  background: rgba(255,255,255,.86);
-  border-color: rgba(255,255,255,.28);
-  box-shadow: none;
-}
-
 .statsRow--media .statIcon{
   width:30px;height:30px;border-radius:999px;
   display:grid;place-items:center;
@@ -220,10 +222,15 @@ body.debug .hud{display:flex;}
 .statsRow--media .statValue{font-weight:950;font-size:15px;letter-spacing:-.01em}
 .statsRow--media .statLabel{font-weight:850;font-size:10px;color: rgba(18,19,24,.54);margin-top:3px}
 
-/* ✅ petits ajustements pour que les nouveaux chips (parking/terrasse) passent mieux */
-.statsRow--media .statChip[data-stat="terrasse"] .statValue{letter-spacing:-.02em}
-.statsRow--media .statChip[data-stat="parkingInterieur"] .statValue,
-.statsRow--media .statChip[data-stat="parkingExterieur"] .statValue{min-width: 14px}
+/* ✅ priorité parking/terrasse : léger highlight */
+.statsRow--media .statChip.is-priority{
+  background: rgba(255,255,255,.96);
+  border-color: rgba(194,24,91,.22);
+  box-shadow: 0 14px 30px rgba(194,24,91,.10);
+}
+.statsRow--media .statChip.is-secondary{
+  opacity:.96;
+}
 
 /* progress */
 .progWrap{
@@ -259,6 +266,15 @@ body.debug .hud{display:flex;}
   gap: 12px;
 }
 
+/* ✅ anim panneau au changement de bien */
+.slide.is-swapping .slide__panel{
+  animation: panelIn var(--swapDur) var(--swapEase) both;
+}
+@keyframes panelIn{
+  0%{transform: translateX(10px); opacity:.60; filter: blur(1px)}
+  100%{transform: translateX(0); opacity:1; filter: blur(0)}
+}
+
 /* TOP */
 .panelTop{
   min-height:0;
@@ -267,21 +283,45 @@ body.debug .hud{display:flex;}
   background: rgba(255,255,255,.90);
   border: 1px solid rgba(18,19,24,.08);
   box-shadow: var(--shadow2);
-  padding: 18px 18px 14px;
+  padding: 16px 18px 14px;
 }
+
+/* ✅ eyebrow type */
+.slide__eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  margin: 0 0 10px;
+  background: rgba(18,19,24,.06);
+  border: 1px solid rgba(18,19,24,.08);
+  font-weight:950;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  font-size:11px;
+  color: rgba(18,19,24,.84);
+}
+.slide__eyebrow::before{
+  content:"";
+  width:10px;height:10px;border-radius:999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 10px 26px rgba(194,24,91,.20);
+}
+
 .slide__title{
-  font-size: 38px;
+  font-size: 36px; /* ↓ un peu */
   font-weight: 950;
   line-height: 1.03;
   letter-spacing: -0.045em;
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   display:-webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow:hidden;
 }
 
-/* localisation */
+/* localisation (ville + CP en badge) */
 .slide__meta{
   display:flex;
   align-items:center;
@@ -291,8 +331,8 @@ body.debug .hud{display:flex;}
   background: linear-gradient(135deg, rgba(194,24,91,.14), rgba(15,118,110,.14));
   border: 1px solid rgba(18,19,24,.10);
   color: rgba(18,19,24,.92);
-  font-weight: 950;
-  font-size: 17px;
+  font-weight: 900;
+  font-size: 16px;
   margin: 0;
   box-shadow: 0 12px 34px rgba(0,0,0,.06);
 }
@@ -302,9 +342,26 @@ body.debug .hud{display:flex;}
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 22s7-4.4 7-12a7 7 0 1 0-14 0c0 7.6 7 12 7 12Z' stroke='%23121318' stroke-width='2'/%3E%3Cpath d='M12 13a3 3 0 1 0-3-3 3 3 0 0 0 3 3Z' stroke='%23121318' stroke-width='2'/%3E%3C/svg%3E") center/18px 18px no-repeat;
   opacity:.92;
 }
+.metaCity{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  max-width: 240px;
+  font-weight: 950;
+}
+.metaZip{
+  flex:0 0 auto;
+  padding:7px 10px;
+  border-radius:999px;
+  background: rgba(255,255,255,.70);
+  border: 1px solid rgba(255,255,255,.35);
+  font-weight:950;
+  font-size:12px;
+  letter-spacing:.08em;
+}
 
 /* =========================
-   CONTACT (OPTION 1: header barre premium)
+   CONTACT (Option A premium barre)
 ========================= */
 .contactCard{
   border-radius: 26px;
@@ -316,7 +373,6 @@ body.debug .hud{display:flex;}
   overflow:hidden;
 }
 
-/* ✅ BARRE PREMIUM */
 .contactTop{
   display:flex;
   align-items:center;
@@ -338,12 +394,12 @@ body.debug .hud{display:flex;}
   gap:12px;
 }
 
-/* ✅ logo rectangle noir premium */
+/* ✅ logo plus petit + fond noir premium */
 .contactLogo{
-  width:64px;
-  height:44px;
+  width:58px;
+  height:40px;
   border-radius: 14px;
-  padding:10px 12px;
+  padding:9px 11px;
 
   background: linear-gradient(180deg, #101218, #07080c);
   border: 1px solid rgba(255,255,255,.16);
@@ -359,15 +415,12 @@ body.debug .hud{display:flex;}
 .contactBrand__name{display:none !important;}
 .contactBrand__tag{display:none !important;}
 
-/* CTA CONTACT aligné, plus fin */
 .contactBadge{
   padding:10px 14px;
   border-radius:999px;
-
   background: linear-gradient(135deg, var(--accent), var(--accentDeep));
   border: 1px solid rgba(255,255,255,.22);
   box-shadow: 0 12px 30px rgba(194,24,91,.22);
-
   font-weight:950;
   letter-spacing:.14em;
   font-size:10.5px;
@@ -379,7 +432,7 @@ body.debug .hud{display:flex;}
 /* lignes contact */
 .contactGrid{display:flex;flex-direction:column;gap:12px}
 
-/* supprime les libellés */
+/* ✅ supprime les libellés (Conseiller / Tel Agence / Mobile) */
 .contactLabel{display:none !important;}
 
 .contactRow{
@@ -394,7 +447,6 @@ body.debug .hud{display:flex;}
   position:relative;
 }
 
-/* icônes */
 .contactRow::before{
   content:"";
   position:absolute;
@@ -417,7 +469,6 @@ body.debug .hud{display:flex;}
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='7' y='2' width='10' height='20' rx='2' stroke='%23121318' stroke-width='2'/%3E%3Cpath d='M11 19h2' stroke='%23121318' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
-/* valeurs */
 .contactValue{
   font-weight:950;
   color: rgba(18,19,24,.92);
@@ -429,10 +480,9 @@ body.debug .hud{display:flex;}
   text-align:left;
   width:100%;
 }
-
-#contactCard .contactRow:nth-child(1) .contactValue{ font-size:16px; }
+#contactCard .contactRow:nth-child(1) .contactValue{ font-size:15.5px; }
 #contactCard .contactRow:nth-child(2) .contactValue,
-#contactCard .contactRow:nth-child(3) .contactValue{ font-size:15px; }
+#contactCard .contactRow:nth-child(3) .contactValue{ font-size:14.8px; }
 
 /* =========================
    QR
@@ -449,8 +499,8 @@ body.debug .hud{display:flex;}
   box-shadow: 0 16px 46px rgba(0,0,0,.08);
 }
 .qrBox{
-  width:124px;
-  height:124px;
+  width:118px;
+  height:118px;
   border-radius: 18px;
   background: #fff;
   border: 1px solid rgba(18,19,24,.10);
@@ -559,15 +609,15 @@ body.debug .hud{display:flex;}
 /* Kiosque */
 @media (max-height: 980px){
   .slide__panel{ padding: 24px 22px 16px; gap:10px; }
-  .slide__title{ font-size: 36px; }
+  .slide__title{ font-size: 34px; }
+  .slide__eyebrow{ margin-bottom: 8px; }
   .contactRow{ padding-top:11px; padding-bottom:11px; }
-  #contactCard .contactRow:nth-child(1) .contactValue{ font-size:15.5px; }
+  #contactCard .contactRow:nth-child(1) .contactValue{ font-size:15px; }
   #contactCard .contactRow:nth-child(2) .contactValue,
-  #contactCard .contactRow:nth-child(3) .contactValue{ font-size:14.5px; }
-  .qrBox{ width:110px; height:110px; }
+  #contactCard .contactRow:nth-child(3) .contactValue{ font-size:14.2px; }
+  .qrBox{ width:108px; height:108px; }
   .dpeImg{ height:36px; }
-  .contactLogo{ width:60px; height:42px; padding:9px 11px; }
-  .statsRow--media .statValue{font-size:14.5px}
+  .contactLogo{ width:56px; height:38px; padding:8px 10px; }
 }
 
 /* Responsive */
@@ -589,8 +639,9 @@ body.debug .hud{display:flex;}
   }
   .slide__title{font-size:30px}
   .slide__meta{font-size:15px}
+  .metaCity{max-width: 62vw;}
   .mediaStats{ left:12px; right:12px; bottom:12px; }
   .qrBox{ width:104px; height:104px; }
-  .contactLogo{ width:58px; height:40px; padding:8px 10px; }
+  .contactLogo{ width:54px; height:36px; padding:8px 10px; }
   .contactBadge{ padding:10px 12px; font-size:10px; }
 }
