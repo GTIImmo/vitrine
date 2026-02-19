@@ -594,3 +594,66 @@ body.debug .hud{display:flex;}
   .contactLogo{ width:58px; height:40px; padding:8px 10px; }
   .contactBadge{ padding:10px 12px; font-size:10px; }
 }
+
+/* =========================================================
+   ✅ AJOUT : TRANSITION “CHANGEMENT DE BIEN” (VISIBLE VITRINE)
+   - mini fade / zoom
+   - flash lumineux premium
+   - panel droite “glisse” léger (perception immédiate)
+========================================================= */
+
+#slide{
+  position:relative;
+  will-change: transform, opacity, filter;
+  transform: translateZ(0);
+}
+
+/* transition globale */
+#slide.is-changing{
+  transform: scale(1.015);
+  filter: brightness(1.06);
+}
+
+/* flash premium */
+#slide.is-changing::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:999;
+  background:
+    radial-gradient(circle at 45% 35%,
+      rgba(255,255,255,.60) 0%,
+      rgba(255,255,255,.25) 28%,
+      rgba(255,255,255,0) 62%);
+  animation: gtiFlash .65s ease both;
+}
+
+@keyframes gtiFlash{
+  0%{ opacity:0; }
+  22%{ opacity:1; }
+  100%{ opacity:0; }
+}
+
+/* panel droite : effet “nouvelle annonce” */
+#slide .slide__panel{
+  transition: transform .55s ease, opacity .55s ease, filter .55s ease;
+}
+#slide.is-changing .slide__panel{
+  transform: translateX(10px);
+  opacity: .86;
+  filter: saturate(1.05);
+}
+
+/* bloc titre/meta/contact/dpe : micro fade pour “reset visuel” */
+#slide .panelTop,
+#slide #contactCard,
+#slide #dpeCard{
+  transition: transform .55s ease, opacity .55s ease;
+}
+#slide.is-changing .panelTop,
+#slide.is-changing #contactCard,
+#slide.is-changing #dpeCard{
+  transform: translateY(6px);
+  opacity: .88;
+}
