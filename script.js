@@ -522,6 +522,9 @@
       photoRotate: clampInt(p.get("photoRotate"), 2, 120, 4),
       refresh: clampInt(p.get("refresh"), 10, 3600, 120),
 
+      // ✅ NEW : limite photo par bien (par défaut 5)
+      maxPhotos: clampInt(p.get("maxPhotos"), 1, 20, 5),
+
       src: (p.get("src") || "exports/catalogue_vitrine.json").trim(),
       debug: p.get("debug") === "1",
 
@@ -617,10 +620,12 @@
     state.progTimer = null;
   }
 
-  function computeItemDurationSec(item, rotateMinSec, photoRotateSec) {
+  // ✅ durée calculée SANS reboucler les photos
+  function computeItemDurationSec(item, rotateMinSec, photoRotateSec, maxPhotos) {
     const count = Array.isArray(item.photos) ? item.photos.length : 0;
-    const photoSlots = Math.max(1, count);
-    const fullPhotosDuration = photoSlots * photoRotateSec;
+    const photosToShow = Math.max(1, Math.min(maxPhotos || 999, count || 1));
+    const fullPhotosDuration = photosToShow * photoRotateSec;
+    // si rotateMinSec est plus long, on garde la dernière photo (pas de boucle)
     return Math.max(rotateMinSec, fullPhotosDuration);
   }
 
@@ -635,7 +640,6 @@
   function setSlideItem(item, rotateMinSec, photoRotateSec, params) {
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
-
     els.slideTitle.textContent = cleanTitle(item.title || "Bien immobilier");
 
     const cityLine = safeText(item.city || "");
@@ -661,7 +665,7 @@
     els.slideImgA.classList.add("is-visible");
     els.slideImgB.classList.remove("is-visible");
 
-    const durSec = computeItemDurationSec(item, rotateMinSec, photoRotateSec);
+    const durSec = computeItemDurationSec(item, rotateMinSec, photoRotateSec, params.maxPhotos);
     state.itemDurationMs = durSec * 1000;
     state.nextItemAt = Date.now() + state.itemDurationMs;
     if (els.slideProg) els.slideProg.style.width = "0%";
@@ -669,6 +673,9 @@
     warmupItem(item, 1, 3).catch(()=>{});
     const nextItem = state.items[(state.itemIndex + 1) % state.items.length];
     if (nextItem) preload(getPhoto(nextItem, 0)).catch(()=>{});
+
+    // ✅ reset phase rotation photo pour ce bien (photo 1 = 4s plein)
+    restartPhotoTimer(photoRotateSec, params.maxPhotos);
   }
 
   // ✅ Transition "book" très visible (sans texte)
@@ -681,19 +688,16 @@
 
     state.isTransitioning = true;
 
-    // lance sweep + sortie
     slideEl.classList.add("is-changing");
     slideEl.classList.remove("is-active");
     slideEl.classList.add("is-exit");
 
-    // au milieu : on remplace le contenu "caché" (pendant l’effet)
     setTimeout(() => {
       slideEl.classList.remove("is-exit");
       slideEl.classList.add("is-enter");
 
       setSlideItem(item, rotateMinSec, photoRotateSec, params);
 
-      // micro-delay pour laisser le DOM appliquer is-enter
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           slideEl.classList.remove("is-enter");
@@ -702,19 +706,32 @@
       });
     }, 420);
 
-    // fin
     setTimeout(() => {
       slideEl.classList.remove("is-changing");
       state.isTransitioning = false;
     }, 820);
   }
 
-  async function swapPhoto(item) {
+  function restartPhotoTimer(photoRotateSec, maxPhotos) {
+    // ✅ Important : redémarrer le timer photo à CHAQUE changement de bien
+    // => la 1ère photo reste toujours photoRotateSec (pas 1s “par hasard”)
+    if (state.photoTimer) clearInterval(state.photoTimer);
+    state.photoTimer = setInterval(() => {
+      const item = state.items[state.itemIndex];
+      swapPhoto(item, maxPhotos).catch(()=>{});
+    }, photoRotateSec * 1000);
+  }
+
+  async function swapPhoto(item, maxPhotos) {
     // ✅ ne change pas de photo pendant un changement de bien
     if (state.isTransitioning) return;
 
     const photos = Array.isArray(item.photos) ? item.photos : [];
     if (photos.length <= 1) return;
+
+    const maxShow = Math.max(1, Math.min(maxPhotos || 999, photos.length));
+    // ✅ pas de boucle : arrivé à la dernière photo autorisée, on stoppe.
+    if (state.photoIndex >= maxShow - 1) return;
 
     state.photoIndex++;
     const nextUrl = getPhoto(item, state.photoIndex);
@@ -748,11 +765,6 @@
 
     const first = items[0];
     setSlideItem(first, rotateMinSec, photoRotateSec, params);
-
-    state.photoTimer = setInterval(() => {
-      const item = state.items[state.itemIndex];
-      swapPhoto(item);
-    }, photoRotateSec * 1000);
 
     state.tickTimer = setInterval(() => {
       if (Date.now() < state.nextItemAt) return;
