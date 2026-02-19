@@ -596,64 +596,85 @@ body.debug .hud{display:flex;}
 }
 
 /* =========================================================
-   ✅ AJOUT : TRANSITION “CHANGEMENT DE BIEN” (VISIBLE VITRINE)
-   - mini fade / zoom
-   - flash lumineux premium
-   - panel droite “glisse” léger (perception immédiate)
+   ✅ TRANSITION "BOOK" (sans texte, très visible en vitrine)
+   - Sortie à gauche + blur
+   - Entrée depuis la droite + net
+   - Sweep lumineux discret (premium)
 ========================================================= */
 
 #slide{
   position:relative;
-  will-change: transform, opacity, filter;
-  transform: translateZ(0);
+  overflow:hidden;
 }
 
-/* transition globale */
-#slide.is-changing{
-  transform: scale(1.015);
-  filter: brightness(1.06);
-}
-
-/* flash premium */
-#slide.is-changing::after{
+/* Sweep lumineux (pas de texte) */
+#slide::after{
   content:"";
   position:absolute;
-  inset:0;
+  top:-15%;
+  left:-140%;
+  width:90%;
+  height:130%;
   pointer-events:none;
-  z-index:999;
+  z-index:9999;
+  opacity:0;
+
+  transform: skewX(-14deg);
   background:
-    radial-gradient(circle at 45% 35%,
-      rgba(255,255,255,.60) 0%,
-      rgba(255,255,255,.25) 28%,
-      rgba(255,255,255,0) 62%);
-  animation: gtiFlash .65s ease both;
+    radial-gradient(800px 600px at 20% 20%, rgba(255,255,255,.55), rgba(255,255,255,0) 58%),
+    linear-gradient(90deg,
+      rgba(194,24,91,.0),
+      rgba(194,24,91,.22),
+      rgba(15,118,110,.20),
+      rgba(255,255,255,.0)
+    );
+  filter: blur(.2px);
+  mix-blend-mode: screen;
 }
 
-@keyframes gtiFlash{
-  0%{ opacity:0; }
-  22%{ opacity:1; }
-  100%{ opacity:0; }
+/* Etats */
+#slide.is-exit{
+  transform: translateX(-10%) scale(.985);
+  filter: blur(1.6px);
+  opacity:.62;
+  transition: transform 520ms cubic-bezier(.22,.85,.2,1),
+              filter 520ms ease,
+              opacity 520ms ease;
 }
 
-/* panel droite : effet “nouvelle annonce” */
-#slide .slide__panel{
-  transition: transform .55s ease, opacity .55s ease, filter .55s ease;
+#slide.is-enter{
+  transform: translateX(10%) scale(.985);
+  filter: blur(1.6px);
+  opacity:.62;
+  transition: none;
+}
+
+#slide.is-active{
+  transform: translateX(0) scale(1);
+  filter:none;
+  opacity:1;
+  transition: transform 620ms cubic-bezier(.18,.9,.2,1),
+              filter 620ms ease,
+              opacity 620ms ease;
+}
+
+/* Déclenche le sweep seulement pendant le change */
+#slide.is-changing::after{
+  animation: gtiSweep 720ms cubic-bezier(.2,.9,.2,1) both;
+}
+@keyframes gtiSweep{
+  0%   { left:-140%; opacity:0; }
+  12%  { opacity:.85; }
+  55%  { left:18%; opacity:.95; }  /* passage devant */
+  100% { left:160%; opacity:0; }
+}
+
+/* Pendant transition : on calme les blocs (propre) */
+#slide.is-changing .priceBadge,
+#slide.is-changing .cornerTag{
+  transform: translateY(-1px);
+  opacity:.92;
 }
 #slide.is-changing .slide__panel{
-  transform: translateX(10px);
-  opacity: .86;
-  filter: saturate(1.05);
-}
-
-/* bloc titre/meta/contact/dpe : micro fade pour “reset visuel” */
-#slide .panelTop,
-#slide #contactCard,
-#slide #dpeCard{
-  transition: transform .55s ease, opacity .55s ease;
-}
-#slide.is-changing .panelTop,
-#slide.is-changing #contactCard,
-#slide.is-changing #dpeCard{
-  transform: translateY(6px);
-  opacity: .88;
+  opacity:.92;
 }
