@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!doctype html>
 <html lang="fr">
 <head>
@@ -33,7 +32,7 @@
       <article class="slide" id="slide">
 
         <!-- MEDIA -->
-        <div class="slide__media" id="media">
+        <div class="slide__media">
           <!-- décor léger (ne dépend pas du JS) -->
           <div class="mediaGlow" aria-hidden="true"></div>
           <div class="mediaFrame" aria-hidden="true"></div>
@@ -55,12 +54,11 @@
           </div>
         </div>
 
-        <!-- COLONNE DROITE -->
-        <div class="slide__panel" id="panel">
+        <!-- ✅ COLONNE DROITE -->
+        <div class="slide__panel">
 
-          <!-- TOP : type + titre + localisation -->
-          <div class="panelTop" id="panelTop">
-            <div class="slide__eyebrow" id="slideType">—</div>
+          <!-- TOP : titre + localisation -->
+          <div class="panelTop">
             <div class="slide__title" id="slideTitle">—</div>
             <div class="slide__meta" id="slideMeta">—</div>
           </div>
@@ -103,7 +101,7 @@
               </div>
             </div>
 
-            <!-- QR -->
+            <!-- ✅ QR (réservé même si absent du JSON) -->
             <div class="qrBlock" id="qrBlock" aria-label="QR code pour plus d'informations">
               <div class="qrBox is-empty" id="qrBox">
                 <img id="qrImg" alt="QR code" decoding="async" loading="eager" />
@@ -115,7 +113,7 @@
             </div>
           </div>
 
-          <!-- DPE -->
+          <!-- ✅ DPE EN DERNIER (footer compact tendance) -->
           <div class="dpeCard hidden dpeCard--compact" id="dpeCard" aria-label="Diagnostic de performance énergétique">
             <div class="dpeHead">
               <div class="dpeTitle">DPE</div>
