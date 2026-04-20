@@ -95,6 +95,10 @@
     return t || "Bien immobilier";
   }
 
+  function displayNature(item) {
+    return cleanTitle(item.nature || item.propertyType || item.typeLabel || item.category || item.title || "Bien immobilier");
+  }
+
   function normalizePhotos(photos, max = 10) {
     if (!Array.isArray(photos)) return [];
     const out = [];
@@ -640,7 +644,7 @@
   function setSlideItem(item, rotateMinSec, photoRotateSec, params) {
     els.slidePrice.textContent = formatPriceEUR(item.price);
     els.slideRef.textContent = safeText(item.ref || "");
-    els.slideTitle.textContent = cleanTitle(item.title || "Bien immobilier");
+    els.slideTitle.textContent = displayNature(item);
 
     const cityLine = safeText(item.city || "");
     els.slideMeta.textContent = cityLine || "—";
@@ -678,6 +682,16 @@
     restartPhotoTimer(photoRotateSec, params.maxPhotos);
   }
 
+  function restartInfoAnimation(slideEl) {
+    if (!slideEl) return;
+    slideEl.classList.remove("is-info-animating");
+    void slideEl.offsetWidth;
+    slideEl.classList.add("is-info-animating");
+    window.setTimeout(() => {
+      slideEl.classList.remove("is-info-animating");
+    }, 1350);
+  }
+
   // ✅ Transition "book" très visible (sans texte)
   function transitionToItem(item, rotateMinSec, photoRotateSec, params) {
     const slideEl = document.getElementById("slide");
@@ -697,6 +711,7 @@
       slideEl.classList.add("is-enter");
 
       setSlideItem(item, rotateMinSec, photoRotateSec, params);
+      restartInfoAnimation(slideEl);
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -704,12 +719,12 @@
           slideEl.classList.add("is-active");
         });
       });
-    }, 420);
+    }, 520);
 
     setTimeout(() => {
       slideEl.classList.remove("is-changing");
       state.isTransitioning = false;
-    }, 820);
+    }, 1250);
   }
 
   function restartPhotoTimer(photoRotateSec, maxPhotos) {
@@ -765,6 +780,7 @@
 
     const first = items[0];
     setSlideItem(first, rotateMinSec, photoRotateSec, params);
+    restartInfoAnimation(slideEl);
 
     state.tickTimer = setInterval(() => {
       if (Date.now() < state.nextItemAt) return;
