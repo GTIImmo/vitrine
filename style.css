@@ -356,11 +356,32 @@ body.debug .hud{display:flex;}
   padding: 0 0 15px;
 }
 .slide__title{
+  margin: 0 0 12px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:10px;
+}
+.slide__typePill{
+  display:inline-flex;
+  align-items:center;
+  padding:7px 12px;
+  border-radius:999px;
+  background:linear-gradient(135deg, rgba(18,19,24,.08), rgba(194,24,91,.10));
+  border:1px solid rgba(18,19,24,.08);
+  color:rgba(90,20,46,.96);
+  font-size:12px;
+  line-height:1;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  font-weight:900;
+  box-shadow:0 8px 18px rgba(18,19,24,.05);
+}
+.slide__titleMain{
   font-size: 34px;
   font-weight: 950;
   line-height: 1.03;
   letter-spacing: 0;
-  margin: 0 0 12px;
   display:-webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
