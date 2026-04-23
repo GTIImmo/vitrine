@@ -533,7 +533,8 @@ body.debug .hud{display:flex;}
   font-size:14px;
   letter-spacing:.02em;
   color: rgba(18,19,24,.92);
-  animation: scannerPulse 1.9s ease-in-out infinite;
+  transform-origin:left center;
+  animation: scannerPulse 1.35s ease-in-out infinite;
 }
 .qrSub{
   margin-top:6px;
@@ -543,8 +544,8 @@ body.debug .hud{display:flex;}
 }
 
 @keyframes scannerPulse{
-  0%,100%{transform:translateX(0); opacity:1}
-  50%{transform:translateX(2px); opacity:.72}
+  0%,100%{transform:translateX(0) scale(1); opacity:1; color:rgba(18,19,24,.92)}
+  50%{transform:translateX(3px) scale(1.08); opacity:1; color:rgba(194,24,91,.96)}
 }
 
 /* =========================
