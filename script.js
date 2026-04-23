@@ -292,8 +292,8 @@
   function stateRibbonConfig(item) {
     const state = normalizeStateLabel(item && item.state);
     if (!state || state === "ACTIF") return null;
-    if (state.includes("OFFRE")) return { label: "SOUS OFFRE", cls: "stateRibbon--offer" };
-    if (state.includes("COMPROMIS")) return { label: "SOUS COMPROMIS", cls: "stateRibbon--compromis" };
+    if (state.includes("OFFRE")) return { label: "Sous offre", cls: "stateRibbon--offer" };
+    if (state.includes("COMPROMIS")) return { label: "Sous compromis", cls: "stateRibbon--compromis" };
     if (state.includes("VENDU") || state.includes("VENTE")) return { label: "VENDU", cls: "stateRibbon--sold" };
     return null;
   }
