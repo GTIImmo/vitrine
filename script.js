@@ -13,7 +13,6 @@
     emptySub: $("#emptySub"),
 
     slidePrice: $("#slidePrice"),
-    slideRef: $("#slideRef"),
     slideTitle: $("#slideTitle"),
     slideMeta: $("#slideMeta"),
 
@@ -294,6 +293,11 @@
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 9V4h5M20 15v5h-5M20 9V4h-5M4 15v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>`;
+      case "ref":
+        return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="4" y="5" width="16" height="14" rx="3" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>`;
       case "rooms":
         return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 10.5V20h16v-9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -390,6 +394,7 @@
     if (!els.slideStats) return;
 
     const stats = [];
+    const ref = safeText(item.ref);
 
     const surface = (item.surface != null && Number(item.surface) > 0) ? Math.round(Number(item.surface)) : null;
     const rooms = (item.rooms != null && Number(item.rooms) > 0) ? Math.round(Number(item.rooms)) : null;
@@ -407,6 +412,7 @@
     const terr = (item.terrasse != null && Number(item.terrasse) > 0) ? Math.round(Number(item.terrasse)) : 0;
 
     // Base
+    if (ref) stats.push({ pr: 110, key:"ref", value:ref, label:"Référence", cls:"is-priority" });
     if (surface != null) stats.push({ pr: 100, key:"surface", value:`${surface} m²`, label:"Surface" });
     if (rooms != null) stats.push({ pr: 90, key:"rooms", value:`${rooms}`, label: plural(rooms, "Pièce", "Pièces") });
     if (bedrooms != null) stats.push({ pr: 80, key:"bedrooms", value:`${bedrooms}`, label: plural(bedrooms, "Chambre", "Chambres") });
@@ -643,7 +649,6 @@
 
   function setSlideItem(item, rotateMinSec, photoRotateSec, params) {
     els.slidePrice.textContent = formatPriceEUR(item.price);
-    els.slideRef.textContent = safeText(item.ref || "");
     els.slideTitle.textContent = displayNature(item);
 
     const cityLine = safeText(item.city || "");
