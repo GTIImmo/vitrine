@@ -127,6 +127,16 @@
     return city.replace(new RegExp(`\\s*${postal}\\s*$`), "").trim() || city;
   }
 
+  function propertyTypeTone(item) {
+    const type = safeText(item.nature || item.propertyType || item.typeLabel || "").toLowerCase();
+    if (type.includes("appartement") || type.includes("studio") || type.includes("duplex") || type.includes("triplex")) return "appartement";
+    if (type.includes("maison") || type.includes("villa") || type.includes("chalet") || type.includes("ferme") || type.includes("demeure") || type.includes("mas") || type.includes("propri")) return "maison";
+    if (type.includes("bureau") || type.includes("local") || type.includes("commerce") || type.includes("boutique")) return "pro";
+    if (type.includes("terrain")) return "terrain";
+    if (type.includes("garage") || type.includes("parking")) return "parking";
+    return "default";
+  }
+
   function normalizePhotos(photos, max = 10) {
     if (!Array.isArray(photos)) return [];
     const out = [];
@@ -704,12 +714,8 @@
   function setSlideItem(item, rotateMinSec, photoRotateSec, params) {
     els.slidePrice.textContent = formatPriceEUR(item.price);
     const nature = displayNature(item);
-    els.slideTitle.innerHTML = `
-      <span class="slide__titleLine">
-        <span class="slide__titleIcon">${propertyTypeIcon(item)}</span>
-        <span class="slide__titleMain">${nature}</span>
-      </span>
-    `;
+    const tone = propertyTypeTone(item);
+    els.slideTitle.innerHTML = `<span class="slide__titleMain slide__titleMain--${tone}">${nature}</span>`;
 
     const cityLine = displayCityOnly(item);
     els.slideMeta.textContent = cityLine || "—";
