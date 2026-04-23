@@ -133,8 +133,8 @@ body.debug .hud{display:flex;}
 .stateRibbon{
   position:absolute;
   top:18px;
-  right:-90px;
-  width:420px;
+  right:-122px;
+  width:392px;
   padding:14px 0;
   transform:rotate(38deg);
   transform-origin:center;
