@@ -204,19 +204,6 @@ body.debug .hud{display:flex;}
   72%{transform:translateX(0) scale(.99)}
   100%{opacity:1;transform:translateX(0) scale(1);box-shadow:0 10px 24px rgba(15,118,110,.08)}
 }
-.cornerTag{
-  position:absolute;top:28px;right:28px;
-  padding:8px 11px;border-radius:6px;
-  font-weight:900;font-size:10.5px;letter-spacing:.10em;text-transform:uppercase;
-  background: rgba(18,19,24,.68);
-  border: 1px solid rgba(255,255,255,.18);
-  color: rgba(255,255,255,.92);
-  box-shadow: none;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  z-index:4;
-}
-
 /* STATS sous photo */
 .mediaStats{
   position:absolute;
@@ -676,9 +663,6 @@ body.debug .hud{display:flex;}
 #slide.is-info-animating .priceBadge::before{
   animation: priceShine 1.05s ease both;
 }
-#slide.is-info-animating .cornerTag{
-  animation: tagSnap .66s cubic-bezier(.2,.9,.2,1) .05s both;
-}
 #slide.is-info-animating .slide__title{
   animation: titleSlideReveal .68s cubic-bezier(.18,.9,.2,1) .10s both;
 }
@@ -781,8 +765,7 @@ body.debug .hud{display:flex;}
 }
 
 /* Pendant transition : on calme les blocs (propre) */
-#slide.is-changing .priceBadge,
-#slide.is-changing .cornerTag{
+#slide.is-changing .priceBadge{
   transform: translateY(-1px);
   opacity:.92;
 }
