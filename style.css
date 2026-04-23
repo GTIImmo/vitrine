@@ -133,9 +133,9 @@ body.debug .hud{display:flex;}
 .stateRibbon{
   position:absolute;
   top:18px;
-  right:-112px;
-  width:380px;
-  padding:14px 24px;
+  right:-90px;
+  width:392px;
+  padding:14px 18px;
   transform:rotate(38deg);
   transform-origin:center;
   display:flex;
@@ -143,9 +143,9 @@ body.debug .hud{display:flex;}
   justify-content:center;
   text-align:center;
   font-weight:950;
-  font-size:11px;
+  font-size:10px;
   line-height:1.05;
-  letter-spacing:.05em;
+  letter-spacing:.04em;
   white-space:nowrap;
   text-transform:uppercase;
   color:#fff;
