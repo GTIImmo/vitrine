@@ -412,6 +412,14 @@ body.debug .hud{display:flex;}
   position:relative;
   overflow:hidden;
 }
+.contactCard__title{
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:rgba(18,19,24,.56);
+  margin:0 0 10px;
+}
 
 /* lignes contact */
 .contactGrid{display:flex;flex-direction:column;gap:8px}
