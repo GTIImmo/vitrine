@@ -99,6 +99,26 @@
     return cleanTitle(item.nature || item.propertyType || item.typeLabel || item.category || item.title || "Bien immobilier");
   }
 
+  function propertyTypeIcon(item) {
+    const type = safeText(item.nature || item.propertyType || item.typeLabel || "").toLowerCase();
+    if (type.includes("appartement") || type.includes("studio") || type.includes("duplex") || type.includes("triplex")) {
+      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 20V6l7-3 7 3v14" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1M11 20v-4h2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+    }
+    if (type.includes("maison") || type.includes("villa") || type.includes("chalet") || type.includes("ferme") || type.includes("demeure") || type.includes("mas") || type.includes("propriété")) {
+      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20H4v-9.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`;
+    }
+    if (type.includes("bureau") || type.includes("local") || type.includes("commerce") || type.includes("boutique")) {
+      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V7h16v13" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 20h20M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+    }
+    if (type.includes("terrain")) {
+      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19 10 7l3 5 7-4-4 11H4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+    }
+    if (type.includes("garage") || type.includes("parking")) {
+      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 11 12 4l9 7v9H3v-9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 20v-5h8v5M8 11h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+    }
+    return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 20V6l7-3 7 3v14" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1M11 20v-4h2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+  }
+
   function displayCityOnly(item) {
     const city = safeText(item.city || "");
     const postal = safeText(item.postalCode || "");
@@ -685,8 +705,10 @@
     els.slidePrice.textContent = formatPriceEUR(item.price);
     const nature = displayNature(item);
     els.slideTitle.innerHTML = `
-      <span class="slide__typePill">${nature}</span>
-      <span class="slide__titleMain">${nature}</span>
+      <span class="slide__titleLine">
+        <span class="slide__titleIcon">${propertyTypeIcon(item)}</span>
+        <span class="slide__titleMain">${nature}</span>
+      </span>
     `;
 
     const cityLine = displayCityOnly(item);
