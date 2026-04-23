@@ -362,25 +362,21 @@ body.debug .hud{display:flex;}
 .slide__titleLine{
   display:flex;
   align-items:flex-start;
-  gap:12px;
+  gap:8px;
 }
 .slide__titleIcon{
-  width:36px;
-  height:36px;
-  flex:0 0 36px;
+  width:22px;
+  height:22px;
+  flex:0 0 22px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  margin-top:3px;
-  border-radius:12px;
-  background:linear-gradient(135deg, rgba(15,118,110,.12), rgba(194,24,91,.10));
-  border:1px solid rgba(15,118,110,.14);
+  margin-top:5px;
   color:rgba(15,118,110,.98);
-  box-shadow:0 10px 24px rgba(15,118,110,.08);
 }
 .slide__titleIcon svg{
-  width:20px;
-  height:20px;
+  width:22px;
+  height:22px;
 }
 .slide__titleMain{
   font-size: 34px;
