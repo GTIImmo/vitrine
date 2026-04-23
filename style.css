@@ -413,12 +413,19 @@ body.debug .hud{display:flex;}
   overflow:hidden;
 }
 .contactCard__title{
+  display:inline-flex;
+  align-items:center;
+  padding:8px 12px;
+  border-radius:10px;
+  background:linear-gradient(135deg, rgba(194,24,91,.12), rgba(15,118,110,.10));
+  border:1px solid rgba(194,24,91,.16);
+  box-shadow:0 10px 22px rgba(18,19,24,.05);
   font-size:12px;
   font-weight:900;
   letter-spacing:.12em;
   text-transform:uppercase;
-  color:rgba(18,19,24,.56);
-  margin:0 0 10px;
+  color:rgba(123,25,63,.92);
+  margin:0 0 12px;
 }
 
 /* lignes contact */
