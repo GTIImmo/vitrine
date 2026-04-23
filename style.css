@@ -359,25 +359,6 @@ body.debug .hud{display:flex;}
   margin: 0 0 12px;
   display:block;
 }
-.slide__titleLine{
-  display:flex;
-  align-items:flex-start;
-  gap:8px;
-}
-.slide__titleIcon{
-  width:22px;
-  height:22px;
-  flex:0 0 22px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  margin-top:5px;
-  color:rgba(15,118,110,.98);
-}
-.slide__titleIcon svg{
-  width:22px;
-  height:22px;
-}
 .slide__titleMain{
   font-size: 34px;
   font-weight: 950;
@@ -388,6 +369,12 @@ body.debug .hud{display:flex;}
   -webkit-box-orient: vertical;
   overflow:hidden;
 }
+.slide__titleMain--appartement{color:#2554c7}
+.slide__titleMain--maison{color:#0f766e}
+.slide__titleMain--pro{color:#7c3aed}
+.slide__titleMain--terrain{color:#8a5a12}
+.slide__titleMain--parking{color:#475569}
+.slide__titleMain--default{color:inherit}
 
 /* localisation */
 .slide__meta{
