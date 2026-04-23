@@ -99,6 +99,14 @@
     return cleanTitle(item.nature || item.propertyType || item.typeLabel || item.category || item.title || "Bien immobilier");
   }
 
+  function displayCityOnly(item) {
+    const city = safeText(item.city || "");
+    const postal = safeText(item.postalCode || "");
+    if (!city) return "";
+    if (!postal) return city;
+    return city.replace(new RegExp(`\\s*${postal}\\s*$`), "").trim() || city;
+  }
+
   function normalizePhotos(photos, max = 10) {
     if (!Array.isArray(photos)) return [];
     const out = [];
@@ -675,9 +683,13 @@
 
   function setSlideItem(item, rotateMinSec, photoRotateSec, params) {
     els.slidePrice.textContent = formatPriceEUR(item.price);
-    els.slideTitle.textContent = displayNature(item);
+    const nature = displayNature(item);
+    els.slideTitle.innerHTML = `
+      <span class="slide__typePill">${nature}</span>
+      <span class="slide__titleMain">${nature}</span>
+    `;
 
-    const cityLine = safeText(item.city || "");
+    const cityLine = displayCityOnly(item);
     els.slideMeta.textContent = cityLine || "—";
 
     renderStats(item);
