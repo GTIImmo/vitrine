@@ -383,10 +383,51 @@
       function chip(base, value, suffix) {
         return base + " " + (value ? value + (suffix || "") : "—");
       }
+      function asInt(value, fallback) {
+        var n = parseInt(value, 10);
+        return isNaN(n) ? fallback : n;
+      }
+      function positiveModulo(value, mod) {
+        return ((value % mod) + mod) % mod;
+      }
+      function applyScreenSlice(items, screen, screens) {
+        if (!items || !items.length) return [];
+        if (!screens || screens <= 1) return items.slice(0);
+        var screenIndex = positiveModulo((screen || 1) - 1, screens);
+        var out = [];
+        for (var i = 0; i < items.length; i++) {
+          if (positiveModulo(i, screens) === screenIndex) out.push(items[i]);
+        }
+        return out.length ? out : items.slice(0);
+      }
+      function renderItem(first) {
+        setText("itemTitle", text(first.title || first.nature || "Sans titre"));
+        setText("itemMeta", [text(first.city), text(first.ref)].filter(Boolean).join(" • "));
+        setText("priceValue", formatPrice(first.price));
+        setText("agencyValue", text(first.agence || "GTI Immobilier"));
+        setText("typeChip", text(first.propertyType || first.nature || "Bien immobilier"));
+        setText("statusChip", text(first.state || "Annonce"));
+        setText("surfaceChip", chip("Surface", first.surface, " m²"));
+        setText("roomsChip", chip("Pièces", first.rooms, ""));
+        setText("bedroomsChip", chip("Chambres", first.bedrooms, ""));
+
+        var img = pickPhoto(first);
+        var hero = document.getElementById("hero");
+        if (img) {
+          hero.src = img;
+          setHtml("imageState", '<span class="ok">Image définie</span>');
+        } else {
+          hero.removeAttribute("src");
+          setHtml("imageState", '<span class="bad">Aucune image dans la donnée</span>');
+        }
+      }
 
       var p = params();
       var src = text(p.src || "exports/catalogue_vitrine.json");
       var agence = text(p.agence || "");
+      var screen = asInt(p.screen, 1);
+      var screens = asInt(p.screens, 1);
+      var rotateSeconds = Math.max(4, asInt(p.rotate, 12));
       setText("jsonUrl", new URL(src, window.location.href).toString());
       setText("agency", agence || "(aucune)");
 
@@ -422,6 +463,7 @@
             return normalizeAgency(x && x.agence).indexOf(target) !== -1;
           });
         }
+        items = applyScreenSlice(items, screen, screens);
 
         if (!items.length) {
           setHtml("status", '<span class="bad">Aucune annonce retenue</span>');
@@ -432,35 +474,32 @@
         }
 
         setHtml("status", '<span class="ok">JSON chargé</span>');
-        setText("details", "Items totaux : " + total + " | Après filtre : " + items.length);
-
-        var first = items[0];
-        setText("itemTitle", text(first.title || first.nature || "Sans titre"));
-        setText("itemMeta", [text(first.city), text(first.ref)].filter(Boolean).join(" • "));
-        setText("priceValue", formatPrice(first.price));
-        setText("agencyValue", text(first.agence || "GTI Immobilier"));
-        setText("typeChip", text(first.propertyType || first.nature || "Bien immobilier"));
-        setText("statusChip", text(first.state || "Annonce"));
-        setText("surfaceChip", chip("Surface", first.surface, " m²"));
-        setText("roomsChip", chip("Pièces", first.rooms, ""));
-        setText("bedroomsChip", chip("Chambres", first.bedrooms, ""));
-
-        var img = pickPhoto(first);
-        var hero = document.getElementById("hero");
-        if (img) {
-          hero.src = img;
-          setHtml("imageState", '<span class="ok">Image définie</span>');
-          setText("statusLine", "Le Samsung charge correctement le JSON, l'image et la première annonce.");
-        } else {
-          setHtml("imageState", '<span class="bad">Aucune image dans la donnée</span>');
-          setText("statusLine", "Le flux charge, mais cette annonce n'a pas de photo exploitable.");
-        }
+        setText("details", "Items totaux : " + total + " | Sur cet écran : " + items.length + " | Rotation : " + rotateSeconds + "s");
 
         var titles = document.getElementById("titles");
         for (var i = 0; i < Math.min(items.length, 8); i++) {
           var li = document.createElement("li");
           li.textContent = text(items[i].title || items[i].nature || items[i].ref || "Sans titre");
           titles.appendChild(li);
+        }
+
+        var currentIndex = 0;
+        function showCurrent() {
+          var current = items[currentIndex];
+          renderItem(current);
+          if (pickPhoto(current)) {
+            setText("statusLine", "Le Samsung charge correctement le JSON, l'image et la rotation des annonces.");
+          } else {
+            setText("statusLine", "Le flux tourne correctement, mais cette annonce n'a pas de photo exploitable.");
+          }
+        }
+
+        showCurrent();
+        if (items.length > 1) {
+          window.setInterval(function () {
+            currentIndex = (currentIndex + 1) % items.length;
+            showCurrent();
+          }, rotateSeconds * 1000);
         }
       };
       xhr.onerror = function () {
