@@ -1,93 +1,165 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Vitrine Samsung | GTI Immobilier</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Samsung | Vitrine GTI</title>
   <style>
-    html,body{margin:0;padding:0;height:100%;background:#f4f5f7;color:#121318;font-family:Arial,sans-serif;overflow:hidden}
-    .app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 310px}
-    .media{position:relative;background:#111318}
-    .hero{width:100%;height:100%;display:block;object-fit:cover;background:#e9edf3}
-    .price{position:absolute;top:28px;left:28px;padding:14px 18px;border-radius:8px;background:linear-gradient(135deg,#c2185b,#9d1342);color:#fff;font-size:25px;font-weight:900;box-shadow:0 18px 40px rgba(0,0,0,.22)}
-    .ribbon{position:absolute;top:28px;right:-86px;width:310px;padding:12px 0;text-align:center;transform:rotate(39deg);font-size:12px;line-height:1;text-transform:uppercase;font-weight:900;color:#fff;border:1px solid rgba(255,255,255,.18);box-shadow:0 12px 28px rgba(0,0,0,.18)}
-    .ribbon.offer{background:linear-gradient(135deg,rgba(201,122,30,.95),rgba(159,93,18,.95))}
-    .ribbon.compromis{background:linear-gradient(135deg,rgba(72,108,196,.96),rgba(47,80,154,.96))}
-    .stats{position:absolute;left:28px;bottom:28px;display:flex;gap:10px;flex-wrap:wrap}
-    .chip{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.94);border:1px solid rgba(18,19,24,.08);box-shadow:0 10px 24px rgba(0,0,0,.06);font-size:14px;font-weight:800}
-    .chip small{display:block;font-size:11px;font-weight:700;color:rgba(18,19,24,.52);margin-top:2px}
-    .panel{background:rgba(255,255,255,.96);padding:28px 20px 18px;border-left:1px solid rgba(18,19,24,.08);display:flex;flex-direction:column}
-    .title{font-size:34px;font-weight:950;line-height:1.03;margin:0 0 12px}
-    .title.appartement{color:#355f9b}.title.maison{color:#9b4d35}.title.pro{color:#8c5c46}.title.terrain{color:#8a6a2a}.title.parking{color:#6d5a66}
-    .meta{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:8px;background:linear-gradient(135deg,rgba(15,118,110,.12),rgba(194,24,91,.10));border:1px solid rgba(15,118,110,.18);color:rgba(10,78,74,.98);font-weight:950;font-size:17px}
-    .meta:before{content:"";width:20px;height:20px;flex:0 0 auto;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 22s7-4.4 7-12a7 7 0 1 0-14 0c0 7.6 7 12 7 12Z' fill='%230f766e' fill-opacity='.14' stroke='%230f766e' stroke-width='2.2'/%3E%3Cpath d='M12 13a3 3 0 1 0-3-3 3 3 0 0 0 3 3Z' stroke='%23c2185b' stroke-width='2.2'/%3E%3C/svg%3E") center/20px 20px no-repeat}
-    .contactTitle{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:rgba(18,19,24,.56);margin:18px 0 10px}
-    .contactRow{display:flex;align-items:center;gap:10px;padding:11px 10px 11px 14px;background:rgba(255,255,255,.72);border:1px solid rgba(18,19,24,.08);border-left:3px solid rgba(194,24,91,.72);margin-bottom:8px;font-weight:900}
-    .qr{margin-top:14px;display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;background:rgba(18,19,24,.045);border:1px solid rgba(18,19,24,.08)}
-    .qr img{width:92px;height:92px;border-radius:6px;background:#fff;border:1px solid rgba(18,19,24,.10);box-shadow:0 12px 28px rgba(0,0,0,.08)}
-    .qrTitle{font-size:14px;font-weight:950}
-    .qrSub{margin-top:6px;font-size:12px;font-weight:750;color:rgba(18,19,24,.60)}
-    .status{margin-top:auto;padding-top:14px;font-size:12px;color:rgba(18,19,24,.52)}
-    .empty{display:flex;align-items:center;justify-content:center;height:100%;font-size:24px;font-weight:800;color:rgba(18,19,24,.6)}
+    html, body { margin: 0; padding: 0; background: #f4f5f7; color: #121318; font-family: Arial, sans-serif; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    .card { background: #fff; border: 1px solid rgba(18,19,24,.08); border-radius: 16px; box-shadow: 0 12px 28px rgba(0,0,0,.06); padding: 18px; margin-bottom: 18px; }
+    .title { font-size: 30px; font-weight: 800; margin: 0 0 8px; }
+    .muted { color: rgba(18,19,24,.62); }
+    .ok { color: #0f766e; font-weight: 700; }
+    .bad { color: #b42318; font-weight: 700; }
+    .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; }
+    .hero { width: 100%; height: 420px; background: #e9edf3; border-radius: 14px; object-fit: cover; display: block; }
+    .label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: rgba(18,19,24,.5); margin-bottom: 6px; }
+    .value { font-size: 18px; font-weight: 700; }
+    .list { margin: 0; padding-left: 18px; }
+    .list li { margin: 6px 0; }
+    .mono { font-family: Consolas, monospace; font-size: 13px; word-break: break-all; }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero { height: 280px; }
+    }
   </style>
 </head>
 <body>
-  <div id="app" class="app" style="display:none">
-    <div class="media">
-      <img id="hero" class="hero" alt="">
-      <div id="price" class="price">—</div>
-      <div id="ribbon" class="ribbon" style="display:none"></div>
-      <div id="stats" class="stats"></div>
+  <div class="wrap">
+    <div class="card">
+      <div class="title">Samsung Vitrine</div>
+      <div class="muted">Version simplifiée, dédiée à ce navigateur Samsung.</div>
     </div>
-    <div class="panel">
-      <div id="title" class="title">—</div>
-      <div id="meta" class="meta">—</div>
-      <div class="contactTitle">Contact</div>
-      <div id="contactAdvisor" class="contactRow">—</div>
-      <div id="contactAgencyPhone" class="contactRow">—</div>
-      <div id="contactAdvisorMobile" class="contactRow">—</div>
-      <div class="qr">
-        <img id="qr" alt="QR code">
-        <div>
-          <div class="qrTitle">Scanner</div>
-          <div class="qrSub">Plus d’infos / visite</div>
+
+    <div class="card">
+      <div class="label">Diagnostic</div>
+      <div id="status" class="value">Chargement...</div>
+      <div id="details" class="muted" style="margin-top:8px;"></div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="label">Première image</div>
+        <img id="hero" class="hero" alt="Image test" />
+        <div id="imageState" class="muted" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="label">Première annonce retenue</div>
+        <div id="itemTitle" class="value">—</div>
+        <div id="itemMeta" class="muted" style="margin-top:8px;">—</div>
+        <div style="margin-top:16px;">
+          <div class="label">URL JSON</div>
+          <div id="jsonUrl" class="mono">—</div>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="label">Agence demandée</div>
+          <div id="agency" class="value">—</div>
         </div>
       </div>
-      <div id="status" class="status"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Exemples de titres chargés</div>
+      <ol id="titles" class="list"></ol>
     </div>
   </div>
-  <div id="empty" class="empty">Chargement…</div>
+
   <script>
     (function () {
-      function q(name){var s=window.location.search||"";var parts=s.replace(/^\?/,"").split("&");for(var i=0;i<parts.length;i++){var p=parts[i].split("=");if(decodeURIComponent(p[0]||"")===name)return decodeURIComponent((p[1]||"").replace(/\+/g," "));}return "";}
-      function txt(v){return v==null?"":String(v);}
-      function normalizeAgency(v){return txt(v).toUpperCase();}
-      function xhrGet(url, done, fail){var x=new XMLHttpRequest();x.open("GET",url,true);x.onreadystatechange=function(){if(x.readyState!==4)return;if(x.status>=200&&x.status<300)done(x.responseText);else fail("HTTP "+x.status);};x.onerror=function(){fail("network");};x.send();}
-      function nature(item){return txt(item.nature||item.propertyType||item.typeLabel||item.category||item.title||"Bien immobilier");}
-      function cityOnly(item){var c=txt(item.city||""),cp=txt(item.postalCode||"");return cp?c.replace(new RegExp("\\s*"+cp+"\\s*$"),"").replace(/^\s+|\s+$/g,""):c;}
-      function tone(item){var t=nature(item).toLowerCase();if(/appartement|studio|duplex|triplex/.test(t))return"appartement";if(/maison|villa|chalet|ferme|demeure|mas|propri/.test(t))return"maison";if(/bureau|local|commerce|boutique/.test(t))return"pro";if(/terrain/.test(t))return"terrain";if(/garage|parking/.test(t))return"parking";return"";}
-      function price(v){var n=Number(v);if(!isFinite(n)||n<=0)return"Prix sur demande";return Math.round(n).toLocaleString("fr-FR")+" €";}
-      function ribbon(item){var s=txt(item.state).toUpperCase();if(s.indexOf("OFFRE")!==-1)return {label:"Sous offre",cls:"offer"};if(s.indexOf("COMPROMIS")!==-1)return {label:"Sous compromis",cls:"compromis"};return null;}
-      function contactParts(s){s=txt(s);var out={advisor:"Conseiller GTI",agency:"—",mobile:"—"};var m=s.match(/NEGOCIATEUR\\s+EN\\s+CHARGE\\s+DU\\s+BIEN\\s*:\\s*([^:]+?)\\s*T[ÉE]L\\s*:/i);if(m)out.advisor=txt(m[1]);var phones=s.match(/[0-9 .-]{10,}/g)||[];if(phones[0])out.agency=txt(phones[0]);if(phones[1])out.mobile=txt(phones[1]);return out;}
-      function statChip(value,label){return '<div class="chip"><div><div>'+value+'</div><small>'+label+'</small></div></div>';}
-      var agence=q("agence"), src=q("src")||"exports/catalogue_vitrine.json";
-      xhrGet(src, function(body){
-        var data; try{data=JSON.parse(body);}catch(e){document.getElementById("empty").innerHTML="JSON invalide";return;}
-        var items=data&&data.items&&data.items.slice?data.items.slice(0):[];
-        if(agence){var target=normalizeAgency(agence), filtered=[];for(var i=0;i<items.length;i++){if(normalizeAgency(items[i]&&items[i].agence).indexOf(target)!==-1)filtered.push(items[i]);}items=filtered;}
-        if(!items.length){document.getElementById("empty").innerHTML="Aucune annonce";return;}
-        var item=items[0], app=document.getElementById("app"), empty=document.getElementById("empty");
-        app.style.display="grid"; empty.style.display="none";
-        document.getElementById("hero").src=txt(item.photos&&item.photos[0]||"");
-        document.getElementById("price").innerHTML=price(item.price);
-        var title=document.getElementById("title"); title.className="title "+tone(item); title.innerHTML=nature(item);
-        document.getElementById("meta").innerHTML=cityOnly(item)||"—";
-        var rb=ribbon(item), rbEl=document.getElementById("ribbon"); if(rb){rbEl.style.display="block"; rbEl.className="ribbon "+rb.cls; rbEl.innerHTML=rb.label;} else {rbEl.style.display="none";}
-        var stats=[]; if(txt(item.ref))stats.push(statChip(txt(item.ref),"Référence")); if(Number(item.surface)>0)stats.push(statChip(Math.round(Number(item.surface))+" m²","Surface")); if(Number(item.rooms)>0)stats.push(statChip(Math.round(Number(item.rooms)),Number(item.rooms)>1?"Pièces":"Pièce")); document.getElementById("stats").innerHTML=stats.join("");
-        var c=contactParts(item.agence); document.getElementById("contactAdvisor").innerHTML=c.advisor; document.getElementById("contactAgencyPhone").innerHTML=c.agency; document.getElementById("contactAdvisorMobile").innerHTML=c.mobile;
-        document.getElementById("qr").src=txt(item.qrUrl||item.qr||"");
-        document.getElementById("status").innerHTML="Mode Samsung simplifié • "+items.length+" annonce(s)";
-      }, function(err){document.getElementById("empty").innerHTML="Erreur : "+err;});
+      function text(v) { return (v == null ? "" : String(v)).replace(/^\s+|\s+$/g, ""); }
+      function setHtml(id, value) { var el = document.getElementById(id); if (el) el.innerHTML = value; }
+      function setText(id, value) { var el = document.getElementById(id); if (el) el.textContent = value; }
+      function params() {
+        var out = {};
+        var q = window.location.search.replace(/^\?/, "").split("&");
+        for (var i = 0; i < q.length; i++) {
+          if (!q[i]) continue;
+          var p = q[i].split("=");
+          var k = decodeURIComponent(p[0] || "");
+          var v = decodeURIComponent(p.slice(1).join("=") || "");
+          out[k] = v;
+        }
+        return out;
+      }
+      function normalizeAgency(v) { return text(v).toUpperCase(); }
+      function pickPhoto(item) {
+        if (!item) return "";
+        var arr = item.photos;
+        if (arr && arr.length) return text(arr[0]);
+        return "";
+      }
+
+      var p = params();
+      var src = text(p.src || "exports/catalogue_vitrine.json");
+      var agence = text(p.agence || "");
+      setText("jsonUrl", new URL(src, window.location.href).toString());
+      setText("agency", agence || "(aucune)");
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", new URL(src, window.location.href).toString(), true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4) return;
+
+        if (xhr.status < 200 || xhr.status >= 300) {
+          setHtml("status", '<span class="bad">Erreur HTTP ' + xhr.status + "</span>");
+          setText("details", "Le JSON n'a pas pu être chargé.");
+          return;
+        }
+
+        var data;
+        try {
+          data = JSON.parse(xhr.responseText);
+        } catch (e) {
+          setHtml("status", '<span class="bad">JSON invalide</span>');
+          setText("details", String(e));
+          return;
+        }
+
+        var items = data && data.items && data.items.slice ? data.items.slice(0) : [];
+        var total = items.length;
+        if (agence) {
+          var target = normalizeAgency(agence);
+          items = items.filter(function (x) {
+            return normalizeAgency(x && x.agence).indexOf(target) !== -1;
+          });
+        }
+
+        if (!items.length) {
+          setHtml("status", '<span class="bad">Aucune annonce retenue</span>');
+          setText("details", "Le JSON est chargé, mais le filtre agence ne renvoie rien.");
+          return;
+        }
+
+        setHtml("status", '<span class="ok">JSON chargé</span>');
+        setText("details", "Items totaux : " + total + " | Items après filtre : " + items.length);
+
+        var first = items[0];
+        setText("itemTitle", text(first.title || first.nature || "Sans titre"));
+        setText("itemMeta", [text(first.city), text(first.price), text(first.ref)].filter(Boolean).join(" • "));
+
+        var img = pickPhoto(first);
+        var hero = document.getElementById("hero");
+        if (img) {
+          hero.src = img;
+          setHtml("imageState", '<span class="ok">Image définie</span> ' + img);
+        } else {
+          setHtml("imageState", '<span class="bad">Aucune image dans la donnée</span>');
+        }
+
+        var titles = document.getElementById("titles");
+        for (var i = 0; i < Math.min(items.length, 8); i++) {
+          var li = document.createElement("li");
+          li.textContent = text(items[i].title || items[i].nature || items[i].ref || "Sans titre");
+          titles.appendChild(li);
+        }
+      };
+      xhr.onerror = function () {
+        setHtml("status", '<span class="bad">Erreur réseau</span>');
+        setText("details", "Le navigateur n'a pas pu charger le JSON.");
+      };
+      xhr.send();
     })();
   </script>
 </body>
