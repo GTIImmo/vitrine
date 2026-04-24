@@ -2,68 +2,70 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Samsung | Vitrine GTI</title>
   <style>
-    html, body { margin: 0; padding: 0; background: #f4f5f7; color: #121318; font-family: Arial, sans-serif; }
-    .wrap { max-width: 1200px; margin: 0 auto; padding: 24px; }
-    .card { background: #fff; border: 1px solid rgba(18,19,24,.08); border-radius: 16px; box-shadow: 0 12px 28px rgba(0,0,0,.06); padding: 18px; margin-bottom: 18px; }
-    .title { font-size: 30px; font-weight: 800; margin: 0 0 8px; }
-    .muted { color: rgba(18,19,24,.62); }
-    .ok { color: #0f766e; font-weight: 700; }
-    .bad { color: #b42318; font-weight: 700; }
-    .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; }
-    .hero { width: 100%; height: 420px; background: #e9edf3; border-radius: 14px; object-fit: cover; display: block; }
-    .label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: rgba(18,19,24,.5); margin-bottom: 6px; }
-    .value { font-size: 18px; font-weight: 700; }
-    .list { margin: 0; padding-left: 18px; }
-    .list li { margin: 6px 0; }
-    .mono { font-family: Consolas, monospace; font-size: 13px; word-break: break-all; }
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: 1fr; }
-      .hero { height: 280px; }
-    }
+    html,body{margin:0;padding:0;height:100%;background:#f4f5f7;color:#121318;font-family:Arial,sans-serif;overflow:hidden}
+    .shell{height:100%;padding:14px;box-sizing:border-box}
+    .stage{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 330px;background:#fff;border:1px solid rgba(18,19,24,.08);border-radius:18px;overflow:hidden;box-shadow:0 18px 46px rgba(0,0,0,.08)}
+    .media{position:relative;background:#111318}
+    .hero{width:100%;height:100%;object-fit:cover;display:block;background:#e9edf3}
+    .price{position:absolute;top:26px;left:26px;padding:13px 18px;border-radius:10px;background:linear-gradient(135deg,#c2185b,#9d1342);color:#fff;font-size:26px;font-weight:900;box-shadow:0 18px 40px rgba(0,0,0,.22)}
+    .chips{position:absolute;left:26px;bottom:26px;display:flex;flex-wrap:wrap;gap:10px;max-width:72%}
+    .chip{background:rgba(255,255,255,.95);border:1px solid rgba(18,19,24,.08);border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,.06);padding:10px 12px;font-size:14px;font-weight:800}
+    .chip small{display:block;margin-top:2px;font-size:11px;font-weight:700;color:rgba(18,19,24,.52)}
+    .panel{padding:26px 20px 18px;border-left:1px solid rgba(18,19,24,.08);display:flex;flex-direction:column;background:rgba(255,255,255,.98)}
+    .title{font-size:34px;line-height:1.03;font-weight:950;margin:0 0 12px}
+    .title.appartement{color:#355f9b}.title.maison{color:#9b4d35}.title.pro{color:#8c5c46}.title.terrain{color:#8a6a2a}.title.parking{color:#6d5a66}
+    .meta{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:9px;background:linear-gradient(135deg,rgba(15,118,110,.12),rgba(194,24,91,.10));border:1px solid rgba(15,118,110,.18);color:rgba(10,78,74,.98);font-size:17px;font-weight:950}
+    .meta:before{content:"";width:20px;height:20px;flex:0 0 auto;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 22s7-4.4 7-12a7 7 0 1 0-14 0c0 7.6 7 12 7 12Z' fill='%230f766e' fill-opacity='.14' stroke='%230f766e' stroke-width='2.2'/%3E%3Cpath d='M12 13a3 3 0 1 0-3-3 3 3 0 0 0 3 3Z' stroke='%23c2185b' stroke-width='2.2'/%3E%3C/svg%3E") center/20px 20px no-repeat}
+    .section{margin-top:18px}
+    .sectionTitle{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:rgba(18,19,24,.56);font-weight:900;margin:0 0 10px}
+    .contactRow{display:flex;align-items:center;min-height:46px;padding:0 12px;background:rgba(255,255,255,.72);border:1px solid rgba(18,19,24,.08);border-left:3px solid rgba(194,24,91,.72);margin-bottom:8px;font-size:15px;font-weight:900}
+    .qr{margin-top:14px;display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:rgba(18,19,24,.045);border:1px solid rgba(18,19,24,.08)}
+    .qr img{width:92px;height:92px;border-radius:8px;background:#fff;border:1px solid rgba(18,19,24,.10);box-shadow:0 12px 28px rgba(0,0,0,.08)}
+    .qrTitle{font-size:14px;font-weight:950}.qrSub{margin-top:6px;font-size:12px;font-weight:750;color:rgba(18,19,24,.60)}
+    .diag{margin-top:auto;padding-top:14px;border-top:1px solid rgba(18,19,24,.08)}
+    .diagTitle{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:rgba(18,19,24,.56);font-weight:900;margin:0 0 8px}
+    .status{font-size:18px;font-weight:800}.muted{margin-top:6px;color:rgba(18,19,24,.62)}.ok{color:#0f766e}.bad{color:#b42318}
+    .mini{margin-top:14px;font-size:12px;color:rgba(18,19,24,.5);word-break:break-word}
+    .empty{display:flex;align-items:center;justify-content:center;height:100%;font-size:24px;font-weight:800;color:rgba(18,19,24,.6)}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="title">Samsung Vitrine</div>
-      <div class="muted">Version simplifiée, dédiée à ce navigateur Samsung.</div>
-    </div>
-
-    <div class="card">
-      <div class="label">Diagnostic</div>
-      <div id="status" class="value">Chargement...</div>
-      <div id="details" class="muted" style="margin-top:8px;"></div>
-    </div>
-
-    <div class="grid">
-      <div class="card">
-        <div class="label">Première image</div>
+  <div class="shell">
+    <div id="stage" class="stage" style="display:none">
+      <div class="media">
         <img id="hero" class="hero" alt="Image test" />
-        <div id="imageState" class="muted" style="margin-top:10px;"></div>
+        <div id="price" class="price">—</div>
+        <div id="chips" class="chips"></div>
       </div>
-
-      <div class="card">
-        <div class="label">Première annonce retenue</div>
-        <div id="itemTitle" class="value">—</div>
-        <div id="itemMeta" class="muted" style="margin-top:8px;">—</div>
-        <div style="margin-top:16px;">
-          <div class="label">URL JSON</div>
-          <div id="jsonUrl" class="mono">—</div>
+      <div class="panel">
+        <div id="itemTitle" class="title">—</div>
+        <div id="itemMeta" class="meta">—</div>
+        <div class="section">
+          <div class="sectionTitle">Contact</div>
+          <div id="contactAgency" class="contactRow">—</div>
         </div>
-        <div style="margin-top:16px;">
-          <div class="label">Agence demandée</div>
-          <div id="agency" class="value">—</div>
+        <div class="section">
+          <div class="sectionTitle">Scanner</div>
+          <div class="qr">
+            <img id="heroQr" alt="QR code" />
+            <div>
+              <div class="qrTitle">Scanner</div>
+              <div class="qrSub">Plus d’infos / visite</div>
+            </div>
+          </div>
+        </div>
+        <div class="diag">
+          <div class="diagTitle">Diagnostic</div>
+          <div id="status" class="status">Chargement...</div>
+          <div id="details" class="muted"></div>
+          <div class="mini" id="jsonUrl"></div>
         </div>
       </div>
     </div>
-
-    <div class="card">
-      <div class="label">Exemples de titres chargés</div>
-      <ol id="titles" class="list"></ol>
-    </div>
+    <div id="empty" class="empty">Chargement…</div>
   </div>
 
   <script>
@@ -136,24 +138,42 @@
         setText("details", "Items totaux : " + total + " | Items après filtre : " + items.length);
 
         var first = items[0];
-        setText("itemTitle", text(first.title || first.nature || "Sans titre"));
-        setText("itemMeta", [text(first.city), text(first.price), text(first.ref)].filter(Boolean).join(" • "));
+        var stage = document.getElementById("stage");
+        var empty = document.getElementById("empty");
+        stage.style.display = "grid";
+        empty.style.display = "none";
+
+        var nature = text(first.nature || first.propertyType || first.title || "Sans titre");
+        var title = document.getElementById("itemTitle");
+        title.textContent = nature;
+        title.className = "title " + (function(v){
+          var t = text(v).toUpperCase();
+          if (t.indexOf("APPARTEMENT") !== -1 || t.indexOf("STUDIO") !== -1 || t.indexOf("DUPLEX") !== -1 || t.indexOf("TRIPLEX") !== -1) return "appartement";
+          if (t.indexOf("MAISON") !== -1 || t.indexOf("VILLA") !== -1 || t.indexOf("CHALET") !== -1 || t.indexOf("FERME") !== -1 || t.indexOf("DEMEURE") !== -1 || t.indexOf("MAS") !== -1 || t.indexOf("PROPRI") !== -1) return "maison";
+          if (t.indexOf("BUREAU") !== -1 || t.indexOf("LOCAL") !== -1 || t.indexOf("COMMERCE") !== -1 || t.indexOf("BOUTIQUE") !== -1) return "pro";
+          if (t.indexOf("TERRAIN") !== -1) return "terrain";
+          if (t.indexOf("GARAGE") !== -1 || t.indexOf("PARKING") !== -1) return "parking";
+          return "";
+        })(nature);
+
+        setText("itemMeta", text(first.city || ""));
+        setText("status", "JSON chargé");
+        document.getElementById("status").className = "status ok";
+        setText("details", "Items totaux : " + total + " | Items après filtre : " + items.length);
+        setText("jsonUrl", new URL(src, window.location.href).toString());
 
         var img = pickPhoto(first);
         var hero = document.getElementById("hero");
-        if (img) {
-          hero.src = img;
-          setHtml("imageState", '<span class="ok">Image définie</span> ' + img);
-        } else {
-          setHtml("imageState", '<span class="bad">Aucune image dans la donnée</span>');
-        }
+        if (img) hero.src = img;
+        document.getElementById("price").textContent = text(first.price || "");
+        document.getElementById("contactAgency").textContent = text(first.agence || "GTI Immobilier");
+        document.getElementById("heroQr").src = text(first.qrUrl || first.qr || "");
 
-        var titles = document.getElementById("titles");
-        for (var i = 0; i < Math.min(items.length, 8); i++) {
-          var li = document.createElement("li");
-          li.textContent = text(items[i].title || items[i].nature || items[i].ref || "Sans titre");
-          titles.appendChild(li);
-        }
+        var chips = [];
+        if (text(first.ref)) chips.push('<div class="chip"><div>'+text(first.ref)+'<small>Référence</small></div></div>');
+        if (text(first.surface)) chips.push('<div class="chip"><div>'+text(first.surface)+' m²<small>Surface</small></div></div>');
+        if (text(first.rooms)) chips.push('<div class="chip"><div>'+text(first.rooms)+'<small>'+(Number(first.rooms)>1?'Pièces':'Pièce')+'</small></div></div>');
+        document.getElementById("chips").innerHTML = chips.join("");
       };
       xhr.onerror = function () {
         setHtml("status", '<span class="bad">Erreur réseau</span>');
