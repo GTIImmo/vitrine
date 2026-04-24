@@ -3,66 +3,351 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Test Samsung | Vitrine GTI</title>
+  <title>Vitrine Samsung | GTI Immobilier</title>
   <style>
-    html, body { margin: 0; padding: 0; background: #f4f5f7; color: #121318; font-family: Arial, sans-serif; }
-    .wrap { max-width: 1200px; margin: 0 auto; padding: 24px; }
-    .card { background: #fff; border: 1px solid rgba(18,19,24,.08); border-radius: 16px; box-shadow: 0 12px 28px rgba(0,0,0,.06); padding: 18px; margin-bottom: 18px; }
-    .title { font-size: 30px; font-weight: 800; margin: 0 0 8px; }
-    .muted { color: rgba(18,19,24,.62); }
-    .ok { color: #0f766e; font-weight: 700; }
-    .bad { color: #b42318; font-weight: 700; }
-    .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; }
-    .hero { width: 100%; height: 420px; background: #e9edf3; border-radius: 14px; object-fit: cover; display: block; }
-    .label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: rgba(18,19,24,.5); margin-bottom: 6px; }
-    .value { font-size: 18px; font-weight: 700; }
-    .list { margin: 0; padding-left: 18px; }
-    .list li { margin: 6px 0; }
-    .mono { font-family: Consolas, monospace; font-size: 13px; word-break: break-all; }
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: 1fr; }
-      .hero { height: 280px; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(196, 148, 123, 0.12), transparent 34%),
+        linear-gradient(135deg, #f6f1eb 0%, #ece4da 42%, #e2d7ca 100%);
+      color: #231915;
+      font-family: Arial, sans-serif;
+    }
+
+    .page {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(340px, 0.9fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: rgba(255, 250, 245, 0.9);
+      border: 1px solid rgba(71, 49, 40, 0.08);
+      border-radius: 26px;
+      box-shadow: 0 22px 60px rgba(58, 35, 24, 0.12);
+      overflow: hidden;
+    }
+
+    .mediaPanel {
+      position: relative;
+      min-height: 620px;
+      background: #ddd3c8;
+    }
+
+    .mediaPanel img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 620px;
+      object-fit: cover;
+      background: #d8cdc1;
+    }
+
+    .mediaTop {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      pointer-events: none;
+    }
+
+    .statusChip,
+    .typeChip {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      min-height: 36px;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: rgba(35, 25, 21, 0.74);
+      color: #fff9f2;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: 0 10px 24px rgba(24, 15, 12, 0.18);
+    }
+
+    .statusChip { background: rgba(94, 55, 42, 0.82); }
+
+    .typeChip {
+      background: rgba(255, 247, 240, 0.9);
+      color: #5f4134;
+      margin-left: auto;
+    }
+
+    .mediaBottom {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      pointer-events: none;
+    }
+
+    .statChip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 15px;
+      border-radius: 14px;
+      background: rgba(255, 250, 245, 0.92);
+      color: #4f382e;
+      font-size: 15px;
+      font-weight: 700;
+      box-shadow: 0 10px 22px rgba(41, 28, 22, 0.14);
+    }
+
+    .contentPanel {
+      display: flex;
+      flex-direction: column;
+      padding: 28px 28px 24px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: rgba(86, 63, 54, 0.58);
+    }
+
+    .title {
+      margin: 10px 0 0;
+      font-size: 42px;
+      line-height: 1.08;
+      font-weight: 800;
+      color: #2b1c15;
+    }
+
+    .location {
+      margin-top: 14px;
+      font-size: 22px;
+      line-height: 1.25;
+      color: #6a4e41;
+      font-weight: 600;
+    }
+
+    .priceRow {
+      margin-top: 26px;
+      padding: 20px 22px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #70453a 0%, #915f4f 100%);
+      color: #fff7f0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .priceLabel {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      opacity: 0.78;
+    }
+
+    .priceValue {
+      margin-top: 10px;
+      font-size: 48px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .contactBlock {
+      margin-top: 22px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: rgba(120, 86, 71, 0.08);
+      border: 1px solid rgba(99, 72, 61, 0.1);
+    }
+
+    .contactTitle {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: rgba(79, 56, 46, 0.55);
+    }
+
+    .contactValue {
+      margin-top: 10px;
+      font-size: 20px;
+      line-height: 1.45;
+      color: #372720;
+      font-weight: 700;
+    }
+
+    .diagGrid {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .diagCard {
+      min-height: 116px;
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(86, 63, 54, 0.08);
+    }
+
+    .diagLabel {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: rgba(79, 56, 46, 0.55);
+    }
+
+    .diagValue {
+      margin-top: 10px;
+      font-size: 20px;
+      line-height: 1.45;
+      color: #2e211b;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .diagValue.mono {
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .statusLine {
+      margin-top: 22px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(86, 63, 54, 0.08);
+      font-size: 19px;
+      line-height: 1.4;
+      color: #352720;
+      font-weight: 700;
+    }
+
+    .ok { color: #0f766e; }
+    .bad { color: #b42318; }
+
+    .samplePanel {
+      margin-top: 20px;
+      padding: 20px 24px;
+    }
+
+    .sampleTitle {
+      margin: 0 0 10px;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: rgba(79, 56, 46, 0.56);
+    }
+
+    .sampleList {
+      margin: 0;
+      padding-left: 20px;
+      color: #3c2b24;
+      font-size: 18px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .sampleList li { margin: 6px 0; }
+
+    @media (max-width: 1080px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .mediaPanel,
+      .mediaPanel img {
+        min-height: 420px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page { padding: 14px; }
+      .contentPanel { padding: 20px; }
+      .title { font-size: 30px; }
+      .location { font-size: 18px; }
+      .priceValue { font-size: 36px; }
+      .diagGrid { grid-template-columns: 1fr; }
+      .mediaPanel,
+      .mediaPanel img { min-height: 300px; }
+      .statusChip,
+      .typeChip,
+      .statChip { font-size: 13px; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="title">Test Samsung Vitrine</div>
-      <div class="muted">Cette page teste seulement le chargement des données et des images, sans animations ni logique avancée.</div>
-    </div>
-
-    <div class="card">
-      <div class="label">Diagnostic</div>
-      <div id="status" class="value">Chargement...</div>
-      <div id="details" class="muted" style="margin-top:8px;"></div>
-    </div>
-
-    <div class="grid">
-      <div class="card">
-        <div class="label">Première image</div>
-        <img id="hero" class="hero" alt="Image test" />
-        <div id="imageState" class="muted" style="margin-top:10px;"></div>
-      </div>
-
-      <div class="card">
-        <div class="label">Première annonce retenue</div>
-        <div id="itemTitle" class="value">—</div>
-        <div id="itemMeta" class="muted" style="margin-top:8px;">—</div>
-        <div style="margin-top:16px;">
-          <div class="label">URL JSON</div>
-          <div id="jsonUrl" class="mono">—</div>
+  <div class="page">
+    <div class="hero">
+      <div class="panel mediaPanel">
+        <img id="hero" alt="Photo du bien" />
+        <div class="mediaTop">
+          <div id="statusChip" class="statusChip">Chargement...</div>
+          <div id="typeChip" class="typeChip">Bien immobilier</div>
         </div>
-        <div style="margin-top:16px;">
-          <div class="label">Agence demandée</div>
-          <div id="agency" class="value">—</div>
+        <div class="mediaBottom">
+          <div id="surfaceChip" class="statChip">Surface —</div>
+          <div id="roomsChip" class="statChip">Pièces —</div>
+          <div id="bedroomsChip" class="statChip">Chambres —</div>
         </div>
       </div>
+
+      <div class="panel contentPanel">
+        <div class="eyebrow">Vitrine Samsung</div>
+        <h1 id="itemTitle" class="title">Chargement de l'annonce...</h1>
+        <div id="itemMeta" class="location">Préparation des données</div>
+
+        <div class="priceRow">
+          <div class="priceLabel">Prix affiché</div>
+          <div id="priceValue" class="priceValue">—</div>
+        </div>
+
+        <div class="contactBlock">
+          <div class="contactTitle">Contact</div>
+          <div id="agencyValue" class="contactValue">—</div>
+        </div>
+
+        <div class="diagGrid">
+          <div class="diagCard">
+            <div class="diagLabel">Diagnostic</div>
+            <div id="status" class="diagValue">Chargement...</div>
+            <div id="details" class="diagValue" style="font-size:16px;font-weight:600;color:#655147;margin-top:8px;">Lecture du catalogue en cours</div>
+          </div>
+          <div class="diagCard">
+            <div class="diagLabel">Source JSON</div>
+            <div id="jsonUrl" class="diagValue mono">—</div>
+          </div>
+          <div class="diagCard">
+            <div class="diagLabel">Agence demandée</div>
+            <div id="agency" class="diagValue">—</div>
+          </div>
+          <div class="diagCard">
+            <div class="diagLabel">Image</div>
+            <div id="imageState" class="diagValue" style="font-size:16px;">—</div>
+          </div>
+        </div>
+
+        <div id="statusLine" class="statusLine">Vérification de compatibilité Samsung en cours.</div>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="label">Exemples de titres chargés</div>
-      <ol id="titles" class="list"></ol>
+    <div class="panel samplePanel">
+      <h2 class="sampleTitle">Exemples de titres chargés</h2>
+      <ol id="titles" class="sampleList"></ol>
     </div>
   </div>
 
@@ -90,6 +375,14 @@
         if (arr && arr.length) return text(arr[0]);
         return "";
       }
+      function formatPrice(value) {
+        var num = Number(value || 0);
+        if (!num) return "Prix sur demande";
+        return num.toLocaleString("fr-FR") + " €";
+      }
+      function chip(base, value, suffix) {
+        return base + " " + (value ? value + (suffix || "") : "—");
+      }
 
       var p = params();
       var src = text(p.src || "exports/catalogue_vitrine.json");
@@ -105,6 +398,8 @@
         if (xhr.status < 200 || xhr.status >= 300) {
           setHtml("status", '<span class="bad">Erreur HTTP ' + xhr.status + "</span>");
           setText("details", "Le JSON n'a pas pu être chargé.");
+          setText("statusChip", "Catalogue indisponible");
+          setText("statusLine", "Le Samsung charge la page mais pas la source de données.");
           return;
         }
 
@@ -114,6 +409,8 @@
         } catch (e) {
           setHtml("status", '<span class="bad">JSON invalide</span>');
           setText("details", String(e));
+          setText("statusChip", "JSON invalide");
+          setText("statusLine", "Le fichier reçu n'est pas exploitable.");
           return;
         }
 
@@ -129,23 +426,34 @@
         if (!items.length) {
           setHtml("status", '<span class="bad">Aucune annonce retenue</span>');
           setText("details", "Le JSON est chargé, mais le filtre agence ne renvoie rien.");
+          setText("statusChip", "Aucune annonce");
+          setText("statusLine", "La page fonctionne mais cette agence n'a aucune annonce dans le flux.");
           return;
         }
 
         setHtml("status", '<span class="ok">JSON chargé</span>');
-        setText("details", "Items totaux : " + total + " | Items après filtre : " + items.length);
+        setText("details", "Items totaux : " + total + " | Après filtre : " + items.length);
 
         var first = items[0];
         setText("itemTitle", text(first.title || first.nature || "Sans titre"));
-        setText("itemMeta", [text(first.city), text(first.price), text(first.ref)].filter(Boolean).join(" • "));
+        setText("itemMeta", [text(first.city), text(first.ref)].filter(Boolean).join(" • "));
+        setText("priceValue", formatPrice(first.price));
+        setText("agencyValue", text(first.agence || "GTI Immobilier"));
+        setText("typeChip", text(first.propertyType || first.nature || "Bien immobilier"));
+        setText("statusChip", text(first.state || "Annonce"));
+        setText("surfaceChip", chip("Surface", first.surface, " m²"));
+        setText("roomsChip", chip("Pièces", first.rooms, ""));
+        setText("bedroomsChip", chip("Chambres", first.bedrooms, ""));
 
         var img = pickPhoto(first);
         var hero = document.getElementById("hero");
         if (img) {
           hero.src = img;
-          setHtml("imageState", '<span class="ok">Image définie</span> ' + img);
+          setHtml("imageState", '<span class="ok">Image définie</span>');
+          setText("statusLine", "Le Samsung charge correctement le JSON, l'image et la première annonce.");
         } else {
           setHtml("imageState", '<span class="bad">Aucune image dans la donnée</span>');
+          setText("statusLine", "Le flux charge, mais cette annonce n'a pas de photo exploitable.");
         }
 
         var titles = document.getElementById("titles");
@@ -158,6 +466,8 @@
       xhr.onerror = function () {
         setHtml("status", '<span class="bad">Erreur réseau</span>');
         setText("details", "Le navigateur n'a pas pu charger le JSON.");
+        setText("statusChip", "Erreur réseau");
+        setText("statusLine", "Le shell s'affiche mais la récupération du catalogue a échoué.");
       };
       xhr.send();
     })();
