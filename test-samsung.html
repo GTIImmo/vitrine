@@ -537,14 +537,18 @@
       function chip(base, value, suffix) {
         return base + " " + (value ? value + (suffix || "") : "—");
       }
+      function twoDigits(value) {
+        var s = String(value);
+        return s.length < 2 ? "0" + s : s;
+      }
       function formatDate(value) {
         var raw = text(value);
         if (!raw) return "—";
         var normalized = raw.replace(" ", "T");
         var d = new Date(normalized);
         if (isNaN(d.getTime())) return raw;
-        var day = String(d.getDate()).padStart(2, "0");
-        var month = String(d.getMonth() + 1).padStart(2, "0");
+        var day = twoDigits(d.getDate());
+        var month = twoDigits(d.getMonth() + 1);
         var year = d.getFullYear();
         return day + "/" + month + "/" + year;
       }
