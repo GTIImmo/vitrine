@@ -50,6 +50,7 @@
       min-height: 620px;
       object-fit: cover;
       background: #d8cdc1;
+      transition: opacity 0.55s ease;
     }
 
     .mediaTop {
@@ -116,6 +117,16 @@
       display: flex;
       flex-direction: column;
       padding: 28px 28px 24px;
+      transition: opacity 0.42s ease, transform 0.42s ease;
+    }
+
+    .mediaPanel.is-fading img,
+    .contentPanel.is-fading {
+      opacity: 0.18;
+    }
+
+    .contentPanel.is-fading {
+      transform: translateY(8px);
     }
 
     .eyebrow {
@@ -293,7 +304,7 @@
 <body>
   <div class="page">
     <div class="hero">
-      <div class="panel mediaPanel">
+      <div id="mediaPanel" class="panel mediaPanel">
         <img id="hero" alt="Photo du bien" />
         <div class="mediaTop">
           <div id="statusChip" class="statusChip">Chargement...</div>
@@ -306,7 +317,7 @@
         </div>
       </div>
 
-      <div class="panel contentPanel">
+      <div id="contentPanel" class="panel contentPanel">
         <div class="eyebrow">Vitrine Samsung</div>
         <h1 id="itemTitle" class="title">Chargement de l'annonce...</h1>
         <div id="itemMeta" class="location">Préparation des données</div>
@@ -399,6 +410,12 @@
           if (positiveModulo(i, screens) === screenIndex) out.push(items[i]);
         }
         return out.length ? out : items.slice(0);
+      }
+      function setFade(active) {
+        var mediaPanel = document.getElementById("mediaPanel");
+        var contentPanel = document.getElementById("contentPanel");
+        if (mediaPanel) mediaPanel.className = active ? "panel mediaPanel is-fading" : "panel mediaPanel";
+        if (contentPanel) contentPanel.className = active ? "panel contentPanel is-fading" : "panel contentPanel";
       }
       function renderItem(first) {
         setText("itemTitle", text(first.title || first.nature || "Sans titre"));
@@ -497,8 +514,14 @@
         showCurrent();
         if (items.length > 1) {
           window.setInterval(function () {
-            currentIndex = (currentIndex + 1) % items.length;
-            showCurrent();
+            setFade(true);
+            window.setTimeout(function () {
+              currentIndex = (currentIndex + 1) % items.length;
+              showCurrent();
+              window.setTimeout(function () {
+                setFade(false);
+              }, 40);
+            }, 280);
           }, rotateSeconds * 1000);
         }
       };
