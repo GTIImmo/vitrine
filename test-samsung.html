@@ -326,6 +326,37 @@
       font-weight: 700;
     }
 
+    .infoBand {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .infoCell {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.54);
+      border: 1px solid rgba(86, 63, 54, 0.08);
+      min-height: 74px;
+    }
+
+    .infoCellLabel {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: rgba(79, 56, 46, 0.5);
+    }
+
+    .infoCellValue {
+      margin-top: 10px;
+      font-size: 18px;
+      line-height: 1.28;
+      color: #2f211b;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
     .ok { color: #0f766e; }
     .bad { color: #b42318; }
 
@@ -371,6 +402,7 @@
       .location { font-size: 18px; }
       .priceValue { font-size: 36px; }
       .diagGrid { grid-template-columns: 1fr; }
+      .infoBand { grid-template-columns: 1fr 1fr; }
       .qrBlock { grid-template-columns: 1fr; }
       .qrVisual { width: 110px; height: 110px; }
       .mediaPanel,
@@ -445,6 +477,25 @@
         </div>
 
         <div id="statusLine" class="statusLine">Vérification de compatibilité Samsung en cours.</div>
+
+        <div class="infoBand">
+          <div class="infoCell">
+            <div class="infoCellLabel">Référence</div>
+            <div id="refValue" class="infoCellValue">—</div>
+          </div>
+          <div class="infoCell">
+            <div class="infoCellLabel">Transaction</div>
+            <div id="offerTypeValue" class="infoCellValue">—</div>
+          </div>
+          <div class="infoCell">
+            <div class="infoCellLabel">Téléphone</div>
+            <div id="phoneValue" class="infoCellValue">—</div>
+          </div>
+          <div class="infoCell">
+            <div class="infoCellLabel">Mise à jour</div>
+            <div id="updatedValue" class="infoCellValue">—</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -486,6 +537,17 @@
       function chip(base, value, suffix) {
         return base + " " + (value ? value + (suffix || "") : "—");
       }
+      function formatDate(value) {
+        var raw = text(value);
+        if (!raw) return "—";
+        var normalized = raw.replace(" ", "T");
+        var d = new Date(normalized);
+        if (isNaN(d.getTime())) return raw;
+        var day = String(d.getDate()).padStart(2, "0");
+        var month = String(d.getMonth() + 1).padStart(2, "0");
+        var year = d.getFullYear();
+        return day + "/" + month + "/" + year;
+      }
       function asInt(value, fallback) {
         var n = parseInt(value, 10);
         return isNaN(n) ? fallback : n;
@@ -520,6 +582,10 @@
         setText("surfaceChip", chip("Surface", first.surface, " m²"));
         setText("roomsChip", chip("Pièces", first.rooms, ""));
         setText("bedroomsChip", chip("Chambres", first.bedrooms, ""));
+        setText("refValue", text(first.ref || "—"));
+        setText("offerTypeValue", text(first.offerType || "Vente"));
+        setText("phoneValue", text(first.phone || "—"));
+        setText("updatedValue", formatDate(first.updatedAt));
 
         var ribbon = document.getElementById("stateRibbon");
         if (ribbon) {
