@@ -1,19 +1,15 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="color-scheme" content="light" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Vitrine Samsung | GTI Immobilier</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    html,body{height:100%;margin:0;background:#f4f5f7;color:#121318;font-family:Inter,Arial,sans-serif;overflow:hidden}
+    html,body{margin:0;padding:0;height:100%;background:#f4f5f7;color:#121318;font-family:Arial,sans-serif;overflow:hidden}
     .app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 310px}
     .media{position:relative;background:#111318}
-    .media img{width:100%;height:100%;object-fit:cover;display:block}
-    .price{position:absolute;top:28px;left:28px;padding:14px 18px;border-radius:8px;background:linear-gradient(135deg,#c2185b,#9d1342);color:#fff;font-weight:900;font-size:25px;box-shadow:0 18px 40px rgba(0,0,0,.22)}
+    .hero{width:100%;height:100%;display:block;object-fit:cover;background:#e9edf3}
+    .price{position:absolute;top:28px;left:28px;padding:14px 18px;border-radius:8px;background:linear-gradient(135deg,#c2185b,#9d1342);color:#fff;font-size:25px;font-weight:900;box-shadow:0 18px 40px rgba(0,0,0,.22)}
     .ribbon{position:absolute;top:28px;right:-86px;width:310px;padding:12px 0;text-align:center;transform:rotate(39deg);font-size:12px;line-height:1;text-transform:uppercase;font-weight:900;color:#fff;border:1px solid rgba(255,255,255,.18);box-shadow:0 12px 28px rgba(0,0,0,.18)}
     .ribbon.offer{background:linear-gradient(135deg,rgba(201,122,30,.95),rgba(159,93,18,.95))}
     .ribbon.compromis{background:linear-gradient(135deg,rgba(72,108,196,.96),rgba(47,80,154,.96))}
@@ -38,7 +34,7 @@
 <body>
   <div id="app" class="app" style="display:none">
     <div class="media">
-      <img id="hero" alt="">
+      <img id="hero" class="hero" alt="">
       <div id="price" class="price">—</div>
       <div id="ribbon" class="ribbon" style="display:none"></div>
       <div id="stats" class="stats"></div>
@@ -61,59 +57,37 @@
     </div>
   </div>
   <div id="empty" class="empty">Chargement…</div>
-
   <script>
-    (function(){
-      function text(v){return (v==null?"":String(v)).replace(/^\s+|\s+$/g,"");}
-      function params(){var o={},q=window.location.search.replace(/^\?/,"").split("&");for(var i=0;i<q.length;i++){if(!q[i])continue;var p=q[i].split("=");o[decodeURIComponent(p[0]||"")]=decodeURIComponent(p.slice(1).join("=")||"");}return o;}
-      function normalizeAgency(v){return text(v).toUpperCase();}
-      function price(v){var n=Number(v);if(!isFinite(n)||n<=0)return"Prix sur demande";return Math.round(n).toLocaleString("fr-FR")+" €";}
-      function nature(item){return text(item.nature||item.propertyType||item.typeLabel||item.category||item.title||"Bien immobilier");}
-      function cityOnly(item){var c=text(item.city||""),cp=text(item.postalCode||"");return cp?c.replace(new RegExp("\\s*"+cp+"\\s*$"),"").replace(/^\s+|\s+$/g,""):c;}
+    (function () {
+      function q(name){var s=window.location.search||"";var parts=s.replace(/^\?/,"").split("&");for(var i=0;i<parts.length;i++){var p=parts[i].split("=");if(decodeURIComponent(p[0]||"")===name)return decodeURIComponent((p[1]||"").replace(/\+/g," "));}return "";}
+      function txt(v){return v==null?"":String(v);}
+      function normalizeAgency(v){return txt(v).toUpperCase();}
+      function xhrGet(url, done, fail){var x=new XMLHttpRequest();x.open("GET",url,true);x.onreadystatechange=function(){if(x.readyState!==4)return;if(x.status>=200&&x.status<300)done(x.responseText);else fail("HTTP "+x.status);};x.onerror=function(){fail("network");};x.send();}
+      function nature(item){return txt(item.nature||item.propertyType||item.typeLabel||item.category||item.title||"Bien immobilier");}
+      function cityOnly(item){var c=txt(item.city||""),cp=txt(item.postalCode||"");return cp?c.replace(new RegExp("\\s*"+cp+"\\s*$"),"").replace(/^\s+|\s+$/g,""):c;}
       function tone(item){var t=nature(item).toLowerCase();if(/appartement|studio|duplex|triplex/.test(t))return"appartement";if(/maison|villa|chalet|ferme|demeure|mas|propri/.test(t))return"maison";if(/bureau|local|commerce|boutique/.test(t))return"pro";if(/terrain/.test(t))return"terrain";if(/garage|parking/.test(t))return"parking";return"";}
-      function ribbon(item){var s=text(item.state).toUpperCase();if(s.indexOf("OFFRE")!==-1)return {label:"Sous offre",cls:"offer"};if(s.indexOf("COMPROMIS")!==-1)return {label:"Sous compromis",cls:"compromis"};return null;}
-      function contactParts(s){
-        s=text(s); var out={advisor:"Conseiller GTI", agency:"—", mobile:"—"};
-        var m=s.match(/NEGOCIATEUR\\s+EN\\s+CHARGE\\s+DU\\s+BIEN\\s*:\\s*([^:]+?)\\s*T[ÉE]L\\s*:/i); if(m) out.advisor=text(m[1]);
-        var phones=s.match(/[0-9 .-]{10,}/g)||[]; if(phones[0]) out.agency=text(phones[0]); if(phones[1]) out.mobile=text(phones[1]);
-        return out;
-      }
+      function price(v){var n=Number(v);if(!isFinite(n)||n<=0)return"Prix sur demande";return Math.round(n).toLocaleString("fr-FR")+" €";}
+      function ribbon(item){var s=txt(item.state).toUpperCase();if(s.indexOf("OFFRE")!==-1)return {label:"Sous offre",cls:"offer"};if(s.indexOf("COMPROMIS")!==-1)return {label:"Sous compromis",cls:"compromis"};return null;}
+      function contactParts(s){s=txt(s);var out={advisor:"Conseiller GTI",agency:"—",mobile:"—"};var m=s.match(/NEGOCIATEUR\\s+EN\\s+CHARGE\\s+DU\\s+BIEN\\s*:\\s*([^:]+?)\\s*T[ÉE]L\\s*:/i);if(m)out.advisor=txt(m[1]);var phones=s.match(/[0-9 .-]{10,}/g)||[];if(phones[0])out.agency=txt(phones[0]);if(phones[1])out.mobile=txt(phones[1]);return out;}
       function statChip(value,label){return '<div class="chip"><div><div>'+value+'</div><small>'+label+'</small></div></div>';}
-
-      var p=params();
-      var src=text(p.src||"exports/catalogue_vitrine.json");
-      var agence=text(p.agence||"");
-      var xhr=new XMLHttpRequest();
-      xhr.open("GET", new URL(src, window.location.href).toString(), true);
-      xhr.onreadystatechange=function(){
-        if(xhr.readyState!==4)return;
-        if(xhr.status<200||xhr.status>=300){document.getElementById("empty").textContent="Erreur JSON "+xhr.status;return;}
-        var data; try{data=JSON.parse(xhr.responseText);}catch(e){document.getElementById("empty").textContent="JSON invalide";return;}
+      var agence=q("agence"), src=q("src")||"exports/catalogue_vitrine.json";
+      xhrGet(src, function(body){
+        var data; try{data=JSON.parse(body);}catch(e){document.getElementById("empty").innerHTML="JSON invalide";return;}
         var items=data&&data.items&&data.items.slice?data.items.slice(0):[];
-        if(agence){var target=normalizeAgency(agence);items=items.filter(function(x){return normalizeAgency(x&&x.agence).indexOf(target)!==-1;});}
-        if(!items.length){document.getElementById("empty").textContent="Aucune annonce";return;}
+        if(agence){var target=normalizeAgency(agence), filtered=[];for(var i=0;i<items.length;i++){if(normalizeAgency(items[i]&&items[i].agence).indexOf(target)!==-1)filtered.push(items[i]);}items=filtered;}
+        if(!items.length){document.getElementById("empty").innerHTML="Aucune annonce";return;}
         var item=items[0], app=document.getElementById("app"), empty=document.getElementById("empty");
         app.style.display="grid"; empty.style.display="none";
-        document.getElementById("hero").src=text(item.photos&&item.photos[0]||"");
-        document.getElementById("price").textContent=price(item.price);
-        var title=document.getElementById("title"); title.textContent=nature(item); title.className="title "+tone(item);
-        document.getElementById("meta").textContent=cityOnly(item)||"—";
-        var rb=ribbon(item), rbEl=document.getElementById("ribbon");
-        if(rb){rbEl.style.display="block"; rbEl.className="ribbon "+rb.cls; rbEl.textContent=rb.label;} else {rbEl.style.display="none";}
-        var stats=[];
-        if(text(item.ref))stats.push(statChip(text(item.ref),"Référence"));
-        if(Number(item.surface)>0)stats.push(statChip(Math.round(Number(item.surface))+" m²","Surface"));
-        if(Number(item.rooms)>0)stats.push(statChip(Math.round(Number(item.rooms)), Number(item.rooms)>1?"Pièces":"Pièce"));
-        document.getElementById("stats").innerHTML=stats.join("");
-        var c=contactParts(item.agence);
-        document.getElementById("contactAdvisor").textContent=c.advisor;
-        document.getElementById("contactAgencyPhone").textContent=c.agency;
-        document.getElementById("contactAdvisorMobile").textContent=c.mobile;
-        document.getElementById("qr").src=text(item.qrUrl||item.qr||"");
-        document.getElementById("status").textContent="Mode Samsung simplifié • "+items.length+" annonce(s) filtrée(s)";
-      };
-      xhr.onerror=function(){document.getElementById("empty").textContent="Erreur réseau";};
-      xhr.send();
+        document.getElementById("hero").src=txt(item.photos&&item.photos[0]||"");
+        document.getElementById("price").innerHTML=price(item.price);
+        var title=document.getElementById("title"); title.className="title "+tone(item); title.innerHTML=nature(item);
+        document.getElementById("meta").innerHTML=cityOnly(item)||"—";
+        var rb=ribbon(item), rbEl=document.getElementById("ribbon"); if(rb){rbEl.style.display="block"; rbEl.className="ribbon "+rb.cls; rbEl.innerHTML=rb.label;} else {rbEl.style.display="none";}
+        var stats=[]; if(txt(item.ref))stats.push(statChip(txt(item.ref),"Référence")); if(Number(item.surface)>0)stats.push(statChip(Math.round(Number(item.surface))+" m²","Surface")); if(Number(item.rooms)>0)stats.push(statChip(Math.round(Number(item.rooms)),Number(item.rooms)>1?"Pièces":"Pièce")); document.getElementById("stats").innerHTML=stats.join("");
+        var c=contactParts(item.agence); document.getElementById("contactAdvisor").innerHTML=c.advisor; document.getElementById("contactAgencyPhone").innerHTML=c.agency; document.getElementById("contactAdvisorMobile").innerHTML=c.mobile;
+        document.getElementById("qr").src=txt(item.qrUrl||item.qr||"");
+        document.getElementById("status").innerHTML="Mode Samsung simplifié • "+items.length+" annonce(s)";
+      }, function(err){document.getElementById("empty").innerHTML="Erreur : "+err;});
     })();
   </script>
 </body>
