@@ -120,6 +120,14 @@ body.debug .hud{display:flex;}
   transform: scale(1.08);
 }
 
+.slide__video{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  background:#000;
+  z-index:1;
+}
+
 /* overlay très léger */
 .slide__gradient{
   position:absolute;inset:0;
