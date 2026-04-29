@@ -19,6 +19,7 @@
 
     slideImgA: $("#slideImgA"),
     slideImgB: $("#slideImgB"),
+    slideVideo: $("#slideVideo"),
     slideProg: $("#slideProg"),
 
     slideStats: $("#slideStats"),
@@ -603,6 +604,11 @@
       debug: p.get("debug") === "1",
 
       qr: (p.get("qr") || "").trim(),
+      promo: p.get("promo") !== "0",
+      promoEvery: clampInt(p.get("promoEvery"), 1, 999, 6),
+      promoDuration: clampInt(p.get("promoDuration"), 5, 300, 12),
+      promoOffset: clampInt(p.get("promoOffset"), -1, 999, -1),
+      promoVideo: (p.get("promoVideo") || "assets/promo-gti.mp4.mp4").trim(),
     };
   }
 
@@ -669,6 +675,41 @@
     }
   }
 
+  function isPromoEntry(entry) {
+    return !!(entry && entry.kind === "promo");
+  }
+
+  function resolvePromoOffset(params) {
+    const every = Math.max(1, params.promoEvery || 1);
+    if (params.promoOffset >= 0) return params.promoOffset % every;
+    return ((params.screen || 1) - 1) % every;
+  }
+
+  function buildPlaylist(items, params) {
+    const listings = items.map(item => ({ kind: "listing", id: item.id, item }));
+    if (!params.promo || !params.promoVideo || !listings.length) return listings;
+
+    const every = Math.max(1, params.promoEvery || 1);
+    const offset = resolvePromoOffset(params);
+    const out = [];
+    let seenListings = 0;
+
+    for (const entry of listings) {
+      out.push(entry);
+      seenListings += 1;
+      if (((seenListings + offset) % every) === 0) {
+        out.push({
+          kind: "promo",
+          id: `PROMO_${params.screen}_${seenListings}`,
+          videoUrl: params.promoVideo,
+          durationSec: params.promoDuration,
+        });
+      }
+    }
+
+    return out;
+  }
+
   // ---------------------------
   // Slide engine
   // ---------------------------
@@ -692,6 +733,10 @@
     state.photoTimer = null;
     state.tickTimer = null;
     state.progTimer = null;
+    if (els.slideVideo) {
+      els.slideVideo.pause();
+      try { els.slideVideo.currentTime = 0; } catch (_) {}
+    }
   }
 
   // ✅ durée calculée SANS reboucler les photos
@@ -711,7 +756,71 @@
     els.slideProg.style.width = `${(pct * 100).toFixed(1)}%`;
   }
 
+  function setPromoVisibility(isPromo) {
+    if (els.slidePrice) els.slidePrice.classList.toggle("hidden", !!isPromo);
+    if (els.slideStats) els.slideStats.classList.toggle("hidden", !!isPromo);
+    if (els.qrBlock) els.qrBlock.classList.toggle("hidden", !!isPromo);
+    if (els.dpeCard) els.dpeCard.classList.toggle("hidden", !!isPromo);
+    if (els.slideStateRibbon) els.slideStateRibbon.classList.toggle("hidden", !!isPromo);
+
+    const contactCard = document.getElementById("contactCard");
+    if (contactCard) contactCard.classList.toggle("hidden", !!isPromo);
+  }
+
+  function stopPromoVideo() {
+    if (!els.slideVideo) return;
+    els.slideVideo.pause();
+    try { els.slideVideo.currentTime = 0; } catch (_) {}
+    els.slideVideo.classList.add("hidden");
+  }
+
+  function startPromoVideo(url) {
+    if (!els.slideVideo) return;
+    const absUrl = new URL(url, window.location.href).toString();
+    if (els.slideVideo.src !== absUrl) {
+      els.slideVideo.src = absUrl;
+    }
+    els.slideVideo.classList.remove("hidden");
+    els.slideVideo.muted = true;
+    els.slideVideo.loop = false;
+    els.slideVideo.playsInline = true;
+    els.slideVideo.autoplay = true;
+    els.slideVideo.onended = () => { state.nextItemAt = Date.now(); };
+    els.slideVideo.onerror = () => { state.nextItemAt = Date.now(); };
+    const playPromise = els.slideVideo.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {});
+    }
+  }
+
+  function setPromoEntry(entry) {
+    setPromoVisibility(true);
+    stopPromoVideo();
+
+    els.slideTitle.innerHTML = `<span class="slide__titleMain slide__titleMain--default">GTI Immobilier</span>`;
+    els.slideMeta.textContent = "Video promotionnelle";
+
+    els.slideImgA.classList.remove("is-visible");
+    els.slideImgB.classList.remove("is-visible");
+    els.slideImgA.classList.add("hidden");
+    els.slideImgB.classList.add("hidden");
+
+    startPromoVideo(entry.videoUrl);
+
+    state.itemDurationMs = (entry.durationSec || 12) * 1000;
+    state.nextItemAt = Date.now() + state.itemDurationMs;
+    if (els.slideProg) els.slideProg.style.width = "0%";
+
+    if (state.photoTimer) {
+      clearInterval(state.photoTimer);
+      state.photoTimer = null;
+    }
+  }
+
   function setSlideItem(item, rotateMinSec, photoRotateSec, params) {
+    setPromoVisibility(false);
+    stopPromoVideo();
+
     els.slidePrice.textContent = formatPriceEUR(item.price);
     const nature = displayNature(item);
     const tone = propertyTypeTone(item);
@@ -736,6 +845,8 @@
     const p0 = getPhoto(item, 0);
     const p1 = getPhoto(item, 1);
 
+    els.slideImgA.classList.remove("hidden");
+    els.slideImgB.classList.remove("hidden");
     els.slideImgA.src = p0;
     els.slideImgB.src = p1;
     els.slideImgA.classList.add("is-visible");
@@ -748,10 +859,18 @@
 
     warmupItem(item, 1, 3).catch(()=>{});
     const nextItem = state.items[(state.itemIndex + 1) % state.items.length];
-    if (nextItem) preload(getPhoto(nextItem, 0)).catch(()=>{});
+    if (nextItem && !isPromoEntry(nextItem)) preload(getPhoto(nextItem.item, 0)).catch(()=>{});
 
     // ✅ reset phase rotation photo pour ce bien (photo 1 = 4s plein)
     restartPhotoTimer(photoRotateSec, params.maxPhotos);
+  }
+
+  function setSlideEntry(entry, rotateMinSec, photoRotateSec, params) {
+    if (isPromoEntry(entry)) {
+      setPromoEntry(entry);
+      return;
+    }
+    setSlideItem(entry.item, rotateMinSec, photoRotateSec, params);
   }
 
   function restartInfoAnimation(slideEl) {
@@ -768,7 +887,7 @@
   function transitionToItem(item, rotateMinSec, photoRotateSec, params) {
     const slideEl = document.getElementById("slide");
     if (!slideEl) {
-      setSlideItem(item, rotateMinSec, photoRotateSec, params);
+      setSlideEntry(item, rotateMinSec, photoRotateSec, params);
       return;
     }
 
@@ -782,7 +901,7 @@
       slideEl.classList.remove("is-exit");
       slideEl.classList.add("is-enter");
 
-      setSlideItem(item, rotateMinSec, photoRotateSec, params);
+      setSlideEntry(item, rotateMinSec, photoRotateSec, params);
       restartInfoAnimation(slideEl);
 
       requestAnimationFrame(() => {
@@ -805,7 +924,8 @@
     if (state.photoTimer) clearInterval(state.photoTimer);
     state.photoTimer = setInterval(() => {
       const item = state.items[state.itemIndex];
-      swapPhoto(item, maxPhotos).catch(()=>{});
+      if (!item || isPromoEntry(item)) return;
+      swapPhoto(item.item, maxPhotos).catch(()=>{});
     }, photoRotateSec * 1000);
   }
 
@@ -851,7 +971,7 @@
     }
 
     const first = items[0];
-    setSlideItem(first, rotateMinSec, photoRotateSec, params);
+    setSlideEntry(first, rotateMinSec, photoRotateSec, params);
     restartInfoAnimation(slideEl);
 
     state.tickTimer = setInterval(() => {
@@ -905,11 +1025,12 @@
         return;
       }
 
-      const fp = fingerprint(items);
+      const playlist = buildPlaylist(items, params);
+      const fp = `${fingerprint(items)}|promo=${params.promo ? 1 : 0}|every=${params.promoEvery}|duration=${params.promoDuration}|offset=${resolvePromoOffset(params)}|video=${params.promoVideo}`;
       if (fp !== lastFingerprint) {
         lastFingerprint = fp;
         preload(getPhoto(items[0], 0)).catch(()=>{});
-        startSlide(items, params.rotate, params.photoRotate, params);
+        startSlide(playlist, params.rotate, params.photoRotate, params);
       } else {
         showView("slide");
         scheduleFitStats();
