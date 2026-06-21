@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-20T09:28:28Z",
+  "generatedAt": "2026-06-21T04:30:49Z",
   "items": [
     {
       "id": "HEKTOR_59574",
@@ -351,6 +351,49 @@
       "terrain": 0,
       "parkingInterieur": 1,
       "terrasse": 1
+    },
+    {
+      "id": "HEKTOR_11682",
+      "ref": "EM65910",
+      "agence": "Groupe GTI Ambert TEL : 04 73 82 95 61 NEGOCIATEUR EN CHARGE DU BIEN : Sandrine DELAVAUD TEL : 0665123699",
+      "title": "Maison avec vue panoramique",
+      "nature": "Maison",
+      "propertyType": "Maison",
+      "city": "Saint-Ferréol-des-Côtes 63600",
+      "postalCode": "63600",
+      "price": 134000.0,
+      "surface": 81,
+      "rooms": 4,
+      "bedrooms": 3,
+      "offerType": "0",
+      "status": "2",
+      "state": "Sous compromis",
+      "photos": [
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_1e81e2784381efd165617962eb69cec4.png",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_9757018b5504aef5b94005eb48345f9b.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_b571b86023d534a71aebb34c38f0d413.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_3b326400fac240e440a0c4f715f97ffc.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_3d54db1a6fc66aaa620969f5689ff0e9.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_64eb7366a644d43b25dd9b2e52f0cb75.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_e65712ab53ce0660e955fbd34cfac01f_Inc_1.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_23166b089b862665fdde607b941fe190.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_b6a4a2212fc24f1f0ca2a375d6fa1795.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_e52fe7ac477ed49fda0025403bd68984.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_5f3c897ae7c53fd04f0b7cde2db9f777.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_c1ef1ef9c76ef33762e0027e22824fab.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_fd62381d06f8e0d6802d92324599c93a.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_97b183a2bda81fdfbc11305d2ebc7331.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_d5553a1ad5f791b46af2ed017f5b8a8c.jpg",
+        "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/16/cb15cb9243a1793a9d570c2585b93300/photo_4724d664d2ac393449af0baa507c9704.jpg"
+      ],
+      "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=11682&fiche_type=visite&pdf_orientation=P&pdf_template=1",
+      "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=11682",
+      "qrUrl": "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fgtiimmo.github.io%2Fvitrine%2Frdv%2Findex.html%3Fref%3D11682",
+      "updatedAt": "2026-06-19 09:24:59",
+      "phone": "0665123699",
+      "weight": 0,
+      "terrain": 340,
+      "parkingInterieur": 0
     },
     {
       "id": "HEKTOR_11682",
