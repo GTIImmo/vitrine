@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-07-09T12:19:02Z",
+  "generatedAt": "2026-07-09T13:32:11Z",
   "items": [
     {
       "id": "HEKTOR_59445",
       "ref": "18342",
       "agence": "Groupe GTI Ambert TEL : 04 73 82 95 61 NEGOCIATEUR EN CHARGE DU BIEN : Alice RONDEAU TEL : 0647471801",
-      "title": "Maison fonctionnelle en pierres 10 km d'Ambert",
+      "title": "Maison en pierre proche d'Ambert",
       "nature": "Maison",
       "propertyType": "Maison",
       "city": "Grandrif 63600",
@@ -35,7 +35,7 @@
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=59445&fiche_type=visite&pdf_orientation=P&pdf_template=1",
       "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=59445",
       "qrUrl": "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fgtiimmo.github.io%2Fvitrine%2Frdv%2Findex.html%3Fref%3D59445",
-      "updatedAt": "2026-07-09 13:38:02",
+      "updatedAt": "2026-07-09 13:43:45",
       "phone": "0647471801",
       "weight": 0,
       "terrain": 2098,
