@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-30T04:30:57Z",
+  "generatedAt": "2026-08-31T04:42:52Z",
   "items": [
     {
       "id": "HEKTOR_62774",
@@ -16,7 +16,7 @@
       "bedrooms": 4,
       "offerType": "0",
       "status": "2",
-      "state": "Actif",
+      "state": "Sous compromis",
       "photos": [
         "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/1/21098fa24465a57015a4b0cdc32f1d2c/photo_10ae2052be57d7947d6907657584dd6c.png",
         "https://groupe-gti-immobilier.staticlbi.com/original/images/biens/1/21098fa24465a57015a4b0cdc32f1d2c/photo_0364ea5515613643bc6650f0c0215615.jpg"
@@ -24,7 +24,7 @@
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=62774&fiche_type=visite&pdf_orientation=P&pdf_template=1",
       "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=62774",
       "qrUrl": "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fgtiimmo.github.io%2Fvitrine%2Frdv%2Findex.html%3Fref%3D62774",
-      "updatedAt": "2026-08-30 01:11:45",
+      "updatedAt": "2026-08-31 01:13:21",
       "phone": "0658799832",
       "weight": 0,
       "terrain": 1600,
