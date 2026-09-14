@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-13T04:58:00Z",
+  "generatedAt": "2026-09-14T04:58:01Z",
   "items": [
     {
       "id": "HEKTOR_24933",
@@ -28,7 +28,7 @@
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=24933&fiche_type=visite&pdf_orientation=P&pdf_template=1",
       "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=24933",
       "qrUrl": "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fgtiimmo.github.io%2Fvitrine%2Frdv%2Findex.html%3Fref%3D24933",
-      "updatedAt": "2026-09-12 16:02:54",
+      "updatedAt": "2026-09-13 19:36:11",
       "phone": "0658799832",
       "weight": 0,
       "terrain": 2000,
