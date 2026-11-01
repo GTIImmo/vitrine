@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-31T05:15:15Z",
+  "generatedAt": "2026-11-01T05:12:17Z",
   "items": [
     {
       "id": "HEKTOR_62465",
@@ -270,7 +270,6 @@
       "status": "2",
       "state": "Actif",
       "photos": [
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386867/cae49e0a-9bf2-4b6b-ad1a-ba959bc490f8/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386867/cb90c039-cc12-49c1-8a69-c7e87cab8559/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386867/8880a6c9-2e55-431f-b720-577434ba2715/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386867/c126820f-f38c-461c-bfc4-1d8d70d3acff/w1600.jpg",
@@ -283,8 +282,7 @@
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386867/34fc6218-e38f-42a9-bcdf-aa0c919dfc11/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386867/9076b0a2-f1b1-46fc-a9ab-8924482c17ec/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386867/b7810fec-daaf-49a3-95b5-e4043afa7a67/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386867/a80ccde6-bfdf-4395-a77b-21bd20cb8e4d/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386867/cf0806df-dfb6-45eb-848e-ffdb604db252/w1600.jpg"
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386867/a80ccde6-bfdf-4395-a77b-21bd20cb8e4d/w1600.jpg"
       ],
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=59445&fiche_type=visite&pdf_orientation=P&pdf_template=1",
       "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=59445",
@@ -6527,11 +6525,11 @@
       "status": "2",
       "state": "Actif",
       "photos": [
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/6db211e6-8a23-4137-a805-4a9b54ec15e6/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/fb7baa19-c844-42b6-a026-e17e10a4deab/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/c96197c1-3167-48a9-96af-2a5e4f1037df/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/2dc98b05-46a6-48cd-9b43-9bbf83cbcaee/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/e53240b3-3859-46d1-bab7-e521933886ad/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/c96197c1-3167-48a9-96af-2a5e4f1037df/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/6db211e6-8a23-4137-a805-4a9b54ec15e6/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/fb7baa19-c844-42b6-a026-e17e10a4deab/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/36d06fc7-61a4-4572-8c66-29a7bf56efb5/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/bc8f7f11-6451-4d1b-9240-fd5697bca605/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386688/46234bc8-b4be-4d8f-b854-30964da6f3a6/w1600.jpg",
@@ -9442,6 +9440,7 @@
       "status": "2",
       "state": "Sous compromis",
       "photos": [
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385031/3c0879e4-9b19-4f8d-b84e-a2706e41501f/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385031/f71fea15-f929-468a-ad30-a478e3e29c49/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385031/c0ca3d7f-ed5d-42e3-80df-78b7f2ea363e/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385031/ca5b4188-0334-4b2a-b6ae-db83e028231a/w1600.jpg",
@@ -9453,8 +9452,7 @@
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385031/7c9ac202-dcda-4cba-9022-46641d758b55/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385031/57b41904-9965-4720-a1fb-adcbc5bf9834/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385031/c341107d-d496-40e6-a7e8-f867cc89289e/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385031/246be5d5-0e80-47a4-a848-fb49b676589c/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385031/3c0879e4-9b19-4f8d-b84e-a2706e41501f/w1600.jpg"
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385031/246be5d5-0e80-47a4-a848-fb49b676589c/w1600.jpg"
       ],
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=54892&fiche_type=visite&pdf_orientation=P&pdf_template=1",
       "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=54892",
@@ -11794,6 +11792,7 @@
       "status": "2",
       "state": "Actif",
       "photos": [
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385836/62f02d4b-843a-4c92-abd3-00be5eb479f1/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385836/6c507d34-eb71-4fc1-a33c-7407a563ba89/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385836/3653fb7e-c20b-42fe-bef2-35990eee94b4/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385836/b155e9ef-6f55-478f-b9de-d987c3c62d64/w1600.jpg",
@@ -11812,8 +11811,7 @@
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385836/8a8f507b-698b-4d0c-9440-cf5bc5fb1b76/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385836/ce11bb7c-d68a-4ff0-b9be-62a72e04a626/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385836/990fb2bb-8ca6-4f82-8f27-4ab3854badc8/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385836/d8091bdf-758d-48df-8de4-da2e76205fda/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385836/62f02d4b-843a-4c92-abd3-00be5eb479f1/w1600.jpg"
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1385836/d8091bdf-758d-48df-8de4-da2e76205fda/w1600.jpg"
       ],
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=5839&fiche_type=visite&pdf_orientation=P&pdf_template=1",
       "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=5839",
@@ -15148,6 +15146,7 @@
       "status": "2",
       "state": "Actif",
       "photos": [
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386266/857eb512-0be7-4771-a7c5-c95563ef14fb/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386266/d421ad1f-005f-4eea-aca3-357f1ffa777c/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386266/3c78d9b7-2142-41c5-8693-ed031575d855/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386266/2aff9ac0-2575-41d5-a7ef-63f6e8e55837/w1600.jpg",
@@ -15166,8 +15165,7 @@
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386266/cdf4ccd1-7dbc-4ca6-bf24-1ad26b83b2e3/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386266/ecab02fb-9207-4fa0-8725-b218b2b0fe53/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386266/dd0952ea-32e4-43f0-908c-5252229b3219/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386266/6485b76a-ca37-464a-9103-f3afe68b5516/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386266/857eb512-0be7-4771-a7c5-c95563ef14fb/w1600.jpg"
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386266/6485b76a-ca37-464a-9103-f3afe68b5516/w1600.jpg"
       ],
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=58880&fiche_type=visite&pdf_orientation=P&pdf_template=1",
       "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=58880",
