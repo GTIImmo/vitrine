@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-07T05:51:55Z",
+  "generatedAt": "2026-11-08T05:40:21Z",
   "items": [
     {
       "id": "HEKTOR_59446",
@@ -19,13 +19,12 @@
       "state": "Actif",
       "photos": [
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/20d6c83b-12bb-4877-9553-5985559ae7e0/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/8df0d5e5-8753-4286-a7d4-33a17de444aa/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/be0a65aa-7142-49c7-94c1-48c65a2df812/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/c7e2bfd3-c006-4822-a4f8-5b6fd7945f65/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/9fcbfcf0-d705-4846-8225-9e63a0716b83/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/f55d2353-a024-497b-9c70-dff080af9ea7/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/6b79ceb0-389e-4b07-a24d-d62403efd729/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/ad24eac2-2eed-426e-a1ca-b67a3360dfac/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/0080a6ed-6c65-4e11-aaca-e61ef3ee02fc/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/be0a65aa-7142-49c7-94c1-48c65a2df812/w1600.jpg"
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1386868/d4b97070-6b69-4f3d-86e9-d02917e86e5d/w1600.jpg"
       ],
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=59446&fiche_type=visite&pdf_orientation=P&pdf_template=1",
       "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=59446",
@@ -156,8 +155,9 @@
       "status": "2",
       "state": "Actif",
       "photos": [
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/2804139/55c0c152-616f-4964-a11a-463c73e333a6/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/2804139/4a61b269-0f55-4e62-8810-608340d5c12a/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/2804139/55c0c152-616f-4964-a11a-463c73e333a6/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/2804139/c073ec15-d253-43ff-bc78-9346626398af/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/2804139/b9366dd5-90ec-4af8-bb39-b0f16ecf4efd/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/2804139/0de6b9f2-7abc-44c5-84a8-236be5785570/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/2804139/95264d9b-f2e4-4cb9-bfe9-d60531340472/w1600.jpg",
