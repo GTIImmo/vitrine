@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-14T05:52:55Z",
+  "generatedAt": "2026-11-15T05:40:45Z",
   "items": [
     {
       "id": "HEKTOR_63098",
@@ -135,19 +135,15 @@
       "status": "2",
       "state": "Actif",
       "photos": [
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/041b6e2c-4432-4da1-ba35-09a908a4b536/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/cbc3ed35-f53f-470e-a127-1b46448bdd29/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/888b0012-e1f6-42cd-9b89-8f44f19adf04/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/b2bd336c-7b39-415c-a262-bf645abdb4f8/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/0aacde23-9418-4d83-8cce-d05863e295d5/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/fb0289e6-3010-4555-9776-aba12ec77c87/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/34ac29fb-6fa5-4b48-a368-34fef98641cf/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/4f853b60-a85c-4776-9dfe-633672d82ae6/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/92e89a1c-6f78-459f-955d-488302e0f2db/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/0cd829c2-2dcf-4e30-9126-8ad801b266bf/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/87de55ab-6457-4f78-a83d-0b5ffdef2c4d/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/38c53f3f-ac47-4498-a195-cc7017db4612/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/98d45e31-abbb-4c54-b773-c8e437b11f0c/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/0aacde23-9418-4d83-8cce-d05863e295d5/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589289/ba0a8957-e98b-4304-b60f-7f4803ef61fe/w1600.jpg"
       ],
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=63304&fiche_type=visite&pdf_orientation=P&pdf_template=1",
@@ -339,15 +335,9 @@
       "status": "2",
       "state": "Actif",
       "photos": [
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388276/19cacad4-40ef-4ca4-9de2-e32b9e727d01/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388276/89e0f677-3e1d-4275-b0e0-9752f6c15aaf/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388276/bc31d0ea-893e-472d-ad9a-db521b7f0e1a/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388276/e0990e30-0b5b-4c2d-8bf1-cca42866b30a/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388276/88d94577-044e-4e5b-9223-29f76b87357d/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388276/ac512593-3338-4fe9-a735-cfd6007cc82f/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388276/349d82cc-9063-411f-b2e0-13df91e1229e/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388276/56ee46b0-03ed-4eba-ac67-9e983c87fcc9/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388276/f77f3ded-073f-41a7-a416-def6c99086a3/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388276/89792925-e856-4eaf-8b80-cef588a183e7/w1600.jpg"
       ],
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=62311&fiche_type=visite&pdf_orientation=P&pdf_template=1",
@@ -377,16 +367,8 @@
       "state": "Actif",
       "photos": [
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/5e2751a3-941f-4188-a816-360f436cb181/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/93de0c35-0a5f-44cb-81eb-db5d9b9b1e1a/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/54471bb2-0428-4187-8e8b-656d72f3a867/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/b623ed95-cd31-4cc2-a076-ec0154de808a/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/b9596736-07a4-41fc-a71b-9192c4e929f8/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/d5fb8a58-935e-48a0-913e-b60e7a3f6741/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/0bcb1ef7-d3bd-4035-bd70-7769a1ce883a/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/39f4cd32-2d45-483a-8275-ccefff687810/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/52d7c312-bf7b-4018-a41f-829633db5dfc/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/e7b25301-b456-4c42-acc2-94ab39dd0cab/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/5e282e9a-5412-408b-a167-9cc29900c04c/w1600.jpg"
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1388277/b9596736-07a4-41fc-a71b-9192c4e929f8/w1600.jpg"
       ],
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=62312&fiche_type=visite&pdf_orientation=P&pdf_template=1",
       "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=62312",
