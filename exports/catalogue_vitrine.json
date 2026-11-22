@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-21T05:44:15Z",
+  "generatedAt": "2026-11-22T05:33:29Z",
   "items": [
     {
       "id": "HEKTOR_62469",
@@ -18,9 +18,10 @@
       "status": "2",
       "state": "Actif",
       "photos": [
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1670800/16eaa4ce-1bf2-49f3-bfd2-0c31c4d54757/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1670800/1eb2af11-e136-4a56-a429-8f29b6246eb2/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1670800/49972762-b470-4c92-9ce4-88fad15753f2/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1670800/1eb2af11-e136-4a56-a429-8f29b6246eb2/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1670800/c63d1a8e-5828-42e8-93b2-d29c41daab7e/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1670800/16eaa4ce-1bf2-49f3-bfd2-0c31c4d54757/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1670800/c5e14728-c403-438a-9257-595973650595/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1670800/6d2175c0-9486-496b-abc6-026ffcc195af/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/1670800/fb8fa2e1-8c9a-4eaf-93bf-ca49946b7663/w1600.jpg",
@@ -207,7 +208,6 @@
       "status": "2",
       "state": "Actif",
       "photos": [
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589160/81319c70-d4d2-4ddb-9ed0-86900c95c367/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589160/ea4a9fd5-4f16-4e49-a553-e9fcacbd183c/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589160/16013cd4-4fd3-4def-bb50-ad28ede88a31/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/7589160/873aff0f-ec1f-4f3e-ae17-3580884338c0/w1600.jpg",
@@ -312,15 +312,15 @@
       "status": "2",
       "state": "Actif",
       "photos": [
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/83486d0b-b47e-48d2-be00-4c6d30e8f109/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/dfe7336f-6e95-4f68-8034-40af1592868c/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/bfa28552-630c-49fa-ac11-43524feafc6c/w1600.jpg",
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/732e6c66-fe65-4409-abfe-44558e9ef0a3/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/b6c51c8a-15b4-4166-80c0-d118aeb09b48/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/01652fbb-0480-4df2-91d7-12eacfff74aa/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/732e6c66-fe65-4409-abfe-44558e9ef0a3/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/aa99d8c1-6293-4402-a100-f01f37a28a04/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/529dda33-c5a6-4696-94e2-f7d02052613d/w1600.jpg",
         "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/36707eeb-a0c7-44ef-ad1a-635bd356de9e/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/16b28c5c-ef73-4264-8688-bd81bb9606f9/w1600.jpg",
-        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/dfe7336f-6e95-4f68-8034-40af1592868c/w1600.jpg"
+        "https://dwaqxfrinihnychuoptk.supabase.co/storage/v1/object/public/gti-photo/3370880/16b28c5c-ef73-4264-8688-bd81bb9606f9/w1600.jpg"
       ],
       "url": "https://gti-immobilier.fr/admin/pdf.php?lang=fr&idann=62712&fiche_type=visite&pdf_orientation=P&pdf_template=1",
       "appointmentUrl": "https://gtiimmo.github.io/vitrine/rdv/index.html?ref=62712",
